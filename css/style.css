@@ -137,6 +137,113 @@ a {
     transform: scale(1.05);
 }
 
+/* Mobile Hamburger Menu */
+.globalnav-item-hamburger {
+    display: none;
+}
+
+.hamburger-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.hamburger-line {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--color-text-primary);
+    border-radius: 1px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 20px;
+    flex-direction: column;
+    gap: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 9998;
+}
+
+.mobile-menu.active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.mobile-menu-link {
+    display: block;
+    padding: 16px 0;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    transition: color 0.2s ease;
+}
+
+.mobile-menu-link:last-child {
+    border-bottom: none;
+}
+
+.mobile-menu-link:active {
+    color: var(--color-accent);
+}
+
+.mobile-menu-download {
+    margin-top: 10px;
+    background: var(--color-accent);
+    color: #fff !important;
+    text-align: center;
+    border-radius: 12px;
+    padding: 16px !important;
+    border-bottom: none !important;
+}
+
+/* Show hamburger and hide menu items on mobile */
+@media (max-width: 768px) {
+    .globalnav-item-menu {
+        display: none;
+    }
+    
+    .globalnav-item-hamburger {
+        display: flex;
+    }
+    
+    .mobile-menu {
+        display: flex;
+    }
+}
+
 /* ============================================
    Main Content
    ============================================ */
@@ -4309,5 +4416,727 @@ a {
     .m3-sound-chip {
         padding: 10px 16px;
         font-size: 13px;
+    }
+}
+
+/* ============================================
+   COMPREHENSIVE MOBILE RESPONSIVE DESIGN
+   ============================================ */
+
+/* ---------- TABLET (max-width: 1024px) ---------- */
+@media (max-width: 1024px) {
+    :root {
+        --max-width: 100%;
+    }
+    
+    .viewport-content {
+        padding: 0 32px;
+    }
+}
+
+/* ---------- MOBILE LANDSCAPE / SMALL TABLET (max-width: 768px) ---------- */
+@media (max-width: 768px) {
+    /* Navigation */
+    #globalnav {
+        padding: 0 16px;
+    }
+    
+    .globalnav-item-menu:not(.globalnav-item-download):not(:first-child) {
+        display: none;
+    }
+    
+    .globalnav-logo {
+        font-size: 16px !important;
+    }
+    
+    /* Viewport Content */
+    .viewport-content {
+        padding: 0 20px;
+    }
+    
+    /* Hero Section */
+    .section-hero {
+        padding: 100px 0 60px;
+        min-height: auto;
+    }
+    
+    .hero-headline {
+        font-size: 36px;
+        line-height: 1.1;
+    }
+    
+    .hero-content {
+        padding: 0 20px;
+    }
+    
+    .hero-cta {
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+    }
+    
+    .hero-link-primary,
+    .hero-link-secondary {
+        font-size: 16px;
+    }
+    
+    /* Hero Devices - Stack vertically on mobile */
+    .hero-devices-spread {
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+        padding: 40px 20px;
+    }
+    
+    .device-back,
+    .device-front-left,
+    .device-front-right {
+        position: relative;
+        transform: none !important;
+    }
+    
+    .device-back {
+        order: 1;
+    }
+    
+    .device-front-left {
+        order: 2;
+    }
+    
+    .device-front-right {
+        order: 3;
+    }
+    
+    .tablet-frame-large {
+        width: 100%;
+        max-width: 340px;
+    }
+    
+    .phone-frame-medium {
+        width: 220px;
+    }
+    
+    .fold-frame-medium {
+        width: 280px;
+    }
+    
+    .device-name {
+        font-size: 11px;
+    }
+    
+    /* Spotlight Sections */
+    .section-feature-spotlight {
+        padding: 80px 0;
+    }
+    
+    .section-feature-spotlight .viewport-content {
+        flex-direction: column;
+        gap: 40px;
+        text-align: center;
+    }
+    
+    .spotlight-content {
+        max-width: 100%;
+    }
+    
+    .spotlight-headline {
+        font-size: 36px;
+    }
+    
+    .spotlight-description {
+        font-size: 17px;
+    }
+    
+    .spotlight-visual {
+        transform: scale(0.85);
+    }
+    
+    /* Features Apple Section */
+    .section-features-apple {
+        padding: 60px 0;
+    }
+    
+    .section-header {
+        margin-bottom: 40px;
+    }
+    
+    .section-headline {
+        font-size: 32px;
+    }
+    
+    .section-eyebrow {
+        font-size: 12px;
+    }
+    
+    /* Apple Hero Card */
+    .apple-hero-card {
+        border-radius: 24px;
+        margin-bottom: 20px;
+    }
+    
+    .hero-card-bg {
+        min-height: 300px;
+        padding: 30px 20px;
+    }
+    
+    .hero-card-title {
+        font-size: 28px;
+    }
+    
+    .hero-card-desc {
+        font-size: 15px;
+        padding: 20px;
+    }
+    
+    /* Apple Tiles Grid */
+    .apple-tiles-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .apple-tiles-grid.second-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .apple-tile {
+        min-height: 280px;
+    }
+    
+    .apple-tile.wide {
+        grid-column: span 1;
+    }
+    
+    .tile-visual {
+        height: 160px;
+    }
+    
+    .tile-title {
+        font-size: 20px;
+    }
+    
+    .tile-desc {
+        font-size: 14px;
+    }
+    
+    /* How It Works Section */
+    .section-how-it-works {
+        padding: 60px 0;
+    }
+    
+    .how-it-works-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .hiw-card {
+        min-height: auto;
+    }
+    
+    .hiw-card.hiw-card-wide {
+        grid-column: span 1;
+    }
+    
+    .hiw-card-visual {
+        height: 280px;
+    }
+    
+    .hiw-card-title {
+        font-size: 22px;
+    }
+    
+    .hiw-card-desc {
+        font-size: 15px;
+    }
+    
+    .hiw-step-badge {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    /* Platforms Section */
+    .section-platforms {
+        padding: 60px 0;
+    }
+    
+    .platforms-showcase {
+        flex-direction: column;
+        align-items: center;
+        gap: 50px;
+        padding: 40px 20px;
+    }
+    
+    .platform-device {
+        transform: none !important;
+    }
+    
+    .android-phone-mockup {
+        transform: scale(0.9);
+    }
+    
+    .android-tablet-mockup {
+        transform: scale(0.7);
+    }
+    
+    .android-fold-mockup {
+        transform: scale(0.8);
+    }
+    
+    /* Customization Section */
+    .customize-container {
+        flex-direction: column;
+        min-height: auto;
+    }
+    
+    .customize-sticky-col {
+        flex: none;
+        width: 100%;
+        position: relative;
+    }
+    
+    .customize-sticky-content {
+        position: relative;
+        height: auto;
+        padding: 60px 20px;
+    }
+    
+    .customize-scroll-col {
+        flex: none;
+        width: 100%;
+    }
+    
+    .feature-panel {
+        height: auto;
+        min-height: 50vh;
+        padding: 60px 20px;
+    }
+    
+    .feature-panel-content {
+        max-width: 100%;
+        text-align: center;
+    }
+    
+    .feature-headline {
+        font-size: 32px;
+    }
+    
+    .feature-body {
+        font-size: 16px;
+    }
+    
+    .customize-phone-frame {
+        width: 220px;
+    }
+    
+    .customize-phone-screen {
+        height: 400px;
+    }
+    
+    /* Download Section */
+    .section-download {
+        padding: 80px 0;
+    }
+    
+    .download-headline {
+        font-size: 36px;
+    }
+    
+    .download-copy {
+        font-size: 17px;
+    }
+    
+    .download-buttons {
+        flex-direction: column;
+        gap: 16px;
+        align-items: center;
+    }
+    
+    .download-btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+    
+    /* Footer */
+    .footer {
+        padding: 30px 20px;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+}
+
+/* ---------- MOBILE PORTRAIT (max-width: 480px) ---------- */
+@media (max-width: 480px) {
+    /* Typography scale down */
+    .hero-headline {
+        font-size: 28px;
+        letter-spacing: -0.02em;
+    }
+    
+    .hero-content {
+        padding: 0 16px;
+    }
+    
+    .section-hero {
+        padding: 80px 0 40px;
+    }
+    
+    /* Devices */
+    .hero-devices-spread {
+        gap: 30px;
+        padding: 30px 16px;
+    }
+    
+    .tablet-frame-large {
+        max-width: 280px;
+    }
+    
+    .phone-frame-medium {
+        width: 180px;
+    }
+    
+    .fold-frame-medium {
+        width: 240px;
+    }
+    
+    /* Hide tablet on very small screens */
+    .device-back {
+        display: none;
+    }
+    
+    /* Spotlight */
+    .spotlight-headline {
+        font-size: 28px;
+    }
+    
+    .spotlight-description {
+        font-size: 15px;
+    }
+    
+    .spotlight-visual {
+        transform: scale(0.7);
+    }
+    
+    .geofence-hero,
+    .alarm-hero {
+        transform: scale(0.8);
+    }
+    
+    /* Features */
+    .section-headline {
+        font-size: 26px;
+    }
+    
+    .hero-card-bg {
+        min-height: 260px;
+        padding: 24px 16px;
+    }
+    
+    .hero-card-title {
+        font-size: 22px;
+    }
+    
+    .hero-card-label {
+        font-size: 11px;
+    }
+    
+    .hero-card-desc {
+        font-size: 14px;
+        padding: 16px;
+    }
+    
+    .apple-tile {
+        min-height: 240px;
+        border-radius: 20px;
+    }
+    
+    .tile-visual {
+        height: 140px;
+    }
+    
+    .tile-content {
+        padding: 16px;
+    }
+    
+    .tile-title {
+        font-size: 18px;
+    }
+    
+    .tile-desc {
+        font-size: 13px;
+    }
+    
+    /* How It Works */
+    .hiw-card {
+        border-radius: 20px;
+    }
+    
+    .hiw-card-visual {
+        height: 240px;
+    }
+    
+    .hiw-card-content {
+        padding: 20px 16px;
+    }
+    
+    .hiw-card-title {
+        font-size: 20px;
+    }
+    
+    .hiw-card-desc {
+        font-size: 14px;
+    }
+    
+    /* Platforms */
+    .android-phone-mockup {
+        transform: scale(0.8);
+    }
+    
+    .android-tablet-mockup {
+        transform: scale(0.55);
+    }
+    
+    .android-fold-mockup {
+        transform: scale(0.65);
+    }
+    
+    .platform-label {
+        font-size: 11px;
+    }
+    
+    /* Customization */
+    .customize-sticky-content {
+        padding: 40px 16px;
+    }
+    
+    .feature-panel {
+        min-height: 40vh;
+        padding: 50px 16px;
+    }
+    
+    .feature-eyebrow {
+        font-size: 12px;
+    }
+    
+    .feature-headline {
+        font-size: 26px;
+    }
+    
+    .feature-body {
+        font-size: 15px;
+    }
+    
+    .customize-phone-frame {
+        width: 200px;
+    }
+    
+    .customize-phone-screen {
+        height: 360px;
+    }
+    
+    .screen-state {
+        padding: 30px 16px;
+    }
+    
+    /* Screen visuals smaller */
+    .sound-wave-display {
+        height: 60px;
+    }
+    
+    .sound-wave-display .wave-bar {
+        width: 6px;
+    }
+    
+    .sound-item {
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+    
+    .theme-preview-box {
+        height: 160px;
+    }
+    
+    .color-dot {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .vib-phone {
+        width: 60px;
+        height: 110px;
+    }
+    
+    .mini-calendar {
+        padding: 14px;
+    }
+    
+    .cal-row span {
+        width: 24px;
+        height: 24px;
+        font-size: 11px;
+    }
+    
+    .pill {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+    
+    /* Download */
+    .download-headline {
+        font-size: 28px;
+    }
+    
+    .download-copy {
+        font-size: 15px;
+    }
+    
+    .download-btn {
+        padding: 14px 24px;
+    }
+    
+    .btn-large {
+        font-size: 16px;
+    }
+}
+
+/* ---------- VERY SMALL MOBILE (max-width: 360px) ---------- */
+@media (max-width: 360px) {
+    .hero-headline {
+        font-size: 24px;
+    }
+    
+    .spotlight-headline {
+        font-size: 24px;
+    }
+    
+    .section-headline {
+        font-size: 22px;
+    }
+    
+    .feature-headline {
+        font-size: 22px;
+    }
+    
+    .phone-frame-medium {
+        width: 160px;
+    }
+    
+    .fold-frame-medium {
+        width: 200px;
+    }
+    
+    .customize-phone-frame {
+        width: 180px;
+    }
+    
+    .customize-phone-screen {
+        height: 320px;
+    }
+    
+    .hero-card-title {
+        font-size: 20px;
+    }
+    
+    .hiw-card-visual {
+        height: 200px;
+    }
+    
+    .download-headline {
+        font-size: 24px;
+    }
+}
+
+/* ---------- LANDSCAPE ORIENTATION FIX ---------- */
+@media (max-height: 500px) and (orientation: landscape) {
+    .section-hero {
+        min-height: auto;
+        padding: 80px 0 40px;
+    }
+    
+    .hero-devices-spread {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .device-back {
+        display: none;
+    }
+    
+    .spotlight-visual {
+        transform: scale(0.6);
+    }
+    
+    .customize-sticky-content {
+        padding: 30px 20px;
+    }
+    
+    .feature-panel {
+        min-height: 100vh;
+    }
+}
+
+/* ---------- HIGH DPI / RETINA OPTIMIZATIONS ---------- */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .globalnav-logo,
+    .hero-headline,
+    .spotlight-headline,
+    .section-headline,
+    .feature-headline {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* ---------- TOUCH DEVICE OPTIMIZATIONS ---------- */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets */
+    .globalnav-link {
+        padding: 12px 8px;
+    }
+    
+    .hero-link-primary,
+    .hero-link-secondary {
+        padding: 14px 28px;
+    }
+    
+    .download-btn {
+        padding: 16px 28px;
+    }
+    
+    /* Disable hover effects that don't work on touch */
+    .apple-tile:hover,
+    .hiw-card:hover {
+        transform: none;
+    }
+    
+    .bounce-hover:hover {
+        transform: none;
+    }
+}
+
+/* ---------- PRINT STYLES ---------- */
+@media print {
+    #globalheader,
+    .hero-cta,
+    .download-buttons,
+    .spotlight-visual,
+    .hero-devices-spread,
+    .customize-sticky-col {
+        display: none !important;
+    }
+    
+    .section {
+        padding: 20px 0;
+        page-break-inside: avoid;
+    }
+    
+    body {
+        background: white;
+        color: black;
     }
 }
