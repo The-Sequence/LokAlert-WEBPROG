@@ -4451,7 +4451,161 @@ a {
     
     /* Viewport Content */
     .viewport-content {
-        padding: 0 20px;
+        padding: 0 16px;
+    }
+    
+    /* ==========================================
+       MOBILE BENTO CARD SYSTEM
+       Apple-style asymmetric grid layout
+       ========================================== */
+    
+    /* Bento Grid Base */
+    .how-it-works-grid,
+    .apple-tiles-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    /* Bento Card Styling */
+    .hiw-card,
+    .apple-tile {
+        border-radius: 20px;
+        overflow: hidden;
+        background: var(--color-fill-secondary);
+    }
+    
+    /* Make third card span full width for bento effect */
+    .hiw-card:nth-child(3),
+    .hiw-card.hiw-card-wide {
+        grid-column: 1 / -1;
+    }
+    
+    /* First card - featured large */
+    .how-it-works-grid .hiw-card:first-child {
+        grid-column: 1 / -1;
+        min-height: 280px;
+    }
+    
+    .how-it-works-grid .hiw-card:first-child .hiw-card-visual {
+        height: 200px;
+    }
+    
+    /* Second and third cards - side by side */
+    .how-it-works-grid .hiw-card:nth-child(2),
+    .how-it-works-grid .hiw-card:nth-child(3):not(.hiw-card-wide) {
+        min-height: 260px;
+    }
+    
+    .how-it-works-grid .hiw-card:nth-child(2) .hiw-card-visual,
+    .how-it-works-grid .hiw-card:nth-child(3):not(.hiw-card-wide) .hiw-card-visual {
+        height: 160px;
+    }
+    
+    /* Wide card adjustments */
+    .hiw-card-wide {
+        grid-column: 1 / -1;
+        min-height: 280px;
+    }
+    
+    .hiw-card-wide .hiw-card-visual {
+        height: 200px;
+    }
+    
+    /* Compact card content for bento */
+    .hiw-card-content {
+        padding: 16px;
+    }
+    
+    .hiw-card-title {
+        font-size: 17px;
+        margin-bottom: 6px;
+    }
+    
+    .hiw-card-desc {
+        font-size: 13px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .hiw-step-badge {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    
+    /* Apple Tiles Bento */
+    .apple-tiles-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .apple-tiles-grid.second-row {
+        grid-template-columns: repeat(2, 1fr);
+        margin-top: 12px;
+    }
+    
+    /* Wide tiles span full width */
+    .apple-tile.wide {
+        grid-column: 1 / -1;
+    }
+    
+    .apple-tile {
+        min-height: 200px;
+        border-radius: 20px;
+    }
+    
+    .apple-tile.wide {
+        min-height: 220px;
+    }
+    
+    .tile-visual {
+        height: 120px;
+    }
+    
+    .apple-tile.wide .tile-visual {
+        height: 140px;
+    }
+    
+    .tile-content {
+        padding: 14px;
+    }
+    
+    .tile-title {
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+    
+    .tile-desc {
+        font-size: 12px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    /* Apple Hero Card - Full width featured */
+    .apple-hero-card {
+        border-radius: 24px;
+        margin-bottom: 16px;
+    }
+    
+    .hero-card-bg {
+        min-height: 260px;
+        padding: 24px 20px;
+    }
+    
+    .hero-card-title {
+        font-size: 24px;
+    }
+    
+    .hero-card-desc {
+        font-size: 14px;
+        padding: 16px;
     }
     
     /* Hero Section */
@@ -4587,73 +4741,7 @@ a {
         font-size: 15px;
         padding: 20px;
     }
-    
-    /* Apple Tiles Grid */
-    .apple-tiles-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-    
-    .apple-tiles-grid.second-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .apple-tile {
-        min-height: 280px;
-    }
-    
-    .apple-tile.wide {
-        grid-column: span 1;
-    }
-    
-    .tile-visual {
-        height: 160px;
-    }
-    
-    .tile-title {
-        font-size: 20px;
-    }
-    
-    .tile-desc {
-        font-size: 14px;
-    }
-    
-    /* How It Works Section */
-    .section-how-it-works {
-        padding: 60px 0;
-    }
-    
-    .how-it-works-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
-    
-    .hiw-card {
-        min-height: auto;
-    }
-    
-    .hiw-card.hiw-card-wide {
-        grid-column: span 1;
-    }
-    
-    .hiw-card-visual {
-        height: 280px;
-    }
-    
-    .hiw-card-title {
-        font-size: 22px;
-    }
-    
-    .hiw-card-desc {
-        font-size: 15px;
-    }
-    
-    .hiw-step-badge {
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
-    }
-    
+
     /* Platforms Section */
     .section-platforms {
         padding: 60px 0;
@@ -4826,69 +4914,120 @@ a {
         transform: scale(0.8);
     }
     
-    /* Features */
+    /* Section Headers */
     .section-headline {
         font-size: 26px;
     }
     
-    .hero-card-bg {
-        min-height: 260px;
-        padding: 24px 16px;
-    }
-    
-    .hero-card-title {
-        font-size: 22px;
-    }
-    
-    .hero-card-label {
+    .section-eyebrow {
         font-size: 11px;
     }
     
-    .hero-card-desc {
-        font-size: 14px;
-        padding: 16px;
+    /* ==========================================
+       MOBILE PORTRAIT BENTO CARDS
+       Tighter, more compact bento grid
+       ========================================== */
+    
+    /* Bento Grid - smaller gap */
+    .how-it-works-grid,
+    .apple-tiles-grid {
+        gap: 10px;
     }
     
-    .apple-tile {
+    /* How It Works Bento Cards */
+    .how-it-works-grid .hiw-card:first-child {
         min-height: 240px;
-        border-radius: 20px;
     }
     
-    .tile-visual {
-        height: 140px;
+    .how-it-works-grid .hiw-card:first-child .hiw-card-visual {
+        height: 160px;
     }
     
-    .tile-content {
-        padding: 16px;
+    .how-it-works-grid .hiw-card:nth-child(2),
+    .how-it-works-grid .hiw-card:nth-child(3):not(.hiw-card-wide) {
+        min-height: 220px;
     }
     
-    .tile-title {
-        font-size: 18px;
+    .how-it-works-grid .hiw-card:nth-child(2) .hiw-card-visual,
+    .how-it-works-grid .hiw-card:nth-child(3):not(.hiw-card-wide) .hiw-card-visual {
+        height: 130px;
     }
     
-    .tile-desc {
-        font-size: 13px;
+    .hiw-card-wide {
+        min-height: 240px;
     }
     
-    /* How It Works */
-    .hiw-card {
-        border-radius: 20px;
-    }
-    
-    .hiw-card-visual {
-        height: 240px;
+    .hiw-card-wide .hiw-card-visual {
+        height: 160px;
     }
     
     .hiw-card-content {
-        padding: 20px 16px;
+        padding: 14px;
     }
     
     .hiw-card-title {
-        font-size: 20px;
+        font-size: 15px;
     }
     
     .hiw-card-desc {
+        font-size: 12px;
+        -webkit-line-clamp: 2;
+    }
+    
+    .hiw-step-badge {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    /* Apple Hero Card - Compact */
+    .hero-card-bg {
+        min-height: 220px;
+        padding: 20px 16px;
+    }
+    
+    .hero-card-title {
+        font-size: 20px;
+    }
+    
+    .hero-card-label {
+        font-size: 10px;
+    }
+    
+    .hero-card-desc {
+        font-size: 13px;
+        padding: 14px;
+    }
+    
+    /* Apple Tiles Bento - Compact */
+    .apple-tile {
+        min-height: 180px;
+        border-radius: 18px;
+    }
+    
+    .apple-tile.wide {
+        min-height: 200px;
+    }
+    
+    .tile-visual {
+        height: 100px;
+    }
+    
+    .apple-tile.wide .tile-visual {
+        height: 120px;
+    }
+    
+    .tile-content {
+        padding: 12px;
+    }
+    
+    .tile-title {
         font-size: 14px;
+    }
+    
+    .tile-desc {
+        font-size: 11px;
+        -webkit-line-clamp: 2;
     }
     
     /* Platforms */
@@ -5037,12 +5176,38 @@ a {
         height: 320px;
     }
     
-    .hero-card-title {
-        font-size: 20px;
+    /* Bento grid single column on very small screens */
+    .how-it-works-grid,
+    .apple-tiles-grid,
+    .apple-tiles-grid.second-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
     }
     
-    .hiw-card-visual {
-        height: 200px;
+    /* All cards full width */
+    .how-it-works-grid .hiw-card:first-child,
+    .how-it-works-grid .hiw-card:nth-child(2),
+    .how-it-works-grid .hiw-card:nth-child(3),
+    .hiw-card.hiw-card-wide,
+    .apple-tile,
+    .apple-tile.wide {
+        grid-column: 1;
+        min-height: auto;
+    }
+    
+    .hiw-card-visual,
+    .how-it-works-grid .hiw-card:first-child .hiw-card-visual,
+    .hiw-card-wide .hiw-card-visual {
+        height: 180px;
+    }
+    
+    .tile-visual,
+    .apple-tile.wide .tile-visual {
+        height: 120px;
+    }
+    
+    .hero-card-title {
+        font-size: 20px;
     }
     
     .download-headline {
