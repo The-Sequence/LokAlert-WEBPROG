@@ -1,19 +1,16 @@
 /**
  * LokAlert - Main JavaScript
- * Smooth scroll animations, bounce effects, and interactions
+ * Scroll animations and interactions
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
     initBounceEffects();
     initSmoothScroll();
-    initParallaxEffects();
-    initCardInteractions();
-    initStepAnimations();
 });
 
 /**
- * Initialize scroll-triggered animations using Intersection Observer
+ * Initialize scroll-triggered animations
  */
 function initScrollAnimations() {
     const observerOptions = {
@@ -26,36 +23,29 @@ function initScrollAnimations() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animate-visible');
-                
-                // If it's a bounce-in element, trigger the animation
-                if (entry.target.classList.contains('bounce-in')) {
-                    entry.target.style.animationPlayState = 'running';
-                }
-                
-                // Stagger children animations
-                const children = entry.target.querySelectorAll('.animate-child');
-                children.forEach((child, index) => {
-                    child.style.animationDelay = `${index * 0.1}s`;
-                    child.classList.add('animate-visible');
-                });
             }
         });
     }, observerOptions);
 
-    // Observe all animated elements
+    // Observe elements that should animate
     const animatedElements = document.querySelectorAll(`
-        .showcase-container,
-        .card-interactive,
-        .step-card,
-        .custom-item,
-        .feature-compact,
-        .section-header-center,
-        .cta-content,
-        .bounce-in
+        .spotlight-content,
+        .spotlight-visual,
+        .feature-item,
+        .step,
+        .platform-device,
+        .customize-item,
+        .download-content,
+        .section-header
     `);
 
-    animatedElements.forEach(el => {
-        el.classList.add('pre-animate');
+    animatedElements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        // Use a small fixed delay based on position in grid, max 0.3s
+        const delay = Math.min(index * 0.05, 0.3);
+        el.style.transition = `opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s, 
+                              transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s`;
         observer.observe(el);
     });
 }
@@ -64,38 +54,17 @@ function initScrollAnimations() {
  * Initialize bounce hover effects
  */
 function initBounceEffects() {
-    const bounceElements = document.querySelectorAll('.bounce-hover, .card-interactive, .custom-item');
+    const bounceElements = document.querySelectorAll('.bounce-hover, .feature-item, .customize-item');
     
     bounceElements.forEach(el => {
         el.addEventListener('mouseenter', () => {
             el.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease';
-            el.style.transform = 'translateY(-8px) scale(1.02)';
-            el.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
-        });
-        
-        el.addEventListener('mouseleave', () => {
-            el.style.transition = 'transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), box-shadow 0.3s ease';
-            el.style.transform = 'translateY(0) scale(1)';
-            el.style.boxShadow = '';
-        });
-    });
-
-    // Extra bouncy effect for step icons
-    const stepIcons = document.querySelectorAll('.step-icon-container');
-    stepIcons.forEach(icon => {
-        icon.addEventListener('mouseenter', () => {
-            icon.style.animation = 'none';
-            icon.style.transform = 'scale(1.15) rotate(5deg)';
-        });
-        
-        icon.addEventListener('mouseleave', () => {
-            icon.style.transform = 'scale(1) rotate(0deg)';
         });
     });
 }
 
 /**
- * Initialize smooth scrolling for anchor links
+ * Initialize smooth scrolling
  */
 function initSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -115,150 +84,99 @@ function initSmoothScroll() {
     });
 }
 
+// Add visible state styles
+const styles = document.createElement('style');
+styles.textContent = `
+    .animate-visible {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+    }
+`;
+document.head.appendChild(styles);
+
+// Reduced motion support
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.style.setProperty('--ease-smooth', 'ease');
+    document.documentElement.style.setProperty('--ease-bounce', 'ease');
+    document.documentElement.style.setProperty('--ease-spring', 'ease');
+}
+
 /**
- * Initialize subtle parallax effects
+ * Initialize Customization Section - Apple TV Style Scroll
+ * Features change as user scrolls through the list
  */
-function initParallaxEffects() {
-    const parallaxElements = document.querySelectorAll('.hero-device, .gradient-orb');
+function initCustomizeScroll() {
+    const section = document.querySelector('.section-customize');
+    const featurePanels = document.querySelectorAll('.feature-panel');
+    const screenStates = document.querySelectorAll('.screen-state');
+    const stickyContent = document.querySelector('.customize-sticky-content');
     
+    if (!section || !featurePanels.length) return;
+    
+    // Set initial active state
+    screenStates[0]?.classList.add('active');
+    
+    function updateActiveFeature() {
+        // Find which panel is most in view
+        let activeFeature = 'sounds';
+        let maxVisibility = 0;
+        
+        featurePanels.forEach(panel => {
+            const rect = panel.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            
+            // Calculate how much of the panel is visible in the viewport center
+            const panelCenter = rect.top + rect.height / 2;
+            const viewportCenter = viewportHeight / 2;
+            const distance = Math.abs(panelCenter - viewportCenter);
+            const visibility = Math.max(0, 1 - distance / viewportHeight);
+            
+            if (visibility > maxVisibility) {
+                maxVisibility = visibility;
+                activeFeature = panel.dataset.feature;
+            }
+        });
+        
+        // Update screen states
+        screenStates.forEach(state => {
+            if (state.dataset.feature === activeFeature) {
+                state.classList.add('active');
+            } else {
+                state.classList.remove('active');
+            }
+        });
+        
+        // Update sticky background to match current panel
+        if (stickyContent) {
+            const backgrounds = {
+                'sounds': 'linear-gradient(135deg, #1a0a2e 0%, #16082a 50%, #0d0015 100%)',
+                'themes': 'linear-gradient(135deg, #0a1a1a 0%, #062a2a 50%, #001515 100%)',
+                'vibration': 'linear-gradient(135deg, #1a1005 0%, #2a1a08 50%, #150d00 100%)',
+                'schedule': 'linear-gradient(135deg, #0a0f1a 0%, #0d1a2e 50%, #050a15 100%)'
+            };
+            stickyContent.style.background = backgrounds[activeFeature] || backgrounds['sounds'];
+        }
+    }
+    
+    // Listen to scroll events with throttling
     let ticking = false;
-    
     window.addEventListener('scroll', () => {
         if (!ticking) {
-            window.requestAnimationFrame(() => {
-                const scrolled = window.pageYOffset;
-                
-                parallaxElements.forEach(el => {
-                    const speed = el.dataset.parallax || 0.3;
-                    const yPos = -(scrolled * speed);
-                    el.style.transform = `translateY(${yPos}px)`;
-                });
-                
+            requestAnimationFrame(() => {
+                updateActiveFeature();
                 ticking = false;
             });
-            
             ticking = true;
         }
     });
+    
+    // Initial update
+    updateActiveFeature();
 }
 
-/**
- * Initialize interactive card effects
- */
-function initCardInteractions() {
-    const cards = document.querySelectorAll('.card-interactive');
-    
-    cards.forEach(card => {
-        // Add subtle tilt effect
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            const rotateX = (y - centerY) / 20;
-            const rotateY = (centerX - x) / 20;
-            
-            card.style.transform = `
-                perspective(1000px) 
-                rotateX(${rotateX}deg) 
-                rotateY(${rotateY}deg) 
-                translateY(-8px) 
-                scale(1.02)
-            `;
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale(1)';
-        });
-    });
-}
+// Initialize customize scroll after DOM loaded
+document.addEventListener('DOMContentLoaded', () => {
+    initCustomizeScroll();
+});
 
-/**
- * Initialize step-by-step animations
- */
-function initStepAnimations() {
-    const steps = document.querySelectorAll('.step-card');
-    
-    const stepObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry, index) => {
-            if (entry.isIntersecting) {
-                // Get the index of this step among all steps
-                const allSteps = Array.from(steps);
-                const stepIndex = allSteps.indexOf(entry.target);
-                
-                // Delay animation based on position
-                setTimeout(() => {
-                    entry.target.classList.add('step-animate-in');
-                }, stepIndex * 150);
-                
-                stepObserver.unobserve(entry.target);
-            }
-        });
-    }, {
-        threshold: 0.2,
-        rootMargin: '0px 0px -50px 0px'
-    });
-
-    steps.forEach(step => {
-        step.classList.add('step-pre-animate');
-        stepObserver.observe(step);
-    });
-}
-
-/**
- * Add CSS for pre-animation and visible states
- */
-const animationStyles = document.createElement('style');
-animationStyles.textContent = `
-    .pre-animate {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-                    transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-    
-    .animate-visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    
-    .step-pre-animate {
-        opacity: 0;
-        transform: translateY(40px) scale(0.9);
-        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    
-    .step-animate-in {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-    
-    .card-interactive {
-        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                    box-shadow 0.3s ease,
-                    background 0.3s ease;
-    }
-    
-    .feature-pill {
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    
-    .feature-pill:active {
-        transform: scale(0.95);
-    }
-`;
-document.head.appendChild(animationStyles);
-
-/**
- * Performance optimization: Reduce animations for users who prefer reduced motion
- */
-if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    document.documentElement.style.setProperty('--transition-smooth', 'ease');
-    document.documentElement.style.setProperty('--transition-bounce', 'ease');
-    document.documentElement.style.setProperty('--transition-spring', 'ease');
-}
-
-console.log('🔔 LokAlert - Loaded with smooth transitions & bouncy animations!');
+console.log('🔔 LokAlert - iOS-style design loaded');
