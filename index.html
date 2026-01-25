@@ -1,918 +1,449 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LokAlert - Never Miss Your Stop Again</title>
+    <title>LokAlert - Smart Location-Based Arrival Alert</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Global Navigation -->
-    <nav id="globalheader">
-        <div id="globalnav">
-            <div class="globalnav-content">
-                <ul class="globalnav-list">
-                    <li class="globalnav-item globalnav-item-logo">
-                        <a href="#" class="globalnav-link globalnav-link-logo">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                            </svg>
-                            LokAlert
-                        </a>
-                    </li>
-                    <li class="globalnav-item globalnav-item-menu">
-                        <a href="#features" class="globalnav-link">Features</a>
-                    </li>
-                    <li class="globalnav-item globalnav-item-menu">
-                        <a href="#how-it-works" class="globalnav-link">How It Works</a>
-                    </li>
-                    <li class="globalnav-item globalnav-item-menu">
-                        <a href="#platforms" class="globalnav-link">Platforms</a>
-                    </li>
-                    <li class="globalnav-item globalnav-item-menu globalnav-item-download">
-                        <a href="#download" class="globalnav-link globalnav-link-download">Download</a>
-                    </li>
-                    <!-- Mobile Menu Button -->
-                    <li class="globalnav-item globalnav-item-hamburger">
-                        <button class="hamburger-btn" id="mobileMenuBtn" aria-label="Menu">
-                            <span class="hamburger-line"></span>
-                            <span class="hamburger-line"></span>
-                            <span class="hamburger-line"></span>
-                        </button>
-                    </li>
-                </ul>
-            </div>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <span class="logo-icon">&#x1F4CD;</span>
+                <span class="logo-text">LokAlert</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#why">Why LokAlert</a></li>
+                <li><a href="#tech">Technology</a></li>
+                <li><a href="#team">Team</a></li>
+                <li><a href="#" class="nav-download-btn">Download</a></li>
+            </ul>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
-        <!-- Mobile Menu Overlay -->
+        <!-- Mobile Menu -->
         <div class="mobile-menu" id="mobileMenu">
-            <a href="#features" class="mobile-menu-link">Features</a>
-            <a href="#how-it-works" class="mobile-menu-link">How It Works</a>
-            <a href="#platforms" class="mobile-menu-link">Platforms</a>
-            <a href="#download" class="mobile-menu-link mobile-menu-download">Download</a>
+            <a href="#features">Features</a>
+            <a href="#why">Why LokAlert</a>
+            <a href="#tech">Technology</a>
+            <a href="#team">Team</a>
+            <a href="#" class="mobile-download-btn">Download App</a>
         </div>
     </nav>
 
-    <main class="main">
-        <!-- ============================================
-             SECTION 1: Hero - Multi-Device Showcase
-             Pixel 10 Pro Fold, Pixel 10 Pro XL, Pixel Tablet
-             ============================================ -->
-        <section class="section section-hero">
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-bg">
+                <div class="hero-gradient"></div>
+                <div class="hero-particles">
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                </div>
+            </div>
             <div class="hero-content">
-                <h1 class="hero-headline animate-fade-up">Works everywhere.<br>Perfectly in sync.</h1>
-                <div class="hero-cta animate-fade-up delay-1">
-                    <a href="#download" class="hero-link-primary">Download Free</a>
-                    <a href="#features" class="hero-link-secondary">Learn more ›</a>
+                <div class="hero-badge animate-fade-in">
+                    <span class="badge-icon">&#x1F680;</span>
+                    <span>Smart Location Technology</span>
+                </div>
+                <h1 class="hero-title animate-fade-up">
+                    <span class="title-main">LokAlert</span>
+                    <span class="title-sub">Smart Location-Based Arrival Alert</span>
+                </h1>
+                <p class="hero-tagline animate-fade-up delay-1">Arrive Smart. Stay Alert.</p>
+                <p class="hero-description animate-fade-up delay-2">
+                    LokAlert is a mobile application designed to notify users automatically when they arrive at a selected destination. Whether you're commuting, traveling, or multitasking, LokAlert ensures you're alerted exactly when you reach your location&#8212;no constant checking required.
+                </p>
+                <div class="hero-cta animate-fade-up delay-3">
+                    <a href="#features" class="btn btn-primary">
+                        <span>Explore Features</span>
+                        <span class="btn-arrow">&#x2192;</span>
+                    </a>
+                    <a href="#why" class="btn btn-secondary">Learn More</a>
+                </div>
+                <div class="hero-visual animate-float">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="screen-map">
+                                <div class="map-grid"></div>
+                                <div class="location-pulse"></div>
+                                <div class="location-marker">&#x1F4CD;</div>
+                                <div class="geofence-ring"></div>
+                            </div>
+                            <div class="screen-card">
+                                <div class="card-icon">&#x1F3E0;</div>
+                                <div class="card-info">
+                                    <span class="card-title">Home</span>
+                                    <span class="card-status">200m &#8226; Active</span>
+                                </div>
+                                <div class="card-toggle active"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Multi-device desk spread layout -->
-            <div class="hero-devices-spread animate-fade-up delay-2">
-                
-                <!-- BACK: Google Pixel Tablet (largest, at top) -->
-                <div class="device-back">
-                    <div class="tablet-frame-large">
-                        <div class="tablet-screen-large">
-                            <div class="tablet-status-bar">
-                                <span>9:41</span>
-                                <span>📶 🔋</span>
-                            </div>
-                            <div class="tablet-app-layout">
-                                <div class="tablet-sidebar">
-                                    <div class="sidebar-header">Recent Searches</div>
-                                    <div class="sidebar-item">🕐 Central Station</div>
-                                    <div class="sidebar-item">🕐 Airport Terminal</div>
-                                    <div class="sidebar-item">🕐 Downtown Mall</div>
-                                </div>
-                                <div class="tablet-main">
-                                    <div class="main-header">My Alarms</div>
-                                    <div class="alarm-card-large">
-                                        <span class="alarm-icon">🏠</span>
-                                        <div class="alarm-details">
-                                            <strong>Home Station</strong>
-                                            <span>200m radius • Active</span>
-                                        </div>
-                                        <div class="switch-large on"></div>
-                                    </div>
-                                    <div class="alarm-card-large">
-                                        <span class="alarm-icon">💼</span>
-                                        <div class="alarm-details">
-                                            <strong>Office</strong>
-                                            <span>500m radius • Active</span>
-                                        </div>
-                                        <div class="switch-large on"></div>
-                                    </div>
-                                    <div class="alarm-card-large">
-                                        <span class="alarm-icon">🏋️</span>
-                                        <div class="alarm-details">
-                                            <strong>Gym</strong>
-                                            <span>100m radius • Paused</span>
-                                        </div>
-                                        <div class="switch-large"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <span class="device-name">Google Pixel Tablet</span>
-                </div>
-                
-                <!-- FRONT LEFT: Pixel 10 Pro XL (Phone) -->
-                <div class="device-front-left">
-                    <div class="phone-frame-medium">
-                        <div class="phone-screen-medium">
-                            <div class="phone-status-bar">
-                                <span>9:41</span>
-                                <span>🔋</span>
-                            </div>
-                            <div class="phone-map-view">
-                                <div class="map-background">
-                                    <div class="map-roads"></div>
-                                    <div class="map-geofence">
-                                        <div class="geofence-pulse"></div>
-                                        <div class="geofence-circle"></div>
-                                        <span class="geofence-pin">📍</span>
-                                    </div>
-                                </div>
-                                <div class="map-search-bar">
-                                    <span>🔍</span> Search location...
-                                </div>
-                                <div class="map-bottom-card">
-                                    <div class="card-handle"></div>
-                                    <div class="card-content">
-                                        <span>🏠</span>
-                                        <div class="card-text">
-                                            <strong>Home Station</strong>
-                                            <small>200m radius</small>
-                                        </div>
-                                        <div class="switch-medium on"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="phone-nav-pill"></div>
-                        </div>
-                    </div>
-                    <span class="device-name">Pixel 10 Pro XL</span>
-                </div>
-                
-                <!-- FRONT RIGHT: Pixel 10 Pro Fold (Foldable/Tablet mode) -->
-                <div class="device-front-right">
-                    <div class="fold-frame-medium">
-                        <div class="fold-screen-medium">
-                            <div class="fold-status-bar">
-                                <span>9:41</span>
-                                <span>📶 🔋</span>
-                            </div>
-                            <div class="fold-split-layout">
-                                <div class="fold-map-panel">
-                                    <div class="mini-map-bg">
-                                        <div class="mini-roads"></div>
-                                        <div class="mini-geofence">
-                                            <div class="mini-pulse"></div>
-                                            <span>📍</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="fold-list-panel">
-                                    <div class="fold-panel-header">Alarms</div>
-                                    <div class="fold-alarm-item">
-                                        <span>🏠</span>
-                                        <span>Home</span>
-                                        <div class="switch-small on"></div>
-                                    </div>
-                                    <div class="fold-alarm-item">
-                                        <span>💼</span>
-                                        <span>Office</span>
-                                        <div class="switch-small on"></div>
-                                    </div>
-                                    <div class="fold-alarm-item">
-                                        <span>🏋️</span>
-                                        <span>Gym</span>
-                                        <div class="switch-small"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fold-hinge-line"></div>
-                    </div>
-                    <span class="device-name">Pixel 10 Pro Fold</span>
-                </div>
-                
+            <div class="scroll-indicator animate-bounce">
+                <span>Scroll</span>
+                <div class="scroll-arrow">&#x2193;</div>
             </div>
         </section>
 
-        <!-- ============================================
-             SECTION 2: Hero Feature - Geofencing
-             Full-width spotlight on the core feature
-             ============================================ -->
-        <section id="geofencing" class="section section-feature-spotlight">
-            <div class="viewport-content">
-                <div class="spotlight-content">
-                    <p class="spotlight-eyebrow">The Core</p>
-                    <h2 class="spotlight-headline">Geofencing.<br>Reimagined.</h2>
-                    <p class="spotlight-description">Draw a virtual boundary anywhere. Get alerted the moment you cross it. GPS, WiFi, and cell towers working together.</p>
+        <!-- About Section -->
+        <section class="about">
+            <div class="container">
+                <div class="about-content">
+                    <div class="about-icon animate-on-scroll">
+                        <div class="icon-ring"></div>
+                        <span>&#x1F3AF;</span>
+                    </div>
+                    <h2 class="section-title animate-on-scroll">How It Works</h2>
+                    <p class="about-text animate-on-scroll">
+                        LokAlert uses real-time GPS tracking and location-based services to monitor a user's movement and trigger an alert once they enter a predefined arrival radius. The app runs efficiently in the background, making it reliable, user-friendly, and practical for everyday use.
+                    </p>
                 </div>
-                <div class="spotlight-visual">
-                    <div class="geofence-hero">
-                        <div class="radar-pulse"></div>
-                        <div class="radar-ring r1"></div>
-                        <div class="radar-ring r2"></div>
-                        <div class="radar-ring r3"></div>
-                        <span class="center-marker">📍</span>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <span class="section-badge">&#x2728; Key Features</span>
+                    <h2 class="section-title">Everything You Need</h2>
+                    <p class="section-subtitle">Powerful features designed for effortless arrival alerts</p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <span>&#x1F4CD;</span>
+                        </div>
+                        <h3>Location Search</h3>
+                        <p>Quickly search and select destinations using place names or addresses.</p>
+                    </div>
+                    
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <span>&#x1F5FA;&#xFE0F;</span>
+                        </div>
+                        <h3>Map View</h3>
+                        <p>Interactive map interface for easy navigation and destination selection.</p>
+                    </div>
+                    
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <span>&#x1F4CF;</span>
+                        </div>
+                        <h3>Set Arrival Radius</h3>
+                        <p>Customize the distance for alert triggers to match your needs.</p>
+                    </div>
+                    
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <span>&#x25B6;&#xFE0F;</span>
+                        </div>
+                        <h3>Start Location Tracking</h3>
+                        <p>Begin tracking with one tap using GPS technology.</p>
+                    </div>
+                    
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <span>&#x1F514;</span>
+                        </div>
+                        <h3>Arrival Alert / Alarm</h3>
+                        <p>Instant alert when destination is reached. Never miss your stop again.</p>
+                    </div>
+                    
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <span>&#x1F504;</span>
+                        </div>
+                        <h3>Background Monitoring</h3>
+                        <p>Works even when minimized, with battery-optimized performance.</p>
+                    </div>
+                    
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <span>&#x2B50;</span>
+                        </div>
+                        <h3>Saved Locations</h3>
+                        <p>Save frequent destinations like home or work for quick access.</p>
+                    </div>
+                    
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon">
+                            <span>&#x274C;</span>
+                        </div>
+                        <h3>Cancel Tracking</h3>
+                        <p>Stop tracking anytime with full control over your alerts.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ============================================
-             SECTION 3: Hero Feature - Alerts
-             Full-width spotlight on the alert experience
-             ============================================ -->
-        <section id="alerts" class="section section-feature-spotlight spotlight-dark">
-            <div class="viewport-content">
-                <div class="spotlight-content">
-                    <p class="spotlight-eyebrow">Never Miss It</p>
-                    <h2 class="spotlight-headline">Full-screen<br>alerts.</h2>
-                    <p class="spotlight-description">Wakes your screen. Cuts through Do Not Disturb. Impossible to ignore.</p>
+        <!-- Why LokAlert Section -->
+        <section id="why" class="why-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <span class="section-badge">&#x1F4A1; Why LokAlert?</span>
+                    <h2 class="section-title">The Smart Choice</h2>
+                    <p class="section-subtitle">Designed for modern life on the move</p>
                 </div>
-                <div class="spotlight-visual">
-                    <div class="alarm-hero">
-                        <div class="alarm-screen-large">
-                            <span class="alarm-emoji-large">🚨</span>
-                            <span class="alarm-text-large">You've arrived!</span>
-                            <div class="alarm-slider-large">
-                                <span class="slider-thumb-large">→</span>
-                                <span class="slider-label-large">Slide to dismiss</span>
-                            </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card animate-on-scroll">
+                        <div class="benefit-icon">&#x2705;</div>
+                        <div class="benefit-content">
+                            <h3>No More Constant Checking</h3>
+                            <p>Eliminates the need to constantly check your location during travel</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-card animate-on-scroll">
+                        <div class="benefit-icon">&#x1F68C;</div>
+                        <div class="benefit-content">
+                            <h3>Perfect for Everyone</h3>
+                            <p>Ideal for travelers, commuters, students, and drivers</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-card animate-on-scroll">
+                        <div class="benefit-icon">&#x26A1;</div>
+                        <div class="benefit-content">
+                            <h3>Simple Yet Powerful</h3>
+                            <p>Simple interface with powerful background functionality</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-card animate-on-scroll">
+                        <div class="benefit-icon">&#x1F6E1;&#xFE0F;</div>
+                        <div class="benefit-content">
+                            <h3>Safety &amp; Convenience</h3>
+                            <p>Improves convenience, safety, and time management</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ============================================
-             SECTION 4: How It Works - Apple iOS Style
-             Large feature cards with visual storytelling
-             ============================================ -->
-        <section id="how-it-works" class="section section-how-it-works">
-            <div class="viewport-content">
-                <header class="section-header">
-                    <p class="section-eyebrow">How it works</p>
-                    <h2 class="section-headline">Three steps.<br>That's it.</h2>
-                </header>
+        <!-- Technology Section -->
+        <section id="tech" class="tech-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <span class="section-badge">&#x2699;&#xFE0F; Technology Highlights</span>
+                    <h2 class="section-title">Built with Modern Tech</h2>
+                    <p class="section-subtitle">Cutting-edge technology for reliable performance</p>
+                </div>
                 
-                <!-- Apple-style large feature cards -->
-                <div class="how-it-works-grid">
-                    <!-- Step 1: Search -->
-                    <div class="hiw-card">
-                        <div class="hiw-card-visual search-card-bg">
-                            <div class="hiw-step-badge">1</div>
-                            <div class="hiw-visual-content">
-                                <div class="hiw-visual-backdrop">
-                                    <div class="m3-search-card">
-                                    <div class="m3-search-input">
-                                        <div class="m3-search-icon-lg"></div>
-                                        <div class="m3-search-placeholder">
-                                            <div class="m3-text-line long"></div>
-                                        </div>
-                                    </div>
-                                    <div class="m3-suggestions">
-                                        <div class="m3-suggestion">
-                                            <div class="m3-pin-icon"></div>
-                                            <div class="m3-text-lines">
-                                                <div class="m3-text-line medium"></div>
-                                                <div class="m3-text-line short"></div>
-                                            </div>
-                                        </div>
-                                        <div class="m3-suggestion">
-                                            <div class="m3-pin-icon"></div>
-                                            <div class="m3-text-lines">
-                                                <div class="m3-text-line medium"></div>
-                                                <div class="m3-text-line short"></div>
-                                            </div>
-                                        </div>
-                                        <div class="m3-suggestion">
-                                            <div class="m3-pin-icon"></div>
-                                            <div class="m3-text-lines">
-                                                <div class="m3-text-line medium"></div>
-                                                <div class="m3-text-line short"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="tech-grid">
+                    <div class="tech-card animate-on-scroll">
+                        <div class="tech-icon">
+                            <div class="tech-icon-bg"></div>
+                            <span>&#x1F6F0;&#xFE0F;</span>
                         </div>
-                        <div class="hiw-card-content">
-                            <h3 class="hiw-card-title">Search anywhere.</h3>
-                            <p class="hiw-card-desc">Find any location using address, landmark, or coordinates. Google Places integration means you'll always find exactly what you're looking for.</p>
-                        </div>
+                        <h3>GPS &amp; Location Services</h3>
+                        <p>Precise positioning using advanced satellite technology</p>
                     </div>
                     
-                    <!-- Step 2: Set Radius -->
-                    <div class="hiw-card">
-                        <div class="hiw-card-visual radius-card-bg">
-                            <div class="hiw-step-badge">2</div>
-                            <div class="hiw-visual-content">
-                                <div class="hiw-visual-backdrop radius-backdrop">
-                                    <div class="m3-radius-card">
-                                    <div class="m3-radius-visual">
-                                        <div class="m3-radius-outer"></div>
-                                        <div class="m3-radius-middle"></div>
-                                        <div class="m3-radius-inner"></div>
-                                        <div class="m3-radius-center"></div>
-                                    </div>
-                                    <div class="m3-radius-slider">
-                                        <div class="m3-slider-track">
-                                            <div class="m3-slider-fill"></div>
-                                            <div class="m3-slider-thumb"></div>
-                                        </div>
-                                        <div class="m3-slider-labels">
-                                            <span>50m</span>
-                                            <span>5km</span>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="tech-card animate-on-scroll">
+                        <div class="tech-icon">
+                            <div class="tech-icon-bg"></div>
+                            <span>&#x1F4CA;</span>
                         </div>
-                        <div class="hiw-card-content">
-                            <h3 class="hiw-card-title">Set your boundary.</h3>
-                            <p class="hiw-card-desc">Choose from 50 meters to 5 kilometers. Your boundary, your rules. Adjust anytime based on how precise you need the alert to be.</p>
-                        </div>
+                        <h3>Real-time Tracking Algorithms</h3>
+                        <p>Smart algorithms for accurate arrival detection</p>
                     </div>
                     
-                    <!-- Step 3: Relax -->
-                    <div class="hiw-card hiw-card-wide">
-                        <div class="hiw-card-visual relax-card-bg">
-                            <div class="hiw-step-badge">3</div>
-                            <div class="hiw-visual-content">
-                                <div class="hiw-visual-backdrop alert-backdrop">
-                                    <div class="m3-alert-card">
-                                    <div class="m3-phone-frame">
-                                        <div class="m3-phone-screen">
-                                            <div class="m3-alert-visual">
-                                                <div class="m3-alert-pulse"></div>
-                                                <div class="m3-alert-icon"></div>
-                                            </div>
-                                            <div class="m3-alert-text">You've arrived!</div>
-                                            <div class="m3-alert-slider">
-                                                <div class="m3-slider-pill"></div>
-                                                <span>Slide to dismiss</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="tech-card animate-on-scroll">
+                        <div class="tech-icon">
+                            <div class="tech-icon-bg"></div>
+                            <span>&#x1F4F1;</span>
                         </div>
-                        <div class="hiw-card-content">
-                            <h3 class="hiw-card-title">Relax. We'll wake you.</h3>
-                            <p class="hiw-card-desc">Sit back, close your eyes. When you enter your destination's radius, a full-screen alarm appears — even if your phone is locked or on Do Not Disturb. Impossible to miss.</p>
+                        <h3>Mobile-friendly UI/UX</h3>
+                        <p>Intuitive design optimized for all screen sizes</p>
+                    </div>
+                    
+                    <div class="tech-card animate-on-scroll">
+                        <div class="tech-icon">
+                            <div class="tech-icon-bg"></div>
+                            <span>&#x1F50B;</span>
                         </div>
+                        <h3>Background Service Optimization</h3>
+                        <p>Efficient background processing with minimal battery drain</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ============================================
-             SECTION 5: Supporting Features - Apple iOS Style
-             Clean Material You inspired placeholders
-             ============================================ -->
-        <section id="features" class="section section-features-apple">
-            <div class="viewport-content">
-                <header class="section-header">
-                    <p class="section-eyebrow">LokAlert features</p>
-                    <h2 class="section-headline">And so much more.</h2>
-                </header>
-                
-                <!-- Apple-style hero feature card -->
-                <div class="apple-hero-card">
-                    <div class="hero-card-bg battery-bg">
-                        <!-- Material You placeholder -->
-                        <div class="m3-placeholder battery-placeholder">
-                            <div class="m3-battery-indicator">
-                                <div class="m3-battery-body">
-                                    <div class="m3-battery-fill"></div>
-                                </div>
-                                <div class="m3-battery-tip"></div>
-                            </div>
-                            <div class="m3-stat-bars">
-                                <div class="m3-bar" style="height: 60%"></div>
-                                <div class="m3-bar" style="height: 85%"></div>
-                                <div class="m3-bar" style="height: 45%"></div>
-                                <div class="m3-bar" style="height: 70%"></div>
-                            </div>
-                        </div>
-                        <div class="hero-card-header">
-                            <span class="hero-card-label">Battery</span>
-                            <h3 class="hero-card-title">All-day power<br>without compromise.</h3>
-                        </div>
-                    </div>
-                    <p class="hero-card-desc">Adaptive polling adjusts location updates based on your distance from the target. Far away? Less frequent checks. Getting close? Precision mode kicks in — all day tracking without draining your battery.</p>
+        <!-- Team Section -->
+        <section id="team" class="team-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <span class="section-badge">&#x1F465; Our Team</span>
+                    <h2 class="section-title">Meet the Members</h2>
+                    <p class="section-subtitle">The talented people behind LokAlert</p>
                 </div>
                 
-                <!-- Apple-style feature tiles grid -->
-                <div class="apple-tiles-grid">
-                    <!-- Privacy Tile -->
-                    <div class="apple-tile">
-                        <div class="tile-visual privacy-visual">
-                            <div class="m3-placeholder privacy-placeholder">
-                                <div class="m3-shield">
-                                    <div class="m3-shield-inner"></div>
-                                </div>
-                                <div class="m3-lock-dots">
-                                    <div class="m3-dot"></div>
-                                    <div class="m3-dot"></div>
-                                    <div class="m3-dot"></div>
-                                </div>
-                            </div>
+                <div class="team-grid">
+                    <div class="team-card animate-on-scroll">
+                        <div class="team-avatar">
+                            <span>OA</span>
                         </div>
-                        <div class="tile-content">
-                            <h4 class="tile-title">Privacy first.</h4>
-                            <p class="tile-desc">Your location data never leaves your device. No cloud uploads, no tracking servers.</p>
-                        </div>
+                        <h3>Alemana, Onyx Herod</h3>
                     </div>
                     
-                    <!-- Custom Sounds Tile -->
-                    <div class="apple-tile">
-                        <div class="tile-visual sounds-visual">
-                            <div class="m3-placeholder sounds-placeholder">
-                                <div class="m3-waveform">
-                                    <div class="m3-wave" style="height: 35%"></div>
-                                    <div class="m3-wave" style="height: 65%"></div>
-                                    <div class="m3-wave" style="height: 100%"></div>
-                                    <div class="m3-wave" style="height: 50%"></div>
-                                    <div class="m3-wave" style="height: 80%"></div>
-                                    <div class="m3-wave" style="height: 40%"></div>
-                                    <div class="m3-wave" style="height: 70%"></div>
-                                </div>
-                            </div>
+                    <div class="team-card animate-on-scroll">
+                        <div class="team-avatar">
+                            <span>RM</span>
                         </div>
-                        <div class="tile-content">
-                            <h4 class="tile-title">Custom sounds.</h4>
-                            <p class="tile-desc">Choose built-in tones or import your own audio files.</p>
-                        </div>
+                        <h3>Mabahin, Ryan</h3>
                     </div>
                     
-                    <!-- Smart Search Tile -->
-                    <div class="apple-tile wide">
-                        <div class="tile-visual search-visual">
-                            <div class="m3-placeholder search-placeholder">
-                                <div class="m3-search-bar">
-                                    <div class="m3-search-icon"></div>
-                                    <div class="m3-search-text"></div>
-                                </div>
-                                <div class="m3-search-results">
-                                    <div class="m3-result-row"></div>
-                                    <div class="m3-result-row"></div>
-                                    <div class="m3-result-row"></div>
-                                </div>
-                            </div>
-                            <div class="m3-placeholder map-placeholder">
-                                <div class="m3-map-grid">
-                                    <div class="m3-map-line h"></div>
-                                    <div class="m3-map-line h"></div>
-                                    <div class="m3-map-line v"></div>
-                                    <div class="m3-map-line v"></div>
-                                </div>
-                                <div class="m3-map-pin"></div>
-                            </div>
+                    <div class="team-card animate-on-scroll">
+                        <div class="team-avatar">
+                            <span>EA</span>
                         </div>
-                        <div class="tile-content">
-                            <h4 class="tile-title">Smart search.</h4>
-                            <p class="tile-desc">Find any location instantly with Google Places integration. Autocomplete helps you find exactly what you're looking for.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Second row of tiles -->
-                <div class="apple-tiles-grid second-row">
-                    <!-- Flexible Radius Tile -->
-                    <div class="apple-tile">
-                        <div class="tile-visual radius-visual">
-                            <div class="m3-placeholder radius-placeholder">
-                                <div class="m3-radius-rings">
-                                    <div class="m3-ring outer"></div>
-                                    <div class="m3-ring middle"></div>
-                                    <div class="m3-ring inner"></div>
-                                    <div class="m3-center-dot"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tile-content">
-                            <h4 class="tile-title">Flexible radius.</h4>
-                            <p class="tile-desc">Set geofence from 50 meters to 5 kilometers.</p>
-                        </div>
+                        <h3>Adamos, Eurika</h3>
                     </div>
                     
-                    <!-- Active Days Tile -->
-                    <div class="apple-tile">
-                        <div class="tile-visual days-visual">
-                            <div class="m3-placeholder days-placeholder">
-                                <div class="m3-calendar">
-                                    <div class="m3-day-dot active"></div>
-                                    <div class="m3-day-dot active"></div>
-                                    <div class="m3-day-dot active"></div>
-                                    <div class="m3-day-dot active"></div>
-                                    <div class="m3-day-dot active"></div>
-                                    <div class="m3-day-dot"></div>
-                                    <div class="m3-day-dot"></div>
-                                </div>
-                            </div>
+                    <div class="team-card animate-on-scroll">
+                        <div class="team-avatar">
+                            <span>GB</span>
                         </div>
-                        <div class="tile-content">
-                            <h4 class="tile-title">Active days.</h4>
-                            <p class="tile-desc">Schedule alarms for specific days of the week.</p>
-                        </div>
+                        <h3>Billones, Gerald</h3>
                     </div>
                     
-                    <!-- Cooldown Timer Tile -->
-                    <div class="apple-tile">
-                        <div class="tile-visual cooldown-visual">
-                            <div class="m3-placeholder cooldown-placeholder">
-                                <div class="m3-timer">
-                                    <svg viewBox="0 0 60 60">
-                                        <circle cx="30" cy="30" r="26" fill="none" stroke="rgba(138,180,248,0.2)" stroke-width="4"/>
-                                        <circle cx="30" cy="30" r="26" fill="none" stroke="#8AB4F8" stroke-width="4" stroke-dasharray="120 164" stroke-linecap="round" transform="rotate(-90 30 30)"/>
-                                    </svg>
-                                </div>
-                            </div>
+                    <div class="team-card animate-on-scroll">
+                        <div class="team-avatar">
+                            <span>TC</span>
                         </div>
-                        <div class="tile-content">
-                            <h4 class="tile-title">Cooldown timer.</h4>
-                            <p class="tile-desc">Prevent repeated alerts with customizable periods.</p>
-                        </div>
+                        <h3>Crisologo, Terence Joefrey</h3>
                     </div>
                     
-                    <!-- Material You Tile -->
-                    <div class="apple-tile">
-                        <div class="tile-visual material-visual">
-                            <div class="m3-placeholder material-placeholder">
-                                <div class="m3-color-palette">
-                                    <div class="m3-color-chip" style="background: #8AB4F8"></div>
-                                    <div class="m3-color-chip" style="background: #81C995"></div>
-                                    <div class="m3-color-chip" style="background: #F28B82"></div>
-                                    <div class="m3-color-chip" style="background: #C58AF9"></div>
-                                </div>
-                                <div class="m3-theme-shapes">
-                                    <div class="m3-shape circle"></div>
-                                    <div class="m3-shape square"></div>
-                                </div>
-                            </div>
+                    <div class="team-card animate-on-scroll">
+                        <div class="team-avatar">
+                            <span>AR</span>
                         </div>
-                        <div class="tile-content">
-                            <h4 class="tile-title">Material You.</h4>
-                            <p class="tile-desc">Dynamic theming adapts to your wallpaper colors.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============================================
-             SECTION 6: Multi-Platform - Adaptive Android Design
-             Shows different Android device form factors
-             ============================================ -->
-        <section id="platforms" class="section section-platforms">
-            <div class="viewport-content">
-                <header class="section-header">
-                    <h2 class="section-headline">Adapts seamlessly.<br>To any Android screen.</h2>
-                    <p class="section-subhead">LokAlert scales beautifully across phones, tablets, and foldables.</p>
-                </header>
-            </div>
-            
-            <div class="platforms-showcase">
-                <!-- Pixel Phone -->
-                <div class="platform-device platform-phone bounce-in">
-                    <div class="platform-label">
-                        <span class="platform-icon">📱</span>
-                        <span>Phone</span>
-                    </div>
-                    <div class="android-phone-mockup">
-                        <div class="android-phone-bezel">
-                            <div class="android-phone-screen">
-                                <div class="android-status-bar">
-                                    <span>12:00</span>
-                                    <span>📶 🔋</span>
-                                </div>
-                                <div class="android-map-content">
-                                    <div class="map-gradient"></div>
-                                    <div class="android-geofence-visual">
-                                        <div class="pulse-ring"></div>
-                                        <span>📍</span>
-                                    </div>
-                                    <div class="android-search-bar">
-                                        <span>🔍</span>
-                                        <span>Search location...</span>
-                                    </div>
-                                </div>
-                                <div class="android-bottom-sheet">
-                                    <div class="sheet-pill"></div>
-                                    <div class="android-alarm-row">
-                                        <span>🏠</span>
-                                        <div class="alarm-info">
-                                            <strong>Home</strong>
-                                            <span>200m • Active</span>
-                                        </div>
-                                        <div class="android-switch on"></div>
-                                    </div>
-                                </div>
-                                <div class="android-nav-pill"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Pixel Tablet -->
-                <div class="platform-device platform-tablet bounce-in">
-                    <div class="platform-label">
-                        <span class="platform-icon">📲</span>
-                        <span>Tablet</span>
-                    </div>
-                    <div class="android-tablet-mockup">
-                        <div class="android-tablet-bezel">
-                            <div class="android-tablet-screen">
-                                <div class="android-status-bar tablet">
-                                    <span>12:00 PM</span>
-                                    <span>📶 WiFi 🔋 100%</span>
-                                </div>
-                                <div class="android-split-layout">
-                                    <div class="android-sidebar">
-                                        <div class="sidebar-header">
-                                            <span class="sidebar-title">Alarms</span>
-                                            <span class="sidebar-add">+</span>
-                                        </div>
-                                        <div class="sidebar-item active">
-                                            <span>🏠</span>
-                                            <div>
-                                                <strong>Home</strong>
-                                                <span>200m</span>
-                                            </div>
-                                        </div>
-                                        <div class="sidebar-item">
-                                            <span>🏢</span>
-                                            <div>
-                                                <strong>Office</strong>
-                                                <span>500m</span>
-                                            </div>
-                                        </div>
-                                        <div class="sidebar-item">
-                                            <span>🏫</span>
-                                            <div>
-                                                <strong>School</strong>
-                                                <span>100m</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="android-main-content">
-                                        <div class="android-tablet-map">
-                                            <div class="map-gradient"></div>
-                                            <div class="tablet-geofence">
-                                                <div class="pulse-ring large"></div>
-                                                <span>📍</span>
-                                                <span class="radius-badge">200m</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Pixel Fold -->
-                <div class="platform-device platform-fold bounce-in">
-                    <div class="platform-label">
-                        <span class="platform-icon">📖</span>
-                        <span>Foldable</span>
-                    </div>
-                    <div class="android-fold-mockup">
-                        <div class="android-fold-bezel">
-                            <div class="android-fold-screen">
-                                <div class="android-status-bar tablet">
-                                    <span>12:00</span>
-                                    <span>📶 🔋</span>
-                                </div>
-                                <div class="android-fold-layout">
-                                    <div class="fold-panel-left">
-                                        <div class="fold-map">
-                                            <div class="map-gradient"></div>
-                                            <div class="fold-geofence">
-                                                <div class="pulse-ring"></div>
-                                                <span>📍</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="fold-hinge"></div>
-                                    <div class="fold-panel-right">
-                                        <div class="fold-list-header">Active Alarms</div>
-                                        <div class="fold-alarm-item">
-                                            <span>🏠</span>
-                                            <div>
-                                                <strong>Home</strong>
-                                                <span>200m • Active</span>
-                                            </div>
-                                            <div class="android-switch on small"></div>
-                                        </div>
-                                        <div class="fold-alarm-item">
-                                            <span>🏢</span>
-                                            <div>
-                                                <strong>Office</strong>
-                                                <span>500m • Inactive</span>
-                                            </div>
-                                            <div class="android-switch small"></div>
-                                        </div>
-                                        <div class="fold-alarm-item">
-                                            <span>🏫</span>
-                                            <div>
-                                                <strong>School</strong>
-                                                <span>100m • Active</span>
-                                            </div>
-                                            <div class="android-switch on small"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============================================
-             SECTION 7: Customization - Apple TV Sticky Scroll
-             Tall section with scroll-triggered content changes
-             ============================================ -->
-        <section class="section section-customize" id="customize">
-            <div class="customize-container">
-                <!-- Sticky column with phone -->
-                <div class="customize-sticky-col">
-                    <div class="customize-sticky-content">
-                        <div class="customize-phone-wrap">
-                            <div class="customize-phone-frame">
-                                <div class="customize-phone-screen">
-                                    <!-- Screen states -->
-                                    <div class="screen-state active" data-feature="sounds">
-                                        <div class="screen-sounds">
-                                            <div class="sound-wave-display">
-                                                <div class="wave-bar" style="--i:0"></div>
-                                                <div class="wave-bar" style="--i:1"></div>
-                                                <div class="wave-bar" style="--i:2"></div>
-                                                <div class="wave-bar" style="--i:3"></div>
-                                                <div class="wave-bar" style="--i:4"></div>
-                                                <div class="wave-bar" style="--i:3"></div>
-                                                <div class="wave-bar" style="--i:2"></div>
-                                            </div>
-                                            <div class="sound-list">
-                                                <div class="sound-item active">Gentle Bell</div>
-                                                <div class="sound-item">Alarm Classic</div>
-                                                <div class="sound-item">Digital Beep</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="screen-state" data-feature="themes">
-                                        <div class="screen-themes">
-                                            <div class="theme-preview-box">
-                                                <div class="theme-header-bar"></div>
-                                                <div class="theme-card-placeholder"></div>
-                                                <div class="theme-fab-btn"></div>
-                                            </div>
-                                            <div class="color-dots">
-                                                <div class="color-dot" style="--c:#6750A4"></div>
-                                                <div class="color-dot active" style="--c:#006A6A"></div>
-                                                <div class="color-dot" style="--c:#7D5260"></div>
-                                                <div class="color-dot" style="--c:#006E1C"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="screen-state" data-feature="vibration">
-                                        <div class="screen-vibration">
-                                            <div class="vib-phone-anim">
-                                                <div class="vib-phone"></div>
-                                                <div class="vib-waves">
-                                                    <span></span><span></span><span></span>
-                                                </div>
-                                            </div>
-                                            <div class="vib-pattern">
-                                                <span class="dot lg"></span>
-                                                <span class="dot sm"></span>
-                                                <span class="dot lg"></span>
-                                                <span class="dot sm"></span>
-                                                <span class="dot lg"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="screen-state" data-feature="schedule">
-                                        <div class="screen-schedule">
-                                            <div class="mini-calendar">
-                                                <div class="cal-title">January 2026</div>
-                                                <div class="cal-row">
-                                                    <span>S</span><span>M</span><span class="on">T</span><span class="on">W</span><span class="on">T</span><span>F</span><span>S</span>
-                                                </div>
-                                            </div>
-                                            <div class="time-pills">
-                                                <span class="pill">6:00 AM</span>
-                                                <span class="pill active">8:30 AM</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Scrollable feature panels - each with its own background -->
-                <div class="customize-scroll-col">
-                    <div class="feature-panel" data-feature="sounds" style="background: linear-gradient(135deg, #1a0a2e 0%, #16082a 50%, #0d0015 100%);">
-                        <div class="feature-panel-content">
-                            <span class="feature-eyebrow">Customization</span>
-                            <h2 class="feature-headline">Custom Sounds</h2>
-                            <p class="feature-body">Choose from a library of alarm tones or use your own. From gentle chimes to impossible-to-ignore alerts — find the perfect sound for any situation.</p>
-                        </div>
-                    </div>
-                    <div class="feature-panel" data-feature="themes" style="background: linear-gradient(135deg, #0a1a1a 0%, #062a2a 50%, #001515 100%);">
-                        <div class="feature-panel-content">
-                            <span class="feature-eyebrow">Customization</span>
-                            <h2 class="feature-headline">Theme Colors</h2>
-                            <p class="feature-body">Material You dynamic theming adapts to your style. Pick your accent color and watch the entire app transform to match your personality.</p>
-                        </div>
-                    </div>
-                    <div class="feature-panel" data-feature="vibration" style="background: linear-gradient(135deg, #1a1005 0%, #2a1a08 50%, #150d00 100%);">
-                        <div class="feature-panel-content">
-                            <span class="feature-eyebrow">Customization</span>
-                            <h2 class="feature-headline">Vibration Patterns</h2>
-                            <p class="feature-body">Set custom vibration patterns that cut through any situation. Short pulses or long buzzes — design the perfect tactile alert.</p>
-                        </div>
-                    </div>
-                    <div class="feature-panel" data-feature="schedule" style="background: linear-gradient(135deg, #0a0f1a 0%, #0d1a2e 50%, #050a15 100%);">
-                        <div class="feature-panel-content">
-                            <span class="feature-eyebrow">Customization</span>
-                            <h2 class="feature-headline">Smart Scheduling</h2>
-                            <p class="feature-body">Set alerts for specific days and times. Perfect for your daily commute, weekly meetings, or any recurring routine.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============================================
-             SECTION 8: Download CTA
-             ============================================ -->
-        <section id="download" class="section section-download">
-            <div class="viewport-content">
-                <div class="download-content">
-                    <h2 class="download-headline">Download LokAlert.</h2>
-                    <p class="download-copy">Free and open source. Made by students, for everyone.</p>
-                    
-                    <div class="download-buttons">
-                        <a href="#" class="download-btn primary bounce-hover">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                                <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
-                            </svg>
-                            <div class="btn-text">
-                                <span class="btn-small">Get it on</span>
-                                <span class="btn-large">Google Play</span>
-                            </div>
-                        </a>
-                        
-                        <a href="https://github.com/The-Sequence/LokAlert" target="_blank" class="download-btn secondary bounce-hover">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                            </svg>
-                            <div class="btn-text">
-                                <span class="btn-small">View on</span>
-                                <span class="btn-large">GitHub</span>
-                            </div>
-                        </a>
+                        <h3>Royo, Aenard Ollyer</h3>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Footer -->
-        <footer id="footer">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                    </svg>
-                    <span>LokAlert</span>
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <span class="logo-icon">&#x1F4CD;</span>
+                        <span class="logo-text">LokAlert</span>
+                    </div>
+                    <p class="footer-tagline">Arrive Smart. Stay Alert.</p>
+                    <p class="footer-copyright">&copy; 2026 LokAlert. All rights reserved.</p>
                 </div>
-                <div class="footer-links">
-                    <a href="https://github.com/The-Sequence/LokAlert">GitHub</a>
-                    <a href="#">Privacy</a>
-                    <a href="#">Terms</a>
-                </div>
-                <p class="footer-copyright">© 2025 The Sequence. A student project.</p>
             </div>
         </footer>
     </main>
 
+    <!-- Download Modal -->
+    <div class="modal-overlay" id="downloadModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            
+            <!-- Download Section (shown when logged in or guest) -->
+            <div class="modal-section" id="downloadSection">
+                <div class="modal-header">
+                    <div class="modal-icon">&#x1F4E5;</div>
+                    <h2>Download LokAlert</h2>
+                    <p>Get the latest version of our app</p>
+                </div>
+                <div class="version-info" id="versionInfo">
+                    <div class="version-loading">Loading...</div>
+                </div>
+                <div class="download-buttons">
+                    <button class="btn btn-primary btn-download" id="downloadBtn">
+                        <span>&#x1F4E5;</span> Download APK
+                    </button>
+                </div>
+                <div class="modal-divider">
+                    <span>or</span>
+                </div>
+                <div class="auth-buttons" id="authButtons">
+                    <p class="auth-text">Sign in to track your downloads</p>
+                    <button class="btn btn-secondary" id="showLoginBtn">Login</button>
+                    <button class="btn btn-outline" id="showRegisterBtn">Register</button>
+                </div>
+                <div class="user-info-modal" id="userInfoModal" style="display: none;">
+                    <p>Logged in as <strong id="userDisplayName"></strong></p>
+                    <button class="btn btn-outline btn-small" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+            
+            <!-- Login Form -->
+            <div class="modal-section" id="loginSection" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon">&#x1F511;</div>
+                    <h2>Login</h2>
+                    <p>Access your account</p>
+                </div>
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label>Username or Email</label>
+                        <input type="text" id="loginUsername" placeholder="Enter username or email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter password" required>
+                    </div>
+                    <div class="form-error" id="loginError"></div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <p class="form-footer">Don't have an account? <a href="#" id="switchToRegister">Register</a></p>
+                    <p class="form-footer"><a href="#" id="backToDownload">&#x2190; Back to download</a></p>
+                </form>
+            </div>
+            
+            <!-- Register Form -->
+            <div class="modal-section" id="registerSection" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon">&#x1F4DD;</div>
+                    <h2>Create Account</h2>
+                    <p>Join LokAlert community</p>
+                </div>
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="regUsername" placeholder="Choose a username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="regEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="regPassword" placeholder="Create a password" required>
+                    </div>
+                    <div class="form-error" id="registerError"></div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                    <p class="form-footer">Already have an account? <a href="#" id="switchToLogin">Login</a></p>
+                    <p class="form-footer"><a href="#" id="backToDownload2">&#x2190; Back to download</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="js/main.js"></script>
+    <script src="js/download.js"></script>
 </body>
 </html>

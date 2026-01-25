@@ -1,56 +1,44 @@
 /**
  * LokAlert - Main JavaScript
- * Scroll animations and interactions
+ * Modern interactions and scroll animations
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    initScrollAnimations();
-    initBounceEffects();
-    initSmoothScroll();
     initMobileMenu();
+    initScrollAnimations();
+    initSmoothScroll();
+    initNavbarScroll();
 });
 
 /**
- * Initialize mobile hamburger menu
+ * Mobile Menu Toggle
  */
 function initMobileMenu() {
-    const hamburgerBtn = document.getElementById('mobileMenuBtn');
+    const menuBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
-    const mobileLinks = document.querySelectorAll('.mobile-menu-link');
+    const menuLinks = document.querySelectorAll('.mobile-menu a');
     
-    if (!hamburgerBtn || !mobileMenu) return;
+    if (!menuBtn || !mobileMenu) return;
     
-    // Toggle menu on hamburger click
-    hamburgerBtn.addEventListener('click', () => {
-        hamburgerBtn.classList.toggle('active');
+    menuBtn.addEventListener('click', () => {
+        menuBtn.classList.toggle('active');
         mobileMenu.classList.toggle('active');
         document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
     });
     
-    // Close menu when a link is clicked
-    mobileLinks.forEach(link => {
+    // Close menu when link is clicked
+    menuLinks.forEach(link => {
         link.addEventListener('click', () => {
-            hamburgerBtn.classList.remove('active');
+            menuBtn.classList.remove('active');
             mobileMenu.classList.remove('active');
             document.body.style.overflow = '';
         });
     });
-    
-    // Close menu on scroll
-    let lastScroll = window.scrollY;
-    window.addEventListener('scroll', () => {
-        if (Math.abs(window.scrollY - lastScroll) > 50) {
-            hamburgerBtn.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            document.body.style.overflow = '';
-            lastScroll = window.scrollY;
-        }
-    }, { passive: true });
     
     // Close menu on resize to desktop
     window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) {
-            hamburgerBtn.classList.remove('active');
+        if (window.innerWidth > 992) {
+            menuBtn.classList.remove('active');
             mobileMenu.classList.remove('active');
             document.body.style.overflow = '';
         }
@@ -58,70 +46,59 @@ function initMobileMenu() {
 }
 
 /**
- * Initialize scroll-triggered animations
+ * Scroll-triggered animations using Intersection Observer
  */
 function initScrollAnimations() {
+    const animatedElements = document.querySelectorAll('.animate-on-scroll');
+    
+    if (!animatedElements.length) return;
+    
     const observerOptions = {
         root: null,
-        rootMargin: '0px 0px -10% 0px',
+        rootMargin: '0px 0px -50px 0px',
         threshold: 0.1
     };
-
+    
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('animate-visible');
+                // Add stagger delay based on index within section
+                const parent = entry.target.closest('section');
+                if (parent) {
+                    const siblings = parent.querySelectorAll('.animate-on-scroll');
+                    const index = Array.from(siblings).indexOf(entry.target);
+                    entry.target.style.transitionDelay = index * 0.1 + 's';
+                }
+                
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
-
-    // Observe elements that should animate
-    const animatedElements = document.querySelectorAll(`
-        .spotlight-content,
-        .spotlight-visual,
-        .feature-item,
-        .step,
-        .platform-device,
-        .customize-item,
-        .download-content,
-        .section-header
-    `);
-
-    animatedElements.forEach((el, index) => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        // Use a small fixed delay based on position in grid, max 0.3s
-        const delay = Math.min(index * 0.05, 0.3);
-        el.style.transition = `opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s, 
-                              transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s`;
-        observer.observe(el);
-    });
-}
-
-/**
- * Initialize bounce hover effects
- */
-function initBounceEffects() {
-    const bounceElements = document.querySelectorAll('.bounce-hover, .feature-item, .customize-item');
     
-    bounceElements.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            el.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease';
-        });
-    });
+    animatedElements.forEach(el => observer.observe(el));
 }
 
 /**
- * Initialize smooth scrolling
+ * Smooth scroll for anchor links
  */
 function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+    const links = document.querySelectorAll('a[href^="#"]');
+    
+    links.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            
+            if (href === '#') return;
+            
+            const target = document.querySelector(href);
+            
             if (target) {
-                const navHeight = document.querySelector('#globalheader').offsetHeight;
-                const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                e.preventDefault();
+                
+                const navbar = document.getElementById('navbar');
+                const navbarHeight = navbar ? navbar.offsetHeight : 0;
+                const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navbarHeight - 20;
                 
                 window.scrollTo({
                     top: targetPosition,
@@ -132,99 +109,51 @@ function initSmoothScroll() {
     });
 }
 
-// Add visible state styles
-const styles = document.createElement('style');
-styles.textContent = `
-    .animate-visible {
-        opacity: 1 !important;
-        transform: translateY(0) !important;
-    }
-`;
-document.head.appendChild(styles);
-
-// Reduced motion support
-if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    document.documentElement.style.setProperty('--ease-smooth', 'ease');
-    document.documentElement.style.setProperty('--ease-bounce', 'ease');
-    document.documentElement.style.setProperty('--ease-spring', 'ease');
+/**
+ * Navbar background change on scroll
+ */
+function initNavbarScroll() {
+    const navbar = document.getElementById('navbar');
+    
+    if (!navbar) return;
+    
+    let lastScroll = 0;
+    
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        // Add/remove scrolled class
+        if (currentScroll > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+    }, { passive: true });
 }
 
 /**
- * Initialize Customization Section - Apple TV Style Scroll
- * Features change as user scrolls through the list
+ * Utility: Throttle function for performance
  */
-function initCustomizeScroll() {
-    const section = document.querySelector('.section-customize');
-    const featurePanels = document.querySelectorAll('.feature-panel');
-    const screenStates = document.querySelectorAll('.screen-state');
-    const stickyContent = document.querySelector('.customize-sticky-content');
-    
-    if (!section || !featurePanels.length) return;
-    
-    // Set initial active state
-    screenStates[0]?.classList.add('active');
-    
-    function updateActiveFeature() {
-        // Find which panel is most in view
-        let activeFeature = 'sounds';
-        let maxVisibility = 0;
-        
-        featurePanels.forEach(panel => {
-            const rect = panel.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            
-            // Calculate how much of the panel is visible in the viewport center
-            const panelCenter = rect.top + rect.height / 2;
-            const viewportCenter = viewportHeight / 2;
-            const distance = Math.abs(panelCenter - viewportCenter);
-            const visibility = Math.max(0, 1 - distance / viewportHeight);
-            
-            if (visibility > maxVisibility) {
-                maxVisibility = visibility;
-                activeFeature = panel.dataset.feature;
-            }
-        });
-        
-        // Update screen states
-        screenStates.forEach(state => {
-            if (state.dataset.feature === activeFeature) {
-                state.classList.add('active');
-            } else {
-                state.classList.remove('active');
-            }
-        });
-        
-        // Update sticky background to match current panel
-        if (stickyContent) {
-            const backgrounds = {
-                'sounds': 'linear-gradient(135deg, #1a0a2e 0%, #16082a 50%, #0d0015 100%)',
-                'themes': 'linear-gradient(135deg, #0a1a1a 0%, #062a2a 50%, #001515 100%)',
-                'vibration': 'linear-gradient(135deg, #1a1005 0%, #2a1a08 50%, #150d00 100%)',
-                'schedule': 'linear-gradient(135deg, #0a0f1a 0%, #0d1a2e 50%, #050a15 100%)'
-            };
-            stickyContent.style.background = backgrounds[activeFeature] || backgrounds['sounds'];
+function throttle(func, limit) {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
         }
-    }
-    
-    // Listen to scroll events with throttling
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                updateActiveFeature();
-                ticking = false;
-            });
-            ticking = true;
-        }
-    });
-    
-    // Initial update
-    updateActiveFeature();
+    };
 }
 
-// Initialize customize scroll after DOM loaded
-document.addEventListener('DOMContentLoaded', () => {
-    initCustomizeScroll();
-});
-
-console.log('🔔 LokAlert - iOS-style design loaded');
+/**
+ * Utility: Debounce function for performance
+ */
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
