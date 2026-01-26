@@ -1,8 +1,17 @@
 /**
  * LokAlert Download & Authentication System
+ * Updated for GitHub Pages static hosting
  */
 
-const API_URL = 'http://localhost:3000/api';
+// APK Download Configuration - Direct link to GitHub releases folder
+const APK_CONFIG = {
+    version: '1.0.0',
+    filename: 'LokAlert Demo 1.apk',
+    fileSize: 17188901,
+    releaseDate: '2026-01-26',
+    releaseNotes: 'Initial release - LokAlert Demo\n• Location-based arrival alerts\n• GPS tracking\n• Customizable radius\n• Background monitoring',
+    downloadUrl: 'releases/LokAlert%20Demo%201.apk'
+};
 
 // DOM Elements
 const downloadModal = document.getElementById('downloadModal');
@@ -15,9 +24,7 @@ const userInfoModal = document.getElementById('userInfoModal');
 const versionInfo = document.getElementById('versionInfo');
 
 // State
-let userToken = localStorage.getItem('userToken');
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-let latestVersion = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -218,82 +225,36 @@ function logout() {
     updateUIForUser();
 }
 
-// Load latest version info
+// Load latest version info - Static version for GitHub Pages
 async function loadLatestVersion() {
-    try {
-        const res = await fetch(`${API_URL}/versions/latest`);
-        latestVersion = await res.json();
-        
-        if (latestVersion) {
-            versionInfo.innerHTML = `
-                <div class="version-card">
-                    <div class="version-badge">v${latestVersion.version}</div>
-                    <div class="version-details">
-                        <span class="version-size">${formatFileSize(latestVersion.file_size)}</span>
-                        <span class="version-date">${formatDate(latestVersion.upload_date)}</span>
-                    </div>
-                    ${latestVersion.release_notes ? `<p class="version-notes">${latestVersion.release_notes}</p>` : ''}
-                    <div class="version-downloads">
-                        <span>&#x1F4E5;</span> ${latestVersion.download_count || 0} downloads
-                    </div>
-                </div>
-            `;
-        } else {
-            versionInfo.innerHTML = `
-                <div class="version-empty">
-                    <p>No APK available yet. Check back soon!</p>
-                </div>
-            `;
-        }
-    } catch (error) {
-        versionInfo.innerHTML = `
-            <div class="version-error">
-                <p>Unable to load version info. Server may be offline.</p>
+    // Use static APK config for GitHub Pages
+    versionInfo.innerHTML = `
+        <div class="version-card">
+            <div class="version-badge">v${APK_CONFIG.version}</div>
+            <div class="version-details">
+                <span class="version-size">${formatFileSize(APK_CONFIG.fileSize)}</span>
+                <span class="version-date">${formatDate(APK_CONFIG.releaseDate)}</span>
             </div>
-        `;
-    }
+            <p class="version-notes">${APK_CONFIG.releaseNotes.replace(/\n/g, '<br>')}</p>
+            <div class="version-downloads">
+                <span>&#x1F4E5;</span> Available for download
+            </div>
+        </div>
+    `;
 }
 
-// Download APK
+// Download APK - Direct download for GitHub Pages
 async function downloadAPK() {
-    if (!latestVersion) {
-        alert('No APK available to download.');
-        return;
-    }
-    
-    // Create download link with token if logged in
-    const downloadUrl = `${API_URL}/download/${latestVersion.id}`;
-    
-    // Open in new tab/window - browser will handle the download
+    // Create download link
     const link = document.createElement('a');
-    link.href = downloadUrl;
+    link.href = APK_CONFIG.downloadUrl;
+    link.download = APK_CONFIG.filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     
-    // Add auth header for tracking if logged in
-    if (userToken) {
-        // For authenticated downloads, we'll use fetch
-        try {
-            const res = await fetch(downloadUrl, {
-                headers: { 'Authorization': `Bearer ${userToken}` }
-            });
-            
-            if (!res.ok) throw new Error('Download failed');
-            
-            const blob = await res.blob();
-            const url = window.URL.createObjectURL(blob);
-            link.href = url;
-            link.download = latestVersion.filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            // Fallback to direct link
-            window.open(downloadUrl, '_blank');
-        }
-    } else {
-        // Guest download - direct link
-        window.open(downloadUrl, '_blank');
-    }
+    // Show success message
+    alert('Download started! Check your downloads folder.');
 }
 
 // Utility functions

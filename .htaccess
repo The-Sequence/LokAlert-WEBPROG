@@ -1,0 +1,38 @@
+# LokAlert - Apache Configuration
+# For InfinityFree and other Apache servers
+
+# Enable URL rewriting
+RewriteEngine On
+
+# Redirect to index.php as default
+DirectoryIndex index.php index.html
+
+# Handle PHP files
+AddHandler application/x-httpd-php .php
+
+# Prevent directory listing
+Options -Indexes
+
+# Allow CORS for API endpoints
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
+
+# Protect includes folder
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Error pages
+ErrorDocument 404 /index.php
+ErrorDocument 500 /index.php
+
+# PHP settings (if allowed)
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 50M
+    php_value post_max_size 50M
+    php_value max_execution_time 300
+</IfModule>
