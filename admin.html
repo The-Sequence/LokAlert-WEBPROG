@@ -612,8 +612,100 @@
                 </div>
                 <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                     <a href="index.html" class="btn btn-small btn-primary">🌐 View Website</a>
-                    <a href="releases/" class="btn btn-small btn-success">📂 Releases Folder</a>
+                    <a href="releases/LokAlert%20Demo%201.apk" download class="btn btn-small btn-success">📥 Download Latest APK</a>
                     <button class="btn btn-small btn-warning" onclick="clearAllData()">🗑️ Clear All Data</button>
+                </div>
+            </div>
+
+            <!-- DATABASE MANAGEMENT SECTION -->
+            <div class="card" style="border: 2px solid var(--primary); background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(34, 211, 238, 0.1) 100%);">
+                <div class="card-header">
+                    <h2 style="font-size: 24px;">🗄️ DATABASE MANAGEMENT</h2>
+                    <span class="badge badge-success" style="font-size: 14px; padding: 8px 16px;">✓ Connected</span>
+                </div>
+                
+                <!-- Database Stats -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">📦</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--primary);" id="dbVersions">0</div>
+                        <div style="color: var(--text-muted); font-size: 13px;">APK Versions</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">👥</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--secondary);" id="dbUsers">1</div>
+                        <div style="color: var(--text-muted); font-size: 13px;">Admin Users</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">📊</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="dbLogs">0</div>
+                        <div style="color: var(--text-muted); font-size: 13px;">Download Logs</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">💬</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--warning);" id="dbMessages">0</div>
+                        <div style="color: var(--text-muted); font-size: 13px;">Messages</div>
+                    </div>
+                </div>
+
+                <!-- Database Tables -->
+                <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                    <span>📋 Database Tables</span>
+                </h3>
+                <div class="table-container" style="margin-bottom: 24px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Table Name</th>
+                                <th>Description</th>
+                                <th>Records</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dbTablesBody">
+                            <tr>
+                                <td><strong>apk_versions</strong></td>
+                                <td>Stores all APK release information</td>
+                                <td id="tableVersionsCount">0</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>users</strong></td>
+                                <td>Admin user accounts</td>
+                                <td>1</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>download_logs</strong></td>
+                                <td>Tracks all APK downloads</td>
+                                <td id="tableLogsCount">0</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>contact_messages</strong></td>
+                                <td>User contact form submissions</td>
+                                <td id="tableMessagesCount">0</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Database Actions -->
+                <h3 style="margin-bottom: 16px;">⚡ Database Actions</h3>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <button class="btn btn-small btn-primary" onclick="refreshDatabase()">🔄 Refresh Data</button>
+                    <button class="btn btn-small btn-success" onclick="exportDatabase()">📤 Export Database</button>
+                    <button class="btn btn-small btn-warning" onclick="importDatabase()">📥 Import Database</button>
+                    <button class="btn btn-small btn-danger" onclick="resetDatabase()">⚠️ Reset Database</button>
+                </div>
+
+                <!-- Recent Activity -->
+                <h3 style="margin-bottom: 16px;">📜 Recent Database Activity</h3>
+                <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 16px; max-height: 200px; overflow-y: auto;" id="activityLog">
+                    <div style="color: var(--text-muted); font-family: monospace; font-size: 13px;" id="activityEntries">
+                        <!-- Activity entries will be loaded here -->
+                    </div>
                 </div>
             </div>
         </main>
@@ -968,9 +1060,197 @@
                 saveReleases();
                 loadReleases();
                 updateStats();
+                updateDatabaseStats();
+                logActivity('All releases cleared');
                 showAlert('All data cleared!', 'success');
             }
         }
+
+        // ============================================
+        // DATABASE MANAGEMENT
+        // ============================================
+        let downloadLogs = [];
+        let contactMessages = [];
+        let activityLog = [];
+
+        // Initialize database data
+        try {
+            downloadLogs = JSON.parse(localStorage.getItem('downloadLogs') || '[]');
+            contactMessages = JSON.parse(localStorage.getItem('contactMessages') || '[]');
+            activityLog = JSON.parse(localStorage.getItem('activityLog') || '[]');
+        } catch (e) {
+            console.error('Error loading database:', e);
+        }
+
+        function updateDatabaseStats() {
+            // Update database stats
+            const versionCount = releases.length;
+            const logCount = downloadLogs.length;
+            const messageCount = contactMessages.length;
+
+            document.getElementById('dbVersions').textContent = versionCount;
+            document.getElementById('dbLogs').textContent = logCount;
+            document.getElementById('dbMessages').textContent = messageCount;
+            document.getElementById('tableVersionsCount').textContent = versionCount;
+            document.getElementById('tableLogsCount').textContent = logCount;
+            document.getElementById('tableMessagesCount').textContent = messageCount;
+
+            // Update activity log display
+            renderActivityLog();
+        }
+
+        function logActivity(action) {
+            const entry = {
+                timestamp: new Date().toISOString(),
+                action: action
+            };
+            activityLog.unshift(entry);
+            if (activityLog.length > 50) activityLog = activityLog.slice(0, 50); // Keep last 50
+            try {
+                localStorage.setItem('activityLog', JSON.stringify(activityLog));
+            } catch (e) {}
+            renderActivityLog();
+        }
+
+        function renderActivityLog() {
+            const container = document.getElementById('activityEntries');
+            if (!container) return;
+            
+            if (activityLog.length === 0) {
+                container.innerHTML = '<div style="opacity: 0.5;">[No recent activity]</div>';
+                return;
+            }
+
+            container.innerHTML = activityLog.slice(0, 20).map(entry => {
+                const date = new Date(entry.timestamp);
+                const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                return `<div style="margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <span style="color: var(--secondary);">[${dateStr} ${timeStr}]</span> ${entry.action}
+                </div>`;
+            }).join('');
+        }
+
+        function refreshDatabase() {
+            updateDatabaseStats();
+            logActivity('Database refreshed');
+            showAlert('Database refreshed successfully!', 'success');
+        }
+
+        function exportDatabase() {
+            const dbExport = {
+                exportDate: new Date().toISOString(),
+                tables: {
+                    apk_versions: releases,
+                    users: [{ id: 1, username: 'admin', role: 'administrator', created_at: '2026-01-01' }],
+                    download_logs: downloadLogs,
+                    contact_messages: contactMessages
+                },
+                metadata: {
+                    version: '1.0.0',
+                    totalRecords: releases.length + 1 + downloadLogs.length + contactMessages.length
+                }
+            };
+            
+            const data = JSON.stringify(dbExport, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `lokalert-database-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            logActivity('Database exported');
+            showAlert('Database exported successfully!', 'success');
+        }
+
+        function importDatabase() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (data.tables) {
+                            if (data.tables.apk_versions) {
+                                releases = data.tables.apk_versions;
+                                saveReleases();
+                            }
+                            if (data.tables.download_logs) {
+                                downloadLogs = data.tables.download_logs;
+                                localStorage.setItem('downloadLogs', JSON.stringify(downloadLogs));
+                            }
+                            if (data.tables.contact_messages) {
+                                contactMessages = data.tables.contact_messages;
+                                localStorage.setItem('contactMessages', JSON.stringify(contactMessages));
+                            }
+                            loadReleases();
+                            updateStats();
+                            updateDatabaseStats();
+                            logActivity('Database imported from file');
+                            showAlert('Database imported successfully!', 'success');
+                        } else {
+                            throw new Error('Invalid database format');
+                        }
+                    } catch (err) {
+                        showAlert('Error importing database: ' + err.message, 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function resetDatabase() {
+            if (confirm('⚠️ WARNING: This will reset ALL database tables to their default state. Continue?')) {
+                if (confirm('🚨 FINAL WARNING: All releases, logs, and messages will be permanently deleted!')) {
+                    // Reset all tables
+                    releases = [{
+                        id: 1,
+                        version: '1.0.0',
+                        versionCode: 1,
+                        filename: 'LokAlert Demo 1.apk',
+                        fileSize: 16.4,
+                        downloadUrl: 'releases/LokAlert%20Demo%201.apk',
+                        releaseNotes: '• Initial release\n• Location-based arrival alerts',
+                        downloads: 0,
+                        isLatest: true,
+                        createdAt: new Date().toISOString()
+                    }];
+                    downloadLogs = [];
+                    contactMessages = [];
+                    activityLog = [];
+                    
+                    saveReleases();
+                    localStorage.setItem('downloadLogs', '[]');
+                    localStorage.setItem('contactMessages', '[]');
+                    localStorage.setItem('activityLog', '[]');
+                    
+                    loadReleases();
+                    updateStats();
+                    updateDatabaseStats();
+                    logActivity('Database reset to default state');
+                    showAlert('Database reset successfully!', 'success');
+                }
+            }
+        }
+
+        // Update the showDashboard function to also load database stats
+        const originalShowDashboard = showDashboard;
+        showDashboard = function() {
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('active');
+            loadReleases();
+            updateStats();
+            updateDatabaseStats();
+            logActivity('Admin logged in');
+        };
 
         // Close modal on outside click
         document.getElementById('editModal').addEventListener('click', function(e) {
