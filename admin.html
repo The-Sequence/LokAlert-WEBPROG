@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - LokAlert APK Manager</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" crossorigin="anonymous">
     <style>
         :root {
             --primary: #6366f1;
@@ -661,8 +661,19 @@
         // ============================================
         // State Management
         // ============================================
-        let isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
-        let releases = JSON.parse(localStorage.getItem('apkReleases') || '[]');
+        let isLoggedIn = false;
+        let releases = [];
+        
+        // Safe localStorage access
+        try {
+            isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+            const storedReleases = localStorage.getItem('apkReleases');
+            if (storedReleases) {
+                releases = JSON.parse(storedReleases);
+            }
+        } catch (e) {
+            console.error('Error accessing localStorage:', e);
+        }
 
         // Initialize with default release if empty
         if (releases.length === 0) {
@@ -685,18 +696,33 @@
         // Initialization
         // ============================================
         document.addEventListener('DOMContentLoaded', () => {
-            if (isLoggedIn) {
-                showDashboard();
+            try {
+                if (isLoggedIn) {
+                    showDashboard();
+                }
+                
+                // Login form
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', handleLogin);
+                }
+                
+                // Release form
+                const releaseForm = document.getElementById('releaseForm');
+                if (releaseForm) {
+                    releaseForm.addEventListener('submit', handleAddRelease);
+                }
+                
+                // Edit form
+                const editForm = document.getElementById('editForm');
+                if (editForm) {
+                    editForm.addEventListener('submit', handleEditRelease);
+                }
+                
+                console.log('Admin panel initialized successfully');
+            } catch (e) {
+                console.error('Initialization error:', e);
             }
-            
-            // Login form
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            
-            // Release form
-            document.getElementById('releaseForm').addEventListener('submit', handleAddRelease);
-            
-            // Edit form
-            document.getElementById('editForm').addEventListener('submit', handleEditRelease);
         });
 
         // ============================================
@@ -704,17 +730,28 @@
         // ============================================
         function handleLogin(e) {
             e.preventDefault();
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-                isLoggedIn = true;
-                localStorage.setItem('adminLoggedIn', 'true');
-                showDashboard();
-            } else {
-                const errorEl = document.getElementById('loginError');
-                errorEl.textContent = 'Invalid username or password';
-                errorEl.style.display = 'block';
+            try {
+                const username = document.getElementById('loginUsername').value.trim();
+                const password = document.getElementById('loginPassword').value;
+                
+                if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                    isLoggedIn = true;
+                    try {
+                        localStorage.setItem('adminLoggedIn', 'true');
+                    } catch (storageErr) {
+                        console.warn('Could not save to localStorage:', storageErr);
+                    }
+                    showDashboard();
+                } else {
+                    const errorEl = document.getElementById('loginError');
+                    if (errorEl) {
+                        errorEl.textContent = 'Invalid username or password';
+                        errorEl.style.display = 'block';
+                    }
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                alert('An error occurred during login. Please try again.');
             }
         }
 
@@ -839,7 +876,11 @@
         // Data Persistence
         // ============================================
         function saveReleases() {
-            localStorage.setItem('apkReleases', JSON.stringify(releases));
+            try {
+                localStorage.setItem('apkReleases', JSON.stringify(releases));
+            } catch (e) {
+                console.error('Error saving releases:', e);
+            }
         }
 
         function loadReleases() {
