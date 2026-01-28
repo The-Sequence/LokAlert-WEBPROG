@@ -63,7 +63,7 @@ class EmailService {
             $this->updateEmailLog($logId, 'sent', 'Email disabled - simulated send');
             return [
                 'success' => true,
-                'message' => 'Email simulated (SMTP not configured)',
+                'message' => 'Email simulated (development mode)',
                 'debug' => true,
                 'email_disabled' => true
             ];
@@ -79,18 +79,8 @@ class EmailService {
             ];
         }
         
-        // Try to send with PHPMailer if available
-        $phpmailerPath = __DIR__ . '/../vendor/PHPMailer/PHPMailer.php';
-        if (file_exists($phpmailerPath)) {
-            $result = $this->sendWithPHPMailer($logId, $to, $subject, $htmlBody, $plainBody);
-            if (!$result['success']) {
-                $result['email_failed'] = true;
-            }
-            return $result;
-        }
-        
-        // Fallback to native mail()
-        $result = $this->sendWithNativeMail($logId, $to, $subject, $htmlBody, $plainBody);
+        // Send using raw SMTP sockets (works on InfinityFree)
+        $result = $this->sendWithRawSMTP($logId, $to, $subject, $htmlBody, $plainBody);
         if (!$result['success']) {
             $result['email_failed'] = true;
         }
@@ -98,70 +88,181 @@ class EmailService {
     }
     
     /**
-     * Send email using PHPMailer
+     * Send email using raw SMTP sockets (works on InfinityFree)
      */
-    private function sendWithPHPMailer($logId, $to, $subject, $htmlBody, $plainBody) {
+    private function sendWithRawSMTP($logId, $to, $subject, $htmlBody, $plainBody) {
+        $host = SMTP_HOST;
+        $port = SMTP_PORT;
+        $username = SMTP_USER;
+        $password = str_replace(' ', '', SMTP_PASS); // Remove spaces from app password
+        $from = SMTP_USER; // Gmail requires FROM to match authenticated user
+        $fromName = SMTP_FROM_NAME;
+        
         try {
-            require_once __DIR__ . '/../vendor/PHPMailer/PHPMailer.php';
-            require_once __DIR__ . '/../vendor/PHPMailer/SMTP.php';
-            require_once __DIR__ . '/../vendor/PHPMailer/Exception.php';
+            // Connect to SMTP server
+            $socket = @fsockopen($host, $port, $errno, $errstr, 30);
             
-            $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+            if (!$socket) {
+                // Try SSL connection as fallback (port 465)
+                $socket = @fsockopen('ssl://' . $host, 465, $errno, $errstr, 30);
+                if (!$socket) {
+                    $this->updateEmailLog($logId, 'failed', "Connection failed: $errstr ($errno)");
+                    return ['success' => false, 'error' => "Failed to connect to SMTP: $errstr"];
+                }
+                $port = 465; // SSL mode, skip STARTTLS
+            }
             
-            // Server settings
-            $mail->isSMTP();
-            $mail->Host = SMTP_HOST;
-            $mail->SMTPAuth = true;
-            $mail->Username = SMTP_USER;
-            $mail->Password = SMTP_PASS;
-            $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = SMTP_PORT;
+            stream_set_timeout($socket, 30);
             
-            // Recipients
-            $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-            $mail->addAddress($to);
+            // Read greeting
+            $response = $this->smtpGetResponse($socket);
+            if (substr($response, 0, 3) != '220') {
+                fclose($socket);
+                $this->updateEmailLog($logId, 'failed', "Invalid greeting: $response");
+                return ['success' => false, 'error' => 'Invalid SMTP greeting'];
+            }
             
-            // Content
-            $mail->isHTML(true);
-            $mail->Subject = $subject;
-            $mail->Body = $htmlBody;
-            $mail->AltBody = $plainBody;
+            // EHLO
+            $this->smtpSendCommand($socket, "EHLO lokalert.infinityfree.me");
+            $response = $this->smtpGetResponse($socket);
             
-            $mail->send();
+            // STARTTLS if on port 587
+            if ($port == 587) {
+                $this->smtpSendCommand($socket, "STARTTLS");
+                $response = $this->smtpGetResponse($socket);
+                if (substr($response, 0, 3) != '220') {
+                    fclose($socket);
+                    $this->updateEmailLog($logId, 'failed', "STARTTLS failed: $response");
+                    return ['success' => false, 'error' => 'STARTTLS failed'];
+                }
+                
+                // Enable TLS
+                if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                    fclose($socket);
+                    $this->updateEmailLog($logId, 'failed', 'TLS encryption failed');
+                    return ['success' => false, 'error' => 'TLS encryption failed'];
+                }
+                
+                // EHLO again after STARTTLS
+                $this->smtpSendCommand($socket, "EHLO lokalert.infinityfree.me");
+                $response = $this->smtpGetResponse($socket);
+            }
+            
+            // AUTH LOGIN
+            $this->smtpSendCommand($socket, "AUTH LOGIN");
+            $response = $this->smtpGetResponse($socket);
+            if (substr($response, 0, 3) != '334') {
+                fclose($socket);
+                $this->updateEmailLog($logId, 'failed', "AUTH failed: $response");
+                return ['success' => false, 'error' => 'AUTH command failed'];
+            }
+            
+            // Username (base64)
+            $this->smtpSendCommand($socket, base64_encode($username));
+            $response = $this->smtpGetResponse($socket);
+            if (substr($response, 0, 3) != '334') {
+                fclose($socket);
+                $this->updateEmailLog($logId, 'failed', "Username rejected: $response");
+                return ['success' => false, 'error' => 'Username rejected'];
+            }
+            
+            // Password (base64)
+            $this->smtpSendCommand($socket, base64_encode($password));
+            $response = $this->smtpGetResponse($socket);
+            if (substr($response, 0, 3) != '235') {
+                fclose($socket);
+                $this->updateEmailLog($logId, 'failed', "Auth failed: $response");
+                return ['success' => false, 'error' => 'Authentication failed - check app password'];
+            }
+            
+            // MAIL FROM
+            $this->smtpSendCommand($socket, "MAIL FROM:<$from>");
+            $response = $this->smtpGetResponse($socket);
+            if (substr($response, 0, 3) != '250') {
+                fclose($socket);
+                $this->updateEmailLog($logId, 'failed', "MAIL FROM rejected: $response");
+                return ['success' => false, 'error' => 'Sender rejected'];
+            }
+            
+            // RCPT TO
+            $this->smtpSendCommand($socket, "RCPT TO:<$to>");
+            $response = $this->smtpGetResponse($socket);
+            if (substr($response, 0, 3) != '250' && substr($response, 0, 3) != '251') {
+                fclose($socket);
+                $this->updateEmailLog($logId, 'failed', "RCPT TO rejected: $response");
+                return ['success' => false, 'error' => 'Recipient rejected'];
+            }
+            
+            // DATA
+            $this->smtpSendCommand($socket, "DATA");
+            $response = $this->smtpGetResponse($socket);
+            if (substr($response, 0, 3) != '354') {
+                fclose($socket);
+                $this->updateEmailLog($logId, 'failed', "DATA rejected: $response");
+                return ['success' => false, 'error' => 'DATA command rejected'];
+            }
+            
+            // Build email
+            $boundary = md5(uniqid(time()));
+            $headers = [
+                "From: $fromName <$from>",
+                "To: $to",
+                "Subject: $subject",
+                "MIME-Version: 1.0",
+                "Content-Type: multipart/alternative; boundary=\"$boundary\"",
+                "Date: " . date('r'),
+                "Message-ID: <" . md5(uniqid()) . "@lokalert.infinityfree.me>"
+            ];
+            
+            $message = implode("\r\n", $headers) . "\r\n\r\n";
+            $message .= "--$boundary\r\n";
+            $message .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
+            $message .= $plainBody . "\r\n\r\n";
+            $message .= "--$boundary\r\n";
+            $message .= "Content-Type: text/html; charset=UTF-8\r\n\r\n";
+            $message .= $htmlBody . "\r\n\r\n";
+            $message .= "--$boundary--\r\n.";
+            
+            fputs($socket, $message . "\r\n");
+            $response = $this->smtpGetResponse($socket);
+            if (substr($response, 0, 3) != '250') {
+                fclose($socket);
+                $this->updateEmailLog($logId, 'failed', "Message rejected: $response");
+                return ['success' => false, 'error' => 'Message was rejected'];
+            }
+            
+            // QUIT
+            $this->smtpSendCommand($socket, "QUIT");
+            fclose($socket);
             
             $this->updateEmailLog($logId, 'sent');
             return ['success' => true, 'message' => 'Email sent successfully'];
             
         } catch (Exception $e) {
-            $error = $mail->ErrorInfo ?? $e->getMessage();
-            $this->updateEmailLog($logId, 'failed', $error);
-            return ['success' => false, 'error' => 'Failed to send email: ' . $error];
+            $this->updateEmailLog($logId, 'failed', $e->getMessage());
+            return ['success' => false, 'error' => 'SMTP error: ' . $e->getMessage()];
         }
     }
     
     /**
-     * Send email using native mail()
+     * Send SMTP command
      */
-    private function sendWithNativeMail($logId, $to, $subject, $htmlBody, $plainBody) {
-        $headers = [
-            'MIME-Version: 1.0',
-            'Content-Type: text/html; charset=UTF-8',
-            'From: ' . SMTP_FROM_NAME . ' <' . SMTP_FROM_EMAIL . '>',
-            'Reply-To: ' . SMTP_FROM_EMAIL,
-            'X-Mailer: PHP/' . phpversion()
-        ];
-        
-        $result = @mail($to, $subject, $htmlBody, implode("\r\n", $headers));
-        
-        if ($result) {
-            $this->updateEmailLog($logId, 'sent');
-            return ['success' => true, 'message' => 'Email sent successfully'];
-        } else {
-            $this->updateEmailLog($logId, 'failed', 'Native mail() failed');
-            return ['success' => false, 'error' => 'Failed to send email'];
-        }
+    private function smtpSendCommand($socket, $command) {
+        fputs($socket, $command . "\r\n");
     }
     
+    /**
+     * Get SMTP response
+     */
+    private function smtpGetResponse($socket) {
+        $response = '';
+        while ($line = fgets($socket, 515)) {
+            $response .= $line;
+            if (isset($line[3]) && $line[3] == ' ') break;
+        }
+        return trim($response);
+    }
+
     /**
      * Log email to database
      */
