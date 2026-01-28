@@ -534,34 +534,66 @@
                 
                 <div style="background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
                     <p style="color: var(--secondary); margin: 0; font-size: 14px;">
-                        <strong>📌 Important:</strong> Since InfinityFree blocks APK files, upload your APK to 
-                        <a href="https://github.com/The-Sequence/LokAlert-WEBPROG/releases" target="_blank" style="color: var(--primary);">GitHub Releases</a>, 
-                        Google Drive, or Dropbox, then paste the direct download URL below.
+                        <strong>� Easy Mode:</strong> Just paste a GitHub Releases URL and we'll auto-fetch version, file size, and release notes!
+                        <br><a href="https://github.com/The-Sequence/LokAlert-WEBPROG/releases" target="_blank" style="color: var(--primary);">→ Upload APK to GitHub Releases first</a>
                     </p>
                 </div>
                 
                 <form id="releaseForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Version Number *</label>
-                            <input type="text" id="versionNumber" placeholder="e.g., 1.0.0, 1.1.0, 2.0.0" required>
+                    <!-- Smart URL Input -->
+                    <div class="form-group">
+                        <label>Download URL * <span style="color: var(--secondary);">(Paste GitHub Release URL)</span></label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="url" id="downloadUrl" placeholder="https://github.com/owner/repo/releases/download/v1.0.0/app.apk" required style="flex: 1;">
+                            <button type="button" class="btn btn-secondary" onclick="fetchReleaseInfo()" id="fetchBtn">
+                                🔍 Auto-Fetch
+                            </button>
                         </div>
+                        <small style="color: var(--text-muted);">Supports: GitHub Releases, Google Drive, Dropbox direct links</small>
+                    </div>
+                    
+                    <!-- Auto-filled fields (can be edited) -->
+                    <div id="autoFilledSection" style="background: rgba(99, 102, 241, 0.05); border-radius: 12px; padding: 16px; margin: 16px 0; display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="color: var(--primary); font-weight: 600;">📋 Auto-detected Info</span>
+                            <span class="badge badge-success" id="fetchStatus">✓ Fetched from GitHub</span>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Version Number *</label>
+                                <input type="text" id="versionNumber" placeholder="e.g., 1.0.0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>File Size</label>
+                                <input type="text" id="fileSizeDisplay" readonly style="background: rgba(255,255,255,0.05);">
+                                <input type="hidden" id="fileSize">
+                            </div>
+                        </div>
+                        
                         <div class="form-group">
-                            <label>File Size (bytes)</label>
-                            <input type="number" id="fileSize" placeholder="e.g., 17000000 (17MB)" min="0">
-                            <small style="color: var(--text-muted);">Optional - for progress display</small>
+                            <label>Release Notes / Changelog</label>
+                            <textarea id="releaseNotes" placeholder="What's new in this version?" rows="4"></textarea>
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label>Download URL * <span style="color: var(--secondary);">(GitHub Releases, Google Drive, etc.)</span></label>
-                        <input type="url" id="downloadUrl" placeholder="https://github.com/.../releases/download/v1.0.0/LokAlert.apk" required>
-                        <small style="color: var(--text-muted);">Direct download link to the APK file</small>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Release Notes / Changelog</label>
-                        <textarea id="releaseNotes" placeholder="What's new in this version?&#10;• Feature 1&#10;• Bug fix 2&#10;• Improvement 3"></textarea>
+                    <!-- Manual entry fallback -->
+                    <div id="manualSection">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Version Number *</label>
+                                <input type="text" id="versionNumberManual" placeholder="e.g., 1.0.0, 1.1.0">
+                            </div>
+                            <div class="form-group">
+                                <label>File Size (bytes)</label>
+                                <input type="number" id="fileSizeManual" placeholder="e.g., 17000000" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Release Notes</label>
+                            <textarea id="releaseNotesManual" placeholder="What's new in this version?"></textarea>
+                        </div>
                     </div>
                     
                     <div class="checkbox-group">
@@ -868,6 +900,11 @@
         let isLoggedIn = false;
         let releases = [];
         
+        // API Base URL - dynamic for local vs production
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'api'  // Local development
+            : 'https://lokalert.infinityfree.me/api';  // Production - InfinityFree URL
+        
         // Safe localStorage access
         try {
             isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
@@ -975,6 +1012,197 @@
         }
 
         // ============================================
+        // GitHub Release Auto-Fetch
+        // ============================================
+        
+        let autoFetchedData = null; // Store fetched data
+        
+        /**
+         * Parse GitHub URL to extract owner, repo, and tag
+         * Supports multiple URL formats:
+         * - https://github.com/owner/repo/releases/download/v1.0.0/file.apk
+         * - https://github.com/owner/repo/releases/tag/v1.0.0
+         * - https://github.com/owner/repo/releases/latest
+         */
+        function parseGitHubUrl(url) {
+            try {
+                const urlObj = new URL(url);
+                if (!urlObj.hostname.includes('github.com')) {
+                    return null;
+                }
+                
+                const pathParts = urlObj.pathname.split('/').filter(p => p);
+                
+                if (pathParts.length < 2) return null;
+                
+                const owner = pathParts[0];
+                const repo = pathParts[1];
+                
+                // Format: /owner/repo/releases/download/tag/filename
+                if (pathParts[2] === 'releases' && pathParts[3] === 'download') {
+                    return {
+                        owner,
+                        repo,
+                        tag: pathParts[4],
+                        filename: pathParts[5] || null,
+                        type: 'download'
+                    };
+                }
+                
+                // Format: /owner/repo/releases/tag/tagname
+                if (pathParts[2] === 'releases' && pathParts[3] === 'tag') {
+                    return {
+                        owner,
+                        repo,
+                        tag: pathParts[4],
+                        type: 'tag'
+                    };
+                }
+                
+                // Format: /owner/repo/releases/latest
+                if (pathParts[2] === 'releases' && (pathParts[3] === 'latest' || !pathParts[3])) {
+                    return {
+                        owner,
+                        repo,
+                        tag: 'latest',
+                        type: 'latest'
+                    };
+                }
+                
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        /**
+         * Fetch release info from GitHub API
+         */
+        async function fetchReleaseInfo() {
+            const urlInput = document.getElementById('downloadUrl');
+            const fetchBtn = document.getElementById('fetchBtn');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                showAlert('Please enter a URL first', 'error');
+                return;
+            }
+            
+            // Parse GitHub URL
+            const parsed = parseGitHubUrl(url);
+            
+            if (!parsed) {
+                // Not a GitHub URL - show manual section
+                document.getElementById('autoFilledSection').style.display = 'none';
+                document.getElementById('manualSection').style.display = 'block';
+                showAlert('Not a GitHub URL. Please fill in details manually.', 'error');
+                return;
+            }
+            
+            // Show loading state
+            fetchBtn.disabled = true;
+            fetchBtn.innerHTML = '⏳ Fetching...';
+            
+            try {
+                // Build API URL
+                let apiUrl;
+                if (parsed.tag === 'latest') {
+                    apiUrl = `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/releases/latest`;
+                } else {
+                    apiUrl = `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/releases/tags/${parsed.tag}`;
+                }
+                
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error('Release not found');
+                }
+                
+                const release = await response.json();
+                
+                // Extract version from tag (remove 'v' prefix if present)
+                const version = release.tag_name.replace(/^v/i, '');
+                
+                // Find APK asset
+                const apkAsset = release.assets.find(a => 
+                    a.name.toLowerCase().endsWith('.apk')
+                );
+                
+                // Determine download URL
+                let downloadUrl = url;
+                let fileSize = 0;
+                let filename = '';
+                
+                if (apkAsset) {
+                    downloadUrl = apkAsset.browser_download_url;
+                    fileSize = apkAsset.size;
+                    filename = apkAsset.name;
+                } else if (parsed.filename) {
+                    // Use filename from URL if no APK found in assets
+                    const matchingAsset = release.assets.find(a => a.name === parsed.filename);
+                    if (matchingAsset) {
+                        downloadUrl = matchingAsset.browser_download_url;
+                        fileSize = matchingAsset.size;
+                        filename = matchingAsset.name;
+                    }
+                }
+                
+                // Store fetched data
+                autoFetchedData = {
+                    version,
+                    fileSize,
+                    downloadUrl,
+                    filename,
+                    releaseNotes: release.body || '',
+                    releaseName: release.name || release.tag_name
+                };
+                
+                // Update form fields
+                document.getElementById('downloadUrl').value = downloadUrl;
+                document.getElementById('versionNumber').value = version;
+                document.getElementById('fileSize').value = fileSize;
+                document.getElementById('fileSizeDisplay').value = formatBytesAdmin(fileSize);
+                document.getElementById('releaseNotes').value = release.body || '';
+                
+                // Show auto-filled section, hide manual
+                document.getElementById('autoFilledSection').style.display = 'block';
+                document.getElementById('manualSection').style.display = 'none';
+                document.getElementById('fetchStatus').innerHTML = `✓ ${release.name || release.tag_name}`;
+                
+                showAlert(`Found: ${release.name || release.tag_name} (${formatBytesAdmin(fileSize)})`, 'success');
+                
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showAlert('Could not fetch release info: ' + error.message, 'error');
+                
+                // Show manual section as fallback
+                document.getElementById('autoFilledSection').style.display = 'none';
+                document.getElementById('manualSection').style.display = 'block';
+                
+                // Try to extract version from URL
+                const versionMatch = url.match(/[vV]?(\d+\.\d+\.?\d*)/);
+                if (versionMatch) {
+                    document.getElementById('versionNumberManual').value = versionMatch[1];
+                }
+                
+            } finally {
+                fetchBtn.disabled = false;
+                fetchBtn.innerHTML = '🔍 Auto-Fetch';
+            }
+        }
+        
+        /**
+         * Format bytes for display
+         */
+        function formatBytesAdmin(bytes) {
+            if (!bytes || bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // ============================================
         // Release Management (Database-backed)
         // ============================================
         
@@ -982,13 +1210,30 @@
         async function handleAddRelease(e) {
             e.preventDefault();
             
-            const version = document.getElementById('versionNumber').value.trim();
-            const fileSize = parseInt(document.getElementById('fileSize').value) || 0;
+            // Check if auto-filled section is visible
+            const autoFilledVisible = document.getElementById('autoFilledSection').style.display !== 'none';
+            
+            let version, fileSize, releaseNotes;
+            
+            if (autoFilledVisible) {
+                version = document.getElementById('versionNumber').value.trim();
+                fileSize = parseInt(document.getElementById('fileSize').value) || 0;
+                releaseNotes = document.getElementById('releaseNotes').value.trim();
+            } else {
+                version = document.getElementById('versionNumberManual').value.trim();
+                fileSize = parseInt(document.getElementById('fileSizeManual').value) || 0;
+                releaseNotes = document.getElementById('releaseNotesManual').value.trim();
+            }
+            
             const downloadUrl = document.getElementById('downloadUrl').value.trim();
-            const releaseNotes = document.getElementById('releaseNotes').value.trim();
             const isLatest = document.getElementById('isLatest').checked;
             
-            // Validate URL
+            // Validation
+            if (!version) {
+                showAlert('Please enter a version number or use Auto-Fetch', 'error');
+                return;
+            }
+            
             if (!downloadUrl.startsWith('http')) {
                 showAlert('Please enter a valid URL starting with http:// or https://', 'error');
                 return;
@@ -1012,8 +1257,14 @@
                 
                 if (data.success) {
                     showAlert('Release added to database successfully!', 'success');
+                    
+                    // Reset form
                     document.getElementById('releaseForm').reset();
                     document.getElementById('isLatest').checked = true;
+                    document.getElementById('autoFilledSection').style.display = 'none';
+                    document.getElementById('manualSection').style.display = 'block';
+                    autoFetchedData = null;
+                    
                     await loadReleasesFromDB();
                     updateStats();
                 } else {
@@ -1497,7 +1748,7 @@
         // ============================================
         // USER MANAGEMENT (Server-side)
         // ============================================
-        const API_BASE = 'api';
+        // API_BASE is already defined at the top of the script
         let usersData = [];
 
         async function loadUsers() {
