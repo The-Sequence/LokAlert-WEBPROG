@@ -8,7 +8,7 @@
 // For production: 'https://your-php-host.com/LokAlert/api'
 const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'api'  // Local development
-    : 'https://lokalert-api.infinityfreeapp.com/api';  // Production - UPDATE THIS URL
+    : 'https://lokalert.infinityfree.me/api';  // Production - InfinityFree URL
 
 // Check if we're in production (cross-origin)
 const IS_PRODUCTION = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
