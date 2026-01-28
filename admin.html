@@ -1124,11 +1124,28 @@
         
         async function checkGitHubConfig() {
             const statusEl = document.getElementById('githubStatus');
+            if (!statusEl) return;
+            
             try {
                 const response = await fetch(`${API_BASE}/github.php?action=check-token`, {
-                    credentials: 'include'
+                    credentials: 'include',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
                 });
-                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    console.error('Invalid JSON response:', text);
+                    throw new Error('Invalid server response');
+                }
                 
                 if (data.configured) {
                     statusEl.innerHTML = `<span style="color: var(--success);">✅ Connected to GitHub: ${data.owner}/${data.repo}</span>`;
@@ -1141,7 +1158,8 @@
                         <br><small>Add these to includes/credentials.php</small>`;
                 }
             } catch (error) {
-                statusEl.innerHTML = `<span style="color: var(--danger);">❌ Could not check GitHub status</span>`;
+                console.error('GitHub check error:', error);
+                statusEl.innerHTML = `<span style="color: var(--danger);">❌ Could not check GitHub status: ${error.message}</span>`;
             }
         }
         
@@ -1150,8 +1168,19 @@
             const fileInput = document.getElementById('apkFile');
             const uploadForm = document.getElementById('uploadForm');
             
-            // Click to browse
-            dropZone.addEventListener('click', () => fileInput.click());
+            if (!dropZone || !fileInput || !uploadForm) {
+                console.error('Upload elements not found');
+                return;
+            }
+            
+            // Click to browse - but not on buttons or input
+            dropZone.addEventListener('click', (e) => {
+                // Don't trigger if clicking on the remove button
+                if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+                    return;
+                }
+                fileInput.click();
+            });
             
             // File input change
             fileInput.addEventListener('change', (e) => {
@@ -1160,26 +1189,35 @@
                 }
             });
             
-            // Drag and drop
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.style.borderColor = 'var(--primary)';
-                dropZone.style.background = 'rgba(99, 102, 241, 0.1)';
+            // Drag and drop - prevent default on document to allow drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
             });
             
-            dropZone.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                dropZone.style.borderColor = 'var(--border-color)';
-                dropZone.style.background = '';
+            // Highlight on drag over
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.style.borderColor = 'var(--primary)';
+                    dropZone.style.background = 'rgba(99, 102, 241, 0.1)';
+                });
             });
             
+            // Remove highlight on drag leave/drop
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.style.borderColor = 'var(--border-color)';
+                    dropZone.style.background = '';
+                });
+            });
+            
+            // Handle drop
             dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.style.borderColor = 'var(--border-color)';
-                dropZone.style.background = '';
-                
-                if (e.dataTransfer.files.length > 0) {
-                    handleFileSelect(e.dataTransfer.files[0]);
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelect(files[0]);
                 }
             });
             

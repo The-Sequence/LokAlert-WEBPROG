@@ -4,8 +4,8 @@
 # Enable URL rewriting
 RewriteEngine On
 
-# Redirect to index.php as default
-DirectoryIndex index.php index.html
+# Prioritize .html files over .php (index.html before index.php)
+DirectoryIndex index.html index.php
 
 # Handle PHP files
 AddHandler application/x-httpd-php .php
@@ -26,9 +26,14 @@ Options -Indexes
     Deny from all
 </Files>
 
+<Files "credentials.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
 # Error pages
-ErrorDocument 404 /index.php
-ErrorDocument 500 /index.php
+ErrorDocument 404 /index.html
+ErrorDocument 500 /index.html
 
 # PHP settings (if allowed)
 <IfModule mod_php7.c>
