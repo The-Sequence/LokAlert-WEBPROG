@@ -1,93 +1,138 @@
 # LokAlert - Web Programming Final Project
 
-A dynamic website with **PHP** and **MySQL** backend featuring full **CRUD** (Create, Read, Update, Delete) operations.
+A dynamic website with **PHP** and **MySQL** backend featuring full **CRUD** operations, **user authentication with email verification**, and **secure download tracking**.
 
 ## 📋 Project Overview
 
-LokAlert is a mobile application landing page with a complete admin panel for managing:
+LokAlert is a mobile application landing page with a complete authentication system and admin panel for managing:
+- **User Registration** with email verification
+- **Secure Downloads** with rate limiting and tracking
 - APK versions (upload, edit, delete)
-- User management (create, edit, delete users)
+- User management (full CRUD with password reset)
 - Contact messages (read, mark as read, delete)
-- Download tracking and statistics
+- Comprehensive download statistics
+
+## 🔐 Authentication & Verification System
+
+### User Registration Flow
+1. User signs up with **email** (required) and optional **name/nickname**
+2. A **6-digit verification code** is sent to their email
+3. User enters the code to verify their account
+4. Once verified, user can download the app
+
+### Security Features
+- **Email verification required** before downloads
+- **5-minute cooldown** between downloads (prevents abuse)
+- **Download tracking** - only counts SUCCESSFUL downloads
+- **Password hashing** using PHP's `password_hash()`
+- **Session-based authentication**
+- **Self-service password reset** via email
+
+### Admin Password Reset Options
+- Send reset email to user (self-service link)
+- Set temporary password (with optional email notification)
 
 ## 🛠️ Technologies Used
 
 | Technology | Purpose |
 |------------|---------|
 | **HTML5** | Content structure |
-| **CSS3** | Styling and responsive design |
-| **JavaScript** | Client-side interactivity and validation |
-| **PHP** | Server-side logic and CRUD operations |
+| **CSS3** | Styling, modals, responsive design |
+| **JavaScript** | SPA-like auth flow, progress tracking |
+| **PHP 7.4+** | Server-side logic and CRUD operations |
 | **MySQL** | Database management |
+| **PHPMailer** | Email service (optional) |
 
 ## 📁 Folder Structure
 
 ```
 LokAlert/
-├── index.php              # Main landing page (PHP)
-├── index.html             # Static version (backup)
-├── admin.php              # Admin panel with CRUD
-├── contact.php            # Contact form (CREATE operation)
+├── index.php              # Main landing page
+├── index.html             # Static fallback
+├── admin.php              # Admin panel entry
+├── admin.html             # Admin dashboard with user management
+├── contact.php            # Contact form
+├── reset-password.html    # Self-service password reset page
 ├── css/
-│   └── style.css          # Main stylesheet
+│   └── style.css          # Main stylesheet (includes auth forms)
 ├── js/
 │   ├── main.js            # Main JavaScript
-│   └── download.js        # Download modal functionality
+│   └── download.js        # Auth flow & download tracking
 ├── api/                   # REST API endpoints
-│   ├── auth.php           # Authentication (login/register)
-│   ├── users.php          # Users CRUD
+│   ├── auth.php           # Signup, verify, login, password reset
+│   ├── users.php          # Users CRUD + admin functions
 │   ├── versions.php       # APK versions CRUD
 │   ├── messages.php       # Contact messages CRUD
-│   └── downloads.php      # Download logging
+│   └── downloads.php      # Download tracking with tokens
 ├── includes/
-│   └── config.php         # Database configuration
+│   ├── config.php         # Configuration & helper functions
+│   └── email_service.php  # Email sending service
 ├── database/
-│   └── lokalert_db.sql    # Database export file
+│   ├── lokalert_db.sql    # Original database schema
+│   └── lokalert_db_v2.sql # Updated schema with verification
 ├── uploads/               # APK file uploads
-├── screenshots/           # Required screenshots
-└── README.md              # Documentation
+├── releases/              # Release files
+├── screenshots/           # Documentation screenshots
+└── README.md              # This file
 ```
 
 ## 🗄️ Database Schema
 
 ### Tables
 
-1. **users** - User accounts
-   - id, username, email, password, is_admin, created_at
+1. **users** - User accounts with verification
+   - id, username, email, password (hashed)
+   - is_admin, is_verified
+   - verification_code, verification_expires
+   - reset_token, reset_expires
+   - download_count, last_download_at
+   - created_at
 
 2. **apk_versions** - APK file versions
-   - id, version, filename, file_size, release_notes, download_count, is_latest, upload_date
+   - id, version, filename, file_size
+   - release_notes, download_count
+   - is_latest, upload_date
 
-3. **download_logs** - Download tracking
-   - id, user_id, version_id, ip_address, user_agent, download_date
+3. **download_logs** - Enhanced download tracking
+   - id, user_id, version_id
+   - ip_address, user_agent
+   - download_token, status (started/completed/failed/cancelled)
+   - started_at, completed_at
 
-4. **contact_messages** - Contact form submissions
-   - id, name, email, subject, message, is_read, created_at
+4. **email_logs** - Email sending history
+   - id, user_id, email_type
+   - recipient_email, subject
+   - status, sent_at
+
+5. **contact_messages** - Contact form submissions
+   - id, name, email, subject, message
+   - is_read, created_at
 
 ## ✨ CRUD Operations
 
 ### CREATE
-- ✅ Add new APK versions (admin.php)
-- ✅ Add new users (admin.php)
-- ✅ Submit contact messages (contact.php)
-- ✅ User registration (api/auth.php)
+- ✅ User signup with email verification
+- ✅ Add new APK versions (admin)
+- ✅ Submit contact messages
+- ✅ Log downloads with status tracking
 
 ### READ
-- ✅ Display APK versions list
-- ✅ Display users list
+- ✅ Display user list with stats (name, verified status, download count)
+- ✅ Display APK versions
 - ✅ Display contact messages
-- ✅ Display download logs
-- ✅ View statistics dashboard
+- ✅ View download logs with success/failure status
+- ✅ Admin dashboard with comprehensive stats
 
 ### UPDATE
+- ✅ Edit user name/email (admin)
+- ✅ Reset user passwords (admin)
+- ✅ Update download status (completed/failed)
 - ✅ Edit APK version details
-- ✅ Edit user information
 - ✅ Mark messages as read
-- ✅ Set version as latest
 
 ### DELETE
+- ✅ Delete users (admin)
 - ✅ Delete APK versions
-- ✅ Delete users
 - ✅ Delete contact messages
 
 ## 🚀 Local Development Setup
@@ -96,6 +141,7 @@ LokAlert/
 - XAMPP, WAMP, MAMP, or similar PHP development environment
 - PHP 7.4 or higher
 - MySQL 5.7 or higher
+- (Optional) Composer for PHPMailer
 
 ### Installation Steps
 
@@ -116,7 +162,7 @@ LokAlert/
 3. **Create the database**
    - Open phpMyAdmin (http://localhost/phpmyadmin)
    - Create a new database named `lokalert_db`
-   - Import `database/lokalert_db.sql`
+   - Import `database/lokalert_db_v2.sql` (updated schema)
 
 4. **Configure database connection**
    - Edit `includes/config.php`
@@ -128,16 +174,61 @@ LokAlert/
      define('DB_PASS', '');
      ```
 
-5. **Access the website**
+5. **Configure email (optional)**
+   - Edit `includes/config.php`
+   - Set `EMAIL_ENABLED` to `true` for production
+   - Configure SMTP settings:
+     ```php
+     define('SMTP_HOST', 'smtp.gmail.com');
+     define('SMTP_USER', 'your-email@gmail.com');
+     define('SMTP_PASS', 'your-app-password');
+     ```
+   - In development mode (`EMAIL_ENABLED = false`), verification codes are shown in alerts
+
+6. **Access the website**
    - Main site: http://localhost/LokAlert/index.php
    - Admin panel: http://localhost/LokAlert/admin.php
-   - Contact form: http://localhost/LokAlert/contact.php
+   - Password reset: http://localhost/LokAlert/reset-password.html?token=...
 
 ### Default Admin Credentials
 - **Username:** admin
 - **Password:** password
 
 ⚠️ **Change these credentials in production!**
+
+## 🔑 API Endpoints
+
+### Authentication (`/api/auth.php`)
+| Method | Action | Description |
+|--------|--------|-------------|
+| POST | `signup` | Register new user |
+| POST | `verify` | Verify email with code |
+| POST | `resend-code` | Resend verification code |
+| POST | `login` | User login |
+| POST | `logout` | User logout |
+| GET | `check` | Check auth status |
+| POST | `forgot-password` | Request password reset |
+| POST | `reset-password` | Reset password with token |
+
+### Downloads (`/api/downloads.php`)
+| Method | Action | Description |
+|--------|--------|-------------|
+| POST | `init` | Initialize download (returns token) |
+| POST | `progress` | Update download progress |
+| POST | `complete` | Mark download as successful |
+| POST | `cancel` | Cancel/fail download |
+| GET | `check-cooldown` | Check if user can download |
+| GET | `latest` | Get latest version info |
+
+### Users (`/api/users.php`) - Admin Only
+| Method | Action | Description |
+|--------|--------|-------------|
+| GET | - | List all users |
+| GET | `stats` | Get user statistics |
+| PUT | - | Update user |
+| DELETE | - | Delete user |
+| POST | `reset-password` | Reset user's password |
+| POST | `send-reset-email` | Send reset email to user |
 
 ## 🌐 InfinityFree Deployment
 
@@ -158,15 +249,18 @@ LokAlert/
 1. Go to **Control Panel** → **phpMyAdmin**
 2. Select your database
 3. Click **Import**
-4. Upload `database/lokalert_db.sql`
+4. Upload `database/lokalert_db_v2.sql`
 
 ### Step 4: Update Configuration
 Edit `includes/config.php` with InfinityFree credentials:
 ```php
-define('DB_HOST', 'sql###.infinityfree.com');  // Your SQL server
-define('DB_NAME', 'epiz_XXXXXXXX_lokalert');    // Your database name
-define('DB_USER', 'epiz_XXXXXXXX');             // Your username
-define('DB_PASS', 'your_password');              // Your password
+define('DB_HOST', 'sql###.infinityfree.com');
+define('DB_NAME', 'epiz_XXXXXXXX_lokalert');
+define('DB_USER', 'epiz_XXXXXXXX');
+define('DB_PASS', 'your_password');
+
+// Enable email for production
+define('EMAIL_ENABLED', true);
 ```
 
 ### Step 5: Upload Files
@@ -177,22 +271,29 @@ define('DB_PASS', 'your_password');              // Your password
 
 ### Step 6: Test Deployment
 1. Visit your InfinityFree URL
-2. Test all CRUD operations:
-   - Submit contact form
-   - Login to admin panel
-   - Add/Edit/Delete APK versions
-   - Add/Edit/Delete users
+2. Test the authentication flow:
+   - Sign up with email
+   - Receive verification code
+   - Verify account
+   - Download app (wait 5 mins for cooldown test)
+3. Test admin panel:
+   - View registered users (count + names)
+   - Reset user passwords
+   - Delete/update users
 
 ## 📸 Required Screenshots
 
 Place these in the `screenshots/` folder:
 
-1. **infinityfree_filemanager.png** - File Manager showing uploaded files
-2. **phpmyadmin_tables.png** - Database tables in phpMyAdmin
-3. **crud_create.png** - Adding new APK version
-4. **crud_read.png** - Dashboard displaying data
-5. **crud_update.png** - Editing a record
-6. **crud_delete.png** - Delete confirmation
+1. **signup_form.png** - User registration modal
+2. **verification_code.png** - Email verification step
+3. **download_progress.png** - Download progress tracking
+4. **admin_users.png** - Admin user management panel
+5. **password_reset.png** - Password reset flow
+6. **crud_create.png** - Adding new APK version
+7. **crud_read.png** - Dashboard displaying data
+8. **crud_update.png** - Editing a record
+9. **crud_delete.png** - Delete confirmation
 
 ## 🔗 Submission Links
 
@@ -208,6 +309,7 @@ http://YOUR_SUBDOMAIN.infinityfreeapp.com
 
 ## 📝 Features Checklist
 
+### Core Requirements
 - [x] HTML - Content structure
 - [x] CSS - Layout and responsive design
 - [x] JavaScript - Client-side validation and interactivity
@@ -217,10 +319,52 @@ http://YOUR_SUBDOMAIN.infinityfreeapp.com
 - [x] READ - Display data from database
 - [x] UPDATE - Edit existing records
 - [x] DELETE - Remove records from database
-- [x] User authentication
-- [x] Admin panel
-- [x] Contact form
-- [x] Download tracking
+
+### Authentication & Security
+- [x] User signup with email + optional name
+- [x] Email verification (6-digit code)
+- [x] Secure password hashing
+- [x] Session-based authentication
+- [x] Self-service password reset via email
+- [x] Admin password reset (temporary or email link)
+
+### Download System
+- [x] Verification required before download
+- [x] Download tracking with tokens
+- [x] Only count SUCCESSFUL downloads
+- [x] 5-minute cooldown between downloads
+- [x] Progress tracking UI
+
+### Admin Panel
+- [x] View registered user count
+- [x] View user names (NOT passwords)
+- [x] View verification status
+- [x] View download counts per user
+- [x] Reset user passwords
+- [x] Delete users
+- [x] Update user information
+- [x] Full CRUD operations
+
+## ⚙️ Configuration Options
+
+In `includes/config.php`:
+
+```php
+// Email settings
+define('EMAIL_ENABLED', false);        // Set true in production
+define('VERIFICATION_CODE_LENGTH', 6); // 6-digit codes
+define('VERIFICATION_CODE_EXPIRY', 15); // Minutes
+
+// Security settings
+define('RESET_TOKEN_EXPIRY', 24);      // Hours
+define('DOWNLOAD_COOLDOWN_MINUTES', 5); // Between downloads
+
+// SMTP (when EMAIL_ENABLED = true)
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_PORT', 587);
+define('SMTP_USER', 'your-email@gmail.com');
+define('SMTP_PASS', 'your-app-password');
+```
 
 ## 👥 Team Members
 

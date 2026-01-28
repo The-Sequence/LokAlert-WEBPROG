@@ -1,295 +1,800 @@
 /**
- * LokAlert Download - REQUIRES SIGNUP
+ * LokAlert Download System v2.0
+ * Features: Signup, Email Verification, Download Tracking, Rate Limiting
  */
-const APK_CONFIG = {
-    version: "1.0.0",
-    filename: "LokAlert Demo 1.apk",
-    fileSize: 17188901,
-    releaseDate: "2026-01-26",
-    releaseNotes: "Initial release - LokAlert Demo\n• Location-based arrival alerts\n• GPS tracking\n• Customizable radius\n• Background monitoring",
-    downloadUrl: "releases/LokAlert%20Demo%201.apk"
-};
 
-const STORAGE_KEYS = {
-    USERS: "LOKALERT_REGISTERED_USERS",
-    CURRENT_USER: "LOKALERT_CURRENT_USER"
-};
+// Production API URL - Update this to your PHP hosting URL
+// For local development: 'api'
+// For production: 'https://your-php-host.com/LokAlert/api'
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'api'  // Local development
+    : 'https://lokalert-api.infinityfreeapp.com/api';  // Production - UPDATE THIS URL
 
+// Check if we're in production (cross-origin)
+const IS_PRODUCTION = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+
+// Fetch options for cross-origin requests
+const fetchOptions = IS_PRODUCTION ? { credentials: 'include' } : {};
+
+/**
+ * Helper function to make API calls with proper CORS handling
+ */
+async function apiCall(url, options = {}) {
+    const defaultOptions = {
+        ...fetchOptions,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    };
+    return fetch(url, { ...defaultOptions, ...options });
+}
+
+// State
 let currentUser = null;
+let currentDownloadToken = null;
+let isDownloading = false;
+let cooldownInterval = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-    checkUserSession();
-    initModalEvents();
-    setupAuthForms();
+// DOM Elements
+let modal, modalContent;
+
+document.addEventListener('DOMContentLoaded', () => {
+    initModal();
+    checkAuthStatus();
+    setupEventListeners();
 });
 
-function checkUserSession() {
-    const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
-    if (saved) { try { currentUser = JSON.parse(saved); } catch(e) {} }
-}
-
-function getUsers() {
-    const u = localStorage.getItem(STORAGE_KEYS.USERS);
-    return u ? JSON.parse(u) : [];
-}
-
-function saveUser(user) {
-    const users = getUsers();
-    users.push(user);
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
-}
-
-function findUser(email) {
-    return getUsers().find(u => u.email.toLowerCase() === email.toLowerCase());
-}
-
-function simpleHash(str) {
-    let h = 0;
-    for (let i = 0; i < str.length; i++) {
-        h = ((h << 5) - h) + str.charCodeAt(i);
-        h = h & h;
-    }
-    return h.toString(16);
-}
-
-function initModalEvents() {
-    const modal = document.getElementById("downloadModal");
-    const closeBtn = document.getElementById("modalClose");
-    if (closeBtn) closeBtn.onclick = closeDownloadModal;
-    if (modal) modal.onclick = (e) => { if (e.target === modal) closeDownloadModal(); };
-    document.onkeydown = (e) => { if (e.key === "Escape") closeDownloadModal(); };
-    const dlBtn = document.getElementById("downloadBtn");
-    if (dlBtn) dlBtn.onclick = handleDownloadClick;
-}
-
-function openDownloadModal() {
-    const modal = document.getElementById("downloadModal");
-    if (modal) {
-        modal.classList.add("active");
-        document.body.style.overflow = "hidden";
-        showSection("download");
-        loadVersionInfo();
-        updateDownloadUI();
-    }
-}
-
-function closeDownloadModal() {
-    const modal = document.getElementById("downloadModal");
-    if (modal) {
-        modal.classList.remove("active");
-        document.body.style.overflow = "";
-    }
-}
-
-function showSection(s) {
-    const dl = document.getElementById("downloadSection");
-    const lg = document.getElementById("loginSection");
-    const rg = document.getElementById("registerSection");
-    if (dl) dl.style.display = s === "download" ? "block" : "none";
-    if (lg) lg.style.display = s === "login" ? "block" : "none";
-    if (rg) rg.style.display = s === "register" ? "block" : "none";
-}
-
-function setupAuthForms() {
-    const lg = document.getElementById("loginSection");
-    const rg = document.getElementById("registerSection");
+/**
+ * Initialize modal and create structure
+ */
+function initModal() {
+    modal = document.getElementById('downloadModal');
+    modalContent = document.querySelector('.modal-content');
     
-    if (lg && !lg.innerHTML.trim()) {
-        lg.innerHTML = `
-            <div class="modal-header">
-                <div class="modal-icon">🔐</div>
-                <h2>Welcome Back</h2>
-                <p>Sign in to download</p>
+    // Build modal structure
+    if (modalContent) {
+        modalContent.innerHTML = `
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            
+            <!-- Main Download Section -->
+            <div class="modal-section" id="downloadSection">
+                <div class="modal-header">
+                    <div class="modal-icon">📥</div>
+                    <h2>Download LokAlert</h2>
+                    <p>Get the latest version of our app</p>
+                </div>
+                <div class="version-info" id="versionInfo">
+                    <div class="version-loading">Loading version info...</div>
+                </div>
+                <div id="downloadArea"></div>
             </div>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="loginEmail" required placeholder="your@email.com">
+            
+            <!-- Signup Section -->
+            <div class="modal-section" id="signupSection" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon">📝</div>
+                    <h2>Create Account</h2>
+                    <p>Quick signup to download</p>
                 </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="loginPassword" required placeholder="Your password">
+                <form id="signupForm" onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label>Name (Optional)</label>
+                        <input type="text" id="signupName" placeholder="Enter your name or nickname">
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" id="signupPassword" placeholder="Create a password (min 6 chars)" required minlength="6">
+                    </div>
+                    <div class="form-error" id="signupError"></div>
+                    <button type="submit" class="btn btn-primary btn-full" id="signupBtn">
+                        <span>Create Account</span>
+                    </button>
+                </form>
+                <p class="form-footer">
+                    Already have an account? <a href="#" onclick="showSection('login'); return false;">Log in</a>
+                </p>
+            </div>
+            
+            <!-- Login Section -->
+            <div class="modal-section" id="loginSection" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon">🔐</div>
+                    <h2>Welcome Back</h2>
+                    <p>Log in to download</p>
                 </div>
-                <div id="loginError" style="color:#ef4444;font-size:14px;margin:10px 0;"></div>
-                <button type="submit" class="btn btn-primary" style="width:100%;">Sign In</button>
-            </form>
-            <p style="text-align:center;margin-top:20px;color:#94a3b8;">
-                No account? <a href="#" id="switchToRegister" style="color:#3b82f6;">Sign Up</a>
-            </p>
-            <p style="text-align:center;margin-top:10px;">
-                <a href="#" id="backToDownload" style="color:#64748b;font-size:14px;">← Back</a>
-            </p>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-error" id="loginError"></div>
+                    <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+                        <span>Log In</span>
+                    </button>
+                </form>
+                <p class="form-footer">
+                    Don't have an account? <a href="#" onclick="showSection('signup'); return false;">Sign up</a><br>
+                    <a href="#" onclick="showSection('forgot'); return false;">Forgot password?</a>
+                </p>
+            </div>
+            
+            <!-- Verification Section -->
+            <div class="modal-section" id="verifySection" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon">✉️</div>
+                    <h2>Verify Your Email</h2>
+                    <p>We sent a code to <span id="verifyEmail"></span></p>
+                </div>
+                <form id="verifyForm" onsubmit="handleVerification(event)">
+                    <div class="form-group">
+                        <label>Verification Code</label>
+                        <input type="text" id="verifyCode" placeholder="Enter 6-digit code" required maxlength="6" pattern="[0-9]{6}" class="code-input">
+                    </div>
+                    <div class="form-error" id="verifyError"></div>
+                    <button type="submit" class="btn btn-primary btn-full" id="verifyBtn">
+                        <span>Verify Email</span>
+                    </button>
+                </form>
+                <p class="form-footer">
+                    Didn't receive the code? <a href="#" onclick="resendCode(); return false;">Resend</a>
+                </p>
+            </div>
+            
+            <!-- Forgot Password Section -->
+            <div class="modal-section" id="forgotSection" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon">🔑</div>
+                    <h2>Reset Password</h2>
+                    <p>We'll send you a reset link</p>
+                </div>
+                <form id="forgotForm" onsubmit="handleForgotPassword(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="forgotEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-error" id="forgotError"></div>
+                    <div class="form-success" id="forgotSuccess"></div>
+                    <button type="submit" class="btn btn-primary btn-full" id="forgotBtn">
+                        <span>Send Reset Link</span>
+                    </button>
+                </form>
+                <p class="form-footer">
+                    <a href="#" onclick="showSection('login'); return false;">Back to login</a>
+                </p>
+            </div>
         `;
     }
     
-    if (rg && !rg.innerHTML.trim()) {
-        rg.innerHTML = `
-            <div class="modal-header">
-                <div class="modal-icon">📝</div>
-                <h2>Create Account</h2>
-                <p>Sign up to download LokAlert</p>
-            </div>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label>Name <span style="color:#64748b;font-size:12px;">(optional)</span></label>
-                    <input type="text" id="regName" placeholder="Your name">
-                </div>
-                <div class="form-group">
-                    <label>Email <span style="color:#ef4444;">*</span></label>
-                    <input type="email" id="regEmail" required placeholder="your@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Password <span style="color:#ef4444;">*</span></label>
-                    <input type="password" id="regPassword" required minlength="6" placeholder="Min 6 chars">
-                </div>
-                <div id="registerError" style="color:#ef4444;font-size:14px;margin:10px 0;"></div>
-                <div id="registerSuccess" style="color:#22c55e;font-size:14px;margin:10px 0;"></div>
-                <button type="submit" class="btn btn-primary" style="width:100%;">Create Account</button>
-            </form>
-            <p style="text-align:center;margin-top:20px;color:#94a3b8;">
-                Have account? <a href="#" id="switchToLogin" style="color:#3b82f6;">Sign In</a>
-            </p>
-            <p style="text-align:center;margin-top:10px;">
-                <a href="#" id="backToDownload2" style="color:#64748b;font-size:14px;">← Back</a>
-            </p>
-        `;
+    loadVersionInfo();
+}
+
+/**
+ * Setup event listeners
+ */
+function setupEventListeners() {
+    // Download buttons
+    document.querySelectorAll('.nav-download-btn, .mobile-download-btn, .floating-download, [onclick*="openDownloadModal"]').forEach(btn => {
+        btn.onclick = (e) => {
+            e.preventDefault();
+            openDownloadModal();
+        };
+    });
+    
+    // Close modal on overlay click
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
     }
     
-    setTimeout(attachFormHandlers, 100);
+    // ESC key to close
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal?.classList.contains('active')) {
+            closeModal();
+        }
+    });
 }
 
-function attachFormHandlers() {
-    const lf = document.getElementById("loginForm");
-    const rf = document.getElementById("registerForm");
-    if (lf) lf.onsubmit = handleLogin;
-    if (rf) rf.onsubmit = handleRegister;
-    
-    const sr = document.getElementById("switchToRegister");
-    const sl = document.getElementById("switchToLogin");
-    const b1 = document.getElementById("backToDownload");
-    const b2 = document.getElementById("backToDownload2");
-    
-    if (sr) sr.onclick = (e) => { e.preventDefault(); showSection("register"); };
-    if (sl) sl.onclick = (e) => { e.preventDefault(); showSection("login"); };
-    if (b1) b1.onclick = (e) => { e.preventDefault(); showSection("download"); };
-    if (b2) b2.onclick = (e) => { e.preventDefault(); showSection("download"); };
+/**
+ * Check authentication status
+ */
+async function checkAuthStatus() {
+    try {
+        const response = await fetch(`${API_BASE}/auth.php?action=check`);
+        const data = await response.json();
+        
+        if (data.authenticated && data.user) {
+            currentUser = data.user;
+            updateUIForUser();
+        } else {
+            currentUser = null;
+        }
+    } catch (error) {
+        console.error('Auth check failed:', error);
+    }
 }
 
-function handleLogin(e) {
-    e.preventDefault();
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-    const err = document.getElementById("loginError");
-    err.textContent = "";
+/**
+ * Update UI based on user status
+ */
+function updateUIForUser() {
+    const downloadArea = document.getElementById('downloadArea');
+    if (!downloadArea) return;
     
-    const user = findUser(email);
-    if (!user) { err.textContent = "No account found."; return; }
-    if (user.password !== simpleHash(password)) { err.textContent = "Wrong password."; return; }
-    
-    currentUser = { email: user.email, name: user.name };
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(currentUser));
-    showSection("download");
-    updateDownloadUI();
-}
-
-function handleRegister(e) {
-    e.preventDefault();
-    const name = document.getElementById("regName").value;
-    const email = document.getElementById("regEmail").value;
-    const password = document.getElementById("regPassword").value;
-    const err = document.getElementById("registerError");
-    const suc = document.getElementById("registerSuccess");
-    err.textContent = "";
-    suc.textContent = "";
-    
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = "Invalid email."; return; }
-    if (findUser(email)) { err.textContent = "Email already registered."; return; }
-    
-    const newUser = {
-        id: Date.now(),
-        name: name || "",
-        email: email.toLowerCase(),
-        password: simpleHash(password),
-        createdAt: new Date().toISOString()
-    };
-    saveUser(newUser);
-    
-    currentUser = { email: newUser.email, name: newUser.name };
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(currentUser));
-    suc.textContent = "Account created!";
-    setTimeout(() => { showSection("download"); updateDownloadUI(); }, 1000);
-}
-
-// CRITICAL GATEKEEPER
-function handleDownloadClick() {
-    console.log("[DOWNLOAD] Click - checking auth...");
     if (!currentUser) {
-        console.log("[DOWNLOAD] No user - show register");
-        alert("Please sign up or log in to download LokAlert.");
-        showSection("register");
-        return;
-    }
-    console.log("[DOWNLOAD] User OK:", currentUser.email);
-    downloadAPK();
-}
-
-function updateDownloadUI() {
-    const btn = document.getElementById("downloadBtn");
-    const note = document.querySelector("#downloadSection p[style*='margin-top: 20px']");
-    
-    if (currentUser) {
-        if (btn) btn.innerHTML = "<span>📥</span> Download APK";
-        if (note) note.innerHTML = "✅ Logged in as <strong>" + currentUser.email + "</strong> | <a href='#' onclick='logout();return false;' style='color:#3b82f6;'>Logout</a>";
-    } else {
-        if (btn) btn.innerHTML = "<span>👤</span> Sign Up to Download";
-        if (note) note.innerHTML = "📱 Android only • <strong style='color:#f59e0b;'>Account required</strong>";
-    }
-}
-
-function logout() {
-    currentUser = null;
-    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
-    updateDownloadUI();
-}
-
-function loadVersionInfo() {
-    const vi = document.getElementById("versionInfo");
-    if (!vi) return;
-    vi.innerHTML = `
-        <div class="version-card">
-            <div class="version-badge">v${APK_CONFIG.version}</div>
-            <div class="version-details">
-                <span class="version-size">${formatSize(APK_CONFIG.fileSize)}</span>
-                <span class="version-date">${formatDate(APK_CONFIG.releaseDate)}</span>
+        // Not logged in - show signup/login buttons
+        downloadArea.innerHTML = `
+            <div class="auth-prompt">
+                <p style="color: #94a3b8; margin-bottom: 20px;">Create a free account to download</p>
+                <button class="btn btn-primary btn-full" onclick="showSection('signup')">
+                    <span>📝</span> Sign Up
+                </button>
+                <button class="btn btn-secondary btn-full" onclick="showSection('login')" style="margin-top: 10px;">
+                    <span>🔐</span> Log In
+                </button>
             </div>
-            <p class="version-notes">${APK_CONFIG.releaseNotes.replace(/\n/g, "<br>")}</p>
-            <div class="version-downloads"><span>📥</span> Available for download</div>
+        `;
+    } else if (!currentUser.is_verified) {
+        // Logged in but not verified
+        downloadArea.innerHTML = `
+            <div class="verify-prompt">
+                <p style="color: #f59e0b; margin-bottom: 15px;">⚠️ Please verify your email to download</p>
+                <button class="btn btn-primary btn-full" onclick="showSection('verify')">
+                    <span>✉️</span> Enter Verification Code
+                </button>
+            </div>
+        `;
+        document.getElementById('verifyEmail').textContent = currentUser.email;
+    } else if (!currentUser.can_download) {
+        // Verified but on cooldown
+        showCooldownUI(currentUser.cooldown_remaining);
+    } else {
+        // Ready to download
+        downloadArea.innerHTML = `
+            <div class="download-ready">
+                <p style="color: #94a3b8; margin-bottom: 10px;">
+                    Welcome, <strong>${currentUser.username || currentUser.email}</strong>!
+                </p>
+                <button class="btn btn-primary btn-full btn-download" onclick="startDownload()">
+                    <span>📥</span> Download APK
+                </button>
+                <button class="btn btn-text" onclick="handleLogout()" style="margin-top: 10px;">
+                    Log out
+                </button>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Show cooldown UI
+ */
+function showCooldownUI(seconds) {
+    const downloadArea = document.getElementById('downloadArea');
+    if (!downloadArea) return;
+    
+    downloadArea.innerHTML = `
+        <div class="cooldown-active">
+            <div class="cooldown-icon">⏱️</div>
+            <p style="color: #f59e0b; margin-bottom: 10px;">Download cooldown active</p>
+            <div class="cooldown-timer" id="cooldownTimer">${formatTime(seconds)}</div>
+            <p style="color: #64748b; font-size: 13px; margin-top: 10px;">
+                Please wait before downloading again
+            </p>
+            <button class="btn btn-text" onclick="handleLogout()" style="margin-top: 15px;">
+                Log out
+            </button>
         </div>
     `;
+    
+    startCooldownTimer(seconds);
 }
 
-function downloadAPK() {
-    console.log("[DOWNLOAD] Starting for:", currentUser?.email);
-    const a = document.createElement("a");
-    a.href = APK_CONFIG.downloadUrl;
-    a.download = APK_CONFIG.filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    alert("Download started!");
+/**
+ * Start cooldown timer
+ */
+function startCooldownTimer(seconds) {
+    if (cooldownInterval) clearInterval(cooldownInterval);
+    
+    let remaining = seconds;
+    cooldownInterval = setInterval(() => {
+        remaining--;
+        const timer = document.getElementById('cooldownTimer');
+        if (timer) timer.textContent = formatTime(remaining);
+        
+        if (remaining <= 0) {
+            clearInterval(cooldownInterval);
+            checkAuthStatus();
+        }
+    }, 1000);
 }
 
-function formatSize(bytes) {
-    if (!bytes) return "Unknown";
-    const s = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, i)).toFixed(2) + " " + s[i];
+/**
+ * Format seconds to MM:SS
+ */
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-function formatDate(d) {
-    if (!d) return "";
-    return new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+/**
+ * Load version info
+ */
+async function loadVersionInfo() {
+    const versionInfo = document.getElementById('versionInfo');
+    if (!versionInfo) return;
+    
+    try {
+        const response = await fetch(`${API_BASE}/downloads.php?action=latest`);
+        const data = await response.json();
+        
+        if (data.success && data.version) {
+            const v = data.version;
+            versionInfo.innerHTML = `
+                <div class="version-card">
+                    <div class="version-header">
+                        <span class="version-number">v${v.version}</span>
+                        <span class="version-size">${v.file_size_formatted}</span>
+                    </div>
+                    <div class="version-stats">
+                        <span>📥 ${v.download_count.toLocaleString()} downloads</span>
+                    </div>
+                    <div class="version-notes">${(v.release_notes || '').replace(/\n/g, '<br>')}</div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        versionInfo.innerHTML = '<p style="color: #ef4444;">Failed to load version info</p>';
+    }
 }
 
-window.logout = logout;
+/**
+ * Show specific section
+ */
+function showSection(section) {
+    // Hide all sections
+    document.querySelectorAll('.modal-section').forEach(s => s.style.display = 'none');
+    
+    // Show requested section
+    const sectionEl = document.getElementById(section + 'Section');
+    if (sectionEl) sectionEl.style.display = 'block';
+    
+    // Clear errors
+    document.querySelectorAll('.form-error').forEach(e => e.textContent = '');
+    document.querySelectorAll('.form-success').forEach(e => e.textContent = '');
+}
+
+/**
+ * Open download modal
+ */
+function openDownloadModal() {
+    if (!modal) return;
+    
+    checkAuthStatus().then(() => {
+        updateUIForUser();
+        showSection('download');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+}
+
+/**
+ * Close modal
+ */
+function closeModal() {
+    if (!modal) return;
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+/**
+ * Handle signup
+ */
+async function handleSignup(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const errorEl = document.getElementById('signupError');
+    const btn = document.getElementById('signupBtn');
+    
+    errorEl.textContent = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Creating account...';
+    
+    try {
+        const response = await fetch(`${API_BASE}/auth.php?action=signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+        });
+        
+        const data = await response.json();
+        
+        // Check for database errors
+        if (data.error && data.error.includes('Database error')) {
+            errorEl.textContent = 'Database setup incomplete. Please run the migration script.';
+            console.error('Database error:', data.error);
+            return;
+        }
+        
+        if (data.success || data.requires_verification) {
+            currentUser = { email, is_verified: false };
+            document.getElementById('verifyEmail').textContent = email;
+            
+            // Show verification code if provided (email disabled or failed)
+            if (data.debug_code) {
+                console.log('Verification code:', data.debug_code);
+                const title = data.email_sent === false ? 'Email could not be sent' : 'Verification Code';
+                alert(`${title}\n\nYour code: ${data.debug_code}\n\nEnter this code in the next step to verify your email.`);
+            }
+            
+            showSection('verify');
+        } else {
+            errorEl.textContent = data.error || 'Signup failed';
+        }
+    } catch (error) {
+        console.error('Signup error:', error);
+        errorEl.textContent = 'Network error. Please try again.';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Create Account</span>';
+    }
+}
+
+/**
+ * Handle login
+ */
+async function handleLogin(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorEl = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+    
+    errorEl.textContent = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Logging in...';
+    
+    try {
+        const response = await fetch(`${API_BASE}/auth.php?action=login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            currentUser = data.user;
+            await checkAuthStatus();
+            showSection('download');
+            updateUIForUser();
+        } else if (data.requires_verification) {
+            currentUser = { email: data.email, is_verified: false };
+            document.getElementById('verifyEmail').textContent = data.email;
+            
+            if (data.debug_code) {
+                console.log('Verification code:', data.debug_code);
+                const title = data.email_sent === false ? 'Email could not be sent' : 'Verification Code';
+                alert(`${title}\n\nYour code: ${data.debug_code}`);
+            }
+            
+            showSection('verify');
+        } else {
+            errorEl.textContent = data.error || 'Login failed';
+        }
+    } catch (error) {
+        errorEl.textContent = 'Network error. Please try again.';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Log In</span>';
+    }
+}
+
+/**
+ * Handle email verification
+ */
+async function handleVerification(e) {
+    e.preventDefault();
+    
+    const code = document.getElementById('verifyCode').value.trim();
+    const email = currentUser?.email || document.getElementById('verifyEmail').textContent;
+    const errorEl = document.getElementById('verifyError');
+    const btn = document.getElementById('verifyBtn');
+    
+    errorEl.textContent = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Verifying...';
+    
+    try {
+        const response = await fetch(`${API_BASE}/auth.php?action=verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, code })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            currentUser = data.user;
+            await checkAuthStatus();
+            showSection('download');
+            updateUIForUser();
+        } else {
+            errorEl.textContent = data.error || 'Verification failed';
+        }
+    } catch (error) {
+        errorEl.textContent = 'Network error. Please try again.';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Verify Email</span>';
+    }
+}
+
+/**
+ * Resend verification code
+ */
+async function resendCode() {
+    const email = currentUser?.email || document.getElementById('verifyEmail').textContent;
+    const errorEl = document.getElementById('verifyError');
+    
+    try {
+        const response = await fetch(`${API_BASE}/auth.php?action=resend-code`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            errorEl.style.color = '#22c55e';
+            errorEl.textContent = 'New code sent!';
+            
+            if (data.debug_code) {
+                const title = data.email_sent === false ? 'Email could not be sent' : 'New Verification Code';
+                alert(`${title}\n\nYour code: ${data.debug_code}`);
+            }
+            
+            setTimeout(() => {
+                errorEl.style.color = '';
+                errorEl.textContent = '';
+            }, 3000);
+        } else {
+            errorEl.textContent = data.error || 'Failed to resend code';
+        }
+    } catch (error) {
+        errorEl.textContent = 'Network error';
+    }
+}
+
+/**
+ * Handle forgot password
+ */
+async function handleForgotPassword(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('forgotEmail').value.trim();
+    const errorEl = document.getElementById('forgotError');
+    const successEl = document.getElementById('forgotSuccess');
+    const btn = document.getElementById('forgotBtn');
+    
+    errorEl.textContent = '';
+    successEl.textContent = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Sending...';
+    
+    try {
+        const response = await fetch(`${API_BASE}/auth.php?action=forgot-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            successEl.textContent = data.message || 'Reset link sent!';
+            
+            if (data.debug_token) {
+                console.log('Debug reset token:', data.debug_token);
+                alert(`Development Mode - Reset link: ${window.location.origin}/reset-password.html?token=${data.debug_token}`);
+            }
+        } else {
+            errorEl.textContent = data.error || 'Request failed';
+        }
+    } catch (error) {
+        errorEl.textContent = 'Network error';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Send Reset Link</span>';
+    }
+}
+
+/**
+ * Handle logout
+ */
+async function handleLogout() {
+    try {
+        await fetch(`${API_BASE}/auth.php?action=logout`);
+    } catch (e) {}
+    
+    currentUser = null;
+    if (cooldownInterval) clearInterval(cooldownInterval);
+    updateUIForUser();
+}
+
+/**
+ * Start download with tracking
+ */
+async function startDownload() {
+    if (isDownloading) return;
+    
+    const downloadArea = document.getElementById('downloadArea');
+    if (!downloadArea) return;
+    
+    isDownloading = true;
+    
+    // Show downloading state
+    downloadArea.innerHTML = `
+        <div class="download-progress">
+            <div class="progress-icon">📥</div>
+            <p>Initializing download...</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <p class="progress-text" id="progressText">0%</p>
+        </div>
+    `;
+    
+    try {
+        // 1. Initialize download - get token
+        const initResponse = await fetch(`${API_BASE}/downloads.php?action=init`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+        });
+        
+        const initData = await initResponse.json();
+        
+        if (!initData.success) {
+            throw new Error(initData.error || 'Failed to initialize download');
+        }
+        
+        currentDownloadToken = initData.download_token;
+        const expectedSize = initData.file_size;
+        const filename = initData.filename;
+        
+        // 2. Start actual file download with progress tracking
+        const fileResponse = await fetch(`releases/${encodeURIComponent(filename)}`);
+        
+        if (!fileResponse.ok) {
+            throw new Error('File not found');
+        }
+        
+        const reader = fileResponse.body.getReader();
+        const chunks = [];
+        let receivedLength = 0;
+        
+        while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) break;
+            
+            chunks.push(value);
+            receivedLength += value.length;
+            
+            // Update progress UI
+            const progress = Math.round((receivedLength / expectedSize) * 100);
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            if (progressFill) progressFill.style.width = progress + '%';
+            if (progressText) progressText.textContent = `${progress}% (${formatBytes(receivedLength)} / ${formatBytes(expectedSize)})`;
+        }
+        
+        // 3. Download complete - notify server
+        const completeResponse = await fetch(`${API_BASE}/downloads.php?action=complete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                download_token: currentDownloadToken,
+                bytes_downloaded: receivedLength,
+                verified: true
+            })
+        });
+        
+        const completeData = await completeResponse.json();
+        
+        if (!completeData.success) {
+            throw new Error(completeData.error || 'Failed to verify download');
+        }
+        
+        // 4. Create blob and trigger actual download
+        const blob = new Blob(chunks);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // 5. Show success
+        downloadArea.innerHTML = `
+            <div class="download-success">
+                <div class="success-icon">✅</div>
+                <h3>Download Complete!</h3>
+                <p style="color: #94a3b8; margin-bottom: 15px;">
+                    Total downloads: ${completeData.download_count?.toLocaleString() || 'N/A'}
+                </p>
+                <p style="color: #64748b; font-size: 13px;">
+                    You can download again in ${completeData.cooldown_minutes || 5} minutes
+                </p>
+            </div>
+        `;
+        
+        // Refresh auth status after a moment
+        setTimeout(() => checkAuthStatus(), 2000);
+        
+    } catch (error) {
+        console.error('Download error:', error);
+        
+        // Cancel the download on server
+        if (currentDownloadToken) {
+            try {
+                await fetch(`${API_BASE}/downloads.php?action=cancel`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        download_token: currentDownloadToken,
+                        reason: 'error'
+                    })
+                });
+            } catch (e) {}
+        }
+        
+        downloadArea.innerHTML = `
+            <div class="download-error">
+                <div class="error-icon">❌</div>
+                <h3>Download Failed</h3>
+                <p style="color: #ef4444; margin-bottom: 15px;">${error.message}</p>
+                <button class="btn btn-primary" onclick="startDownload()">
+                    <span>🔄</span> Try Again
+                </button>
+            </div>
+        `;
+    } finally {
+        isDownloading = false;
+        currentDownloadToken = null;
+    }
+}
+
+/**
+ * Format bytes to human readable
+ */
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Global function for modal
 window.openDownloadModal = openDownloadModal;
+window.closeModal = closeModal;

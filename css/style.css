@@ -1909,3 +1909,228 @@ main {
         gap: 5px;
     }
 }
+
+/* ============================================
+   Download Modal Enhanced Styles
+   ============================================ */
+
+/* Form Groups */
+.modal-section .form-group {
+    margin-bottom: 20px;
+}
+
+.modal-section .form-group label {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.modal-section .form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.modal-section .form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.modal-section .form-group input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Verification Code Input */
+.code-input {
+    text-align: center;
+    font-size: 1.5rem !important;
+    font-weight: 600;
+    letter-spacing: 8px;
+    font-family: monospace;
+}
+
+/* Form Buttons */
+.btn-full {
+    width: 100%;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 10px;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.btn-text:hover {
+    color: var(--primary-light);
+}
+
+/* Form Error/Success Messages */
+.form-error {
+    color: #ef4444;
+    font-size: 0.9rem;
+    text-align: center;
+    min-height: 20px;
+    margin-bottom: 15px;
+}
+
+.form-success {
+    color: #22c55e;
+    font-size: 0.9rem;
+    text-align: center;
+    min-height: 20px;
+    margin-bottom: 15px;
+}
+
+.form-footer {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 20px;
+}
+
+.form-footer a {
+    color: var(--primary-light);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.form-footer a:hover {
+    color: var(--accent);
+}
+
+/* Version Card */
+.version-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.version-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.version-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.version-size {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.version-stats {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.version-notes {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+/* Download Progress */
+.download-progress {
+    text-align: center;
+    padding: 20px;
+}
+
+.progress-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Download States */
+.download-success,
+.download-error,
+.download-ready,
+.auth-prompt,
+.verify-prompt,
+.cooldown-active {
+    text-align: center;
+    padding: 20px;
+}
+
+.success-icon,
+.error-icon,
+.cooldown-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.download-success h3,
+.download-error h3 {
+    margin-bottom: 10px;
+}
+
+/* Cooldown Timer */
+.cooldown-timer {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: monospace;
+}
+
+/* Spinner */
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+

@@ -712,6 +712,66 @@
                     </div>
                 </div>
             </div>
+
+            <!-- USER MANAGEMENT SECTION -->
+            <div class="card" style="border: 2px solid var(--secondary); background: linear-gradient(135deg, rgba(34, 211, 238, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);">
+                <div class="card-header">
+                    <h2 style="font-size: 24px;">👥 USER MANAGEMENT</h2>
+                    <button class="btn btn-small btn-primary" onclick="loadUsers()">🔄 Refresh</button>
+                </div>
+                
+                <!-- User Stats -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">👤</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--secondary);" id="statTotalUsers">0</div>
+                        <div style="color: var(--text-muted); font-size: 12px;">Total Users</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">✅</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="statVerifiedUsers">0</div>
+                        <div style="color: var(--text-muted); font-size: 12px;">Verified</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">📛</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--warning);" id="statUsersWithNames">0</div>
+                        <div style="color: var(--text-muted); font-size: 12px;">With Names</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">📥</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--primary);" id="statUsersDownloaded">0</div>
+                        <div style="color: var(--text-muted); font-size: 12px;">Downloaded</div>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <h3 style="margin-bottom: 16px;">📋 Registered Users</h3>
+                <div class="table-container" style="margin-bottom: 20px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Verified</th>
+                                <th>Downloads</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading users...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- User Actions Info -->
+                <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px;">
+                    <p style="color: var(--text-muted); font-size: 13px; margin: 0;">
+                        <strong>Note:</strong> User passwords are not displayed for security reasons. You can reset a user's password or send them a self-service reset email.
+                    </p>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -742,6 +802,55 @@
                     <button type="button" class="btn btn-small" onclick="closeEditModal()" style="background: var(--border-color);">Cancel</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- User Edit Modal -->
+    <div class="modal-overlay" id="userEditModal">
+        <div class="modal-content">
+            <h3>✏️ Edit User</h3>
+            <form id="userEditForm" onsubmit="saveUserEdit(event)">
+                <input type="hidden" id="userEditId">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="userEditName" placeholder="User's name (optional)">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="userEditEmail" required>
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary btn-small">Save Changes</button>
+                    <button type="button" class="btn btn-small" onclick="closeUserEditModal()" style="background: var(--border-color);">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div class="modal-overlay" id="passwordResetModal">
+        <div class="modal-content">
+            <h3>🔐 Reset User Password</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">User: <strong id="resetUserEmail"></strong></p>
+            <input type="hidden" id="resetUserId">
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn btn-primary" onclick="sendResetEmail()">
+                    📧 Send Reset Email to User
+                </button>
+                <div style="text-align: center; color: var(--text-muted); font-size: 13px;">- or -</div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Set Temporary Password</label>
+                    <input type="text" id="tempPassword" placeholder="Enter temporary password (min 6 chars)">
+                </div>
+                <button class="btn btn-warning" onclick="setTempPassword()">
+                    🔑 Set Temporary Password
+                </button>
+            </div>
+            
+            <div id="resetResult" style="margin-top: 15px;"></div>
+            
+            <button type="button" class="btn btn-small" onclick="closePasswordResetModal()" style="margin-top: 20px; background: var(--border-color); width: 100%;">Close</button>
         </div>
     </div>
 
@@ -1260,6 +1369,236 @@
         document.getElementById('editModal').addEventListener('click', function(e) {
             if (e.target === this) closeEditModal();
         });
+
+        // ============================================
+        // USER MANAGEMENT (Server-side)
+        // ============================================
+        const API_BASE = 'api';
+        let usersData = [];
+
+        async function loadUsers() {
+            const tbody = document.getElementById('usersTable');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading...</td></tr>';
+            
+            try {
+                // Load user stats
+                const statsResponse = await fetch(`${API_BASE}/users.php?action=stats`);
+                const stats = await statsResponse.json();
+                
+                if (stats.total_users !== undefined) {
+                    document.getElementById('statTotalUsers').textContent = stats.total_users;
+                    document.getElementById('statVerifiedUsers').textContent = stats.verified_users;
+                    document.getElementById('statUsersWithNames').textContent = stats.users_with_names;
+                    document.getElementById('statUsersDownloaded').textContent = stats.users_with_downloads;
+                    document.getElementById('dbUsers').textContent = stats.total_users + 1; // +1 for admin
+                }
+                
+                // Load users list
+                const usersResponse = await fetch(`${API_BASE}/users.php`);
+                usersData = await usersResponse.json();
+                
+                if (Array.isArray(usersData) && usersData.length > 0) {
+                    // Filter out admin users for the main list display
+                    const regularUsers = usersData.filter(u => !u.is_admin);
+                    
+                    if (regularUsers.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No registered users yet</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = regularUsers.map(user => `
+                        <tr>
+                            <td>${user.id}</td>
+                            <td>${user.username || '<span style="color: var(--text-muted);">—</span>'}</td>
+                            <td>${user.email}</td>
+                            <td>${user.is_verified ? '<span class="badge badge-success">✓ Yes</span>' : '<span class="badge" style="background: rgba(245,158,11,0.2); color: var(--warning);">Pending</span>'}</td>
+                            <td>${user.download_count || 0}</td>
+                            <td>${formatDate(user.created_at)}</td>
+                            <td class="actions">
+                                <button class="btn btn-small btn-warning" onclick="openUserEditModal(${user.id})" title="Edit">✏️</button>
+                                <button class="btn btn-small btn-primary" onclick="openPasswordResetModal(${user.id}, '${user.email}')" title="Reset Password">🔐</button>
+                                <button class="btn btn-small btn-danger" onclick="deleteUser(${user.id})" title="Delete">🗑️</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else if (usersData.error) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--danger);">${usersData.error}</td></tr>`;
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No registered users yet</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--danger);">Failed to load users. Make sure the database is set up.</td></tr>';
+            }
+        }
+
+        function openUserEditModal(userId) {
+            const user = usersData.find(u => u.id === userId);
+            if (user) {
+                document.getElementById('userEditId').value = user.id;
+                document.getElementById('userEditName').value = user.username || '';
+                document.getElementById('userEditEmail').value = user.email;
+                document.getElementById('userEditModal').classList.add('active');
+            }
+        }
+
+        function closeUserEditModal() {
+            document.getElementById('userEditModal').classList.remove('active');
+        }
+
+        async function saveUserEdit(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('userEditId').value;
+            const username = document.getElementById('userEditName').value.trim();
+            const email = document.getElementById('userEditEmail').value.trim();
+            
+            try {
+                const response = await fetch(`${API_BASE}/users.php?id=${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    closeUserEditModal();
+                    loadUsers();
+                    logActivity(`Updated user #${userId}`);
+                    showAlert('User updated successfully!', 'success');
+                } else {
+                    showAlert(data.error || 'Failed to update user', 'error');
+                }
+            } catch (error) {
+                showAlert('Network error', 'error');
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to delete this user? This cannot be undone.')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/users.php?id=${userId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    loadUsers();
+                    logActivity(`Deleted user #${userId}`);
+                    showAlert('User deleted successfully!', 'success');
+                } else {
+                    showAlert(data.error || 'Failed to delete user', 'error');
+                }
+            } catch (error) {
+                showAlert('Network error', 'error');
+            }
+        }
+
+        function openPasswordResetModal(userId, email) {
+            document.getElementById('resetUserId').value = userId;
+            document.getElementById('resetUserEmail').textContent = email;
+            document.getElementById('tempPassword').value = '';
+            document.getElementById('resetResult').innerHTML = '';
+            document.getElementById('passwordResetModal').classList.add('active');
+        }
+
+        function closePasswordResetModal() {
+            document.getElementById('passwordResetModal').classList.remove('active');
+        }
+
+        async function sendResetEmail() {
+            const userId = document.getElementById('resetUserId').value;
+            const resultEl = document.getElementById('resetResult');
+            
+            resultEl.innerHTML = '<p style="color: var(--text-muted);">Sending email...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/users.php?action=send-reset-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: parseInt(userId) })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultEl.innerHTML = '<p style="color: var(--success);">✅ Reset email sent successfully!</p>';
+                    if (data.debug_token) {
+                        resultEl.innerHTML += `<p style="color: var(--warning); font-size: 12px; word-break: break-all;">Debug token: ${data.debug_token}</p>`;
+                    }
+                    logActivity(`Sent password reset email to user #${userId}`);
+                } else {
+                    resultEl.innerHTML = `<p style="color: var(--danger);">❌ ${data.error || 'Failed to send email'}</p>`;
+                }
+            } catch (error) {
+                resultEl.innerHTML = '<p style="color: var(--danger);">❌ Network error</p>';
+            }
+        }
+
+        async function setTempPassword() {
+            const userId = document.getElementById('resetUserId').value;
+            const tempPassword = document.getElementById('tempPassword').value.trim();
+            const resultEl = document.getElementById('resetResult');
+            
+            if (tempPassword && tempPassword.length < 6) {
+                resultEl.innerHTML = '<p style="color: var(--danger);">Password must be at least 6 characters</p>';
+                return;
+            }
+            
+            resultEl.innerHTML = '<p style="color: var(--text-muted);">Setting password...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/users.php?action=reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        user_id: parseInt(userId),
+                        new_password: tempPassword || '',
+                        send_email: true
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultEl.innerHTML = `<p style="color: var(--success);">✅ Password reset!</p>`;
+                    if (data.temp_password) {
+                        resultEl.innerHTML += `<p style="color: var(--warning); font-family: monospace; font-size: 14px;">Temp Password: <strong>${data.temp_password}</strong></p>`;
+                    }
+                    if (data.email_sent) {
+                        resultEl.innerHTML += `<p style="color: var(--text-muted); font-size: 12px;">Email notification sent to user.</p>`;
+                    }
+                    logActivity(`Reset password for user #${userId}`);
+                } else {
+                    resultEl.innerHTML = `<p style="color: var(--danger);">❌ ${data.error || 'Failed to reset password'}</p>`;
+                }
+            } catch (error) {
+                resultEl.innerHTML = '<p style="color: var(--danger);">❌ Network error</p>';
+            }
+        }
+
+        // Close modals on outside click
+        document.getElementById('userEditModal').addEventListener('click', function(e) {
+            if (e.target === this) closeUserEditModal();
+        });
+        document.getElementById('passwordResetModal').addEventListener('click', function(e) {
+            if (e.target === this) closePasswordResetModal();
+        });
+
+        // Update showDashboard to also load users
+        const _originalShowDashboard = showDashboard;
+        showDashboard = function() {
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('active');
+            loadReleases();
+            updateStats();
+            updateDatabaseStats();
+            loadUsers();
+            logActivity('Admin logged in');
+        };
     </script>
 </body>
 </html>
