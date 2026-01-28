@@ -2,6 +2,7 @@
 /**
  * LokAlert API - APK Versions CRUD
  * Full CRUD operations for APK version management
+ * Supports external download URLs (GitHub Releases, Google Drive, etc.)
  */
 
 require_once '../includes/config.php';
@@ -10,6 +11,9 @@ require_once '../includes/config.php';
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     jsonResponse(['status' => 'ok']);
 }
+
+// Ensure versions table has download_url column
+ensureVersionsTable();
 
 $method = $_SERVER['REQUEST_METHOD'];
 $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
@@ -41,6 +45,42 @@ switch ($method) {
         break;
     default:
         jsonResponse(['error' => 'Method not allowed'], 405);
+}
+
+/**
+ * Ensure apk_versions table exists with download_url column
+ */
+function ensureVersionsTable() {
+    try {
+        $db = Database::getInstance()->getConnection();
+        
+        // Create table if not exists
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `apk_versions` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `version` VARCHAR(20) NOT NULL,
+                `filename` VARCHAR(255) NOT NULL,
+                `file_size` BIGINT DEFAULT 0,
+                `download_url` VARCHAR(500) NULL,
+                `release_notes` TEXT NULL,
+                `is_latest` TINYINT(1) DEFAULT 0,
+                `download_count` INT DEFAULT 0,
+                `upload_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX `idx_is_latest` (`is_latest`),
+                INDEX `idx_version` (`version`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        // Add download_url column if missing (for existing tables)
+        try {
+            $db->exec("ALTER TABLE `apk_versions` ADD COLUMN `download_url` VARCHAR(500) NULL AFTER `file_size`");
+        } catch (PDOException $e) {
+            // Column already exists, ignore
+        }
+        
+    } catch (PDOException $e) {
+        // Ignore - best effort
+    }
 }
 
 /**
@@ -88,64 +128,55 @@ function getVersion($id) {
 }
 
 /**
- * CREATE - Add new APK version
+ * CREATE - Add new APK version with external download URL
  */
 function createVersion() {
     requireAdmin();
     
-    // Check if data comes from form or JSON
-    if (!empty($_POST)) {
-        $version = sanitize($_POST['version'] ?? '');
-        $release_notes = sanitize($_POST['release_notes'] ?? '');
-        $is_latest = isset($_POST['is_latest']) ? 1 : 0;
-    } else {
-        $data = json_decode(file_get_contents('php://input'), true);
-        $version = sanitize($data['version'] ?? '');
-        $release_notes = sanitize($data['release_notes'] ?? '');
-        $is_latest = isset($data['is_latest']) ? (int)$data['is_latest'] : 0;
-    }
+    $data = json_decode(file_get_contents('php://input'), true);
+    
+    $version = sanitize($data['version'] ?? '');
+    $download_url = sanitize($data['download_url'] ?? '');
+    $release_notes = sanitize($data['release_notes'] ?? '');
+    $file_size = isset($data['file_size']) ? (int)$data['file_size'] : 0;
+    $is_latest = isset($data['is_latest']) ? (int)$data['is_latest'] : 0;
     
     // Validation
     if (empty($version)) {
         jsonResponse(['error' => 'Version number is required'], 400);
     }
     
-    // Handle file upload
-    $filename = '';
-    $file_size = 0;
-    
-    if (isset($_FILES['apk']) && $_FILES['apk']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = UPLOAD_DIR;
-        
-        // Create upload directory if not exists
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-        
-        $filename = 'LokAlert-v' . $version . '.apk';
-        $filepath = $uploadDir . $filename;
-        
-        if (move_uploaded_file($_FILES['apk']['tmp_name'], $filepath)) {
-            $file_size = $_FILES['apk']['size'];
-        } else {
-            jsonResponse(['error' => 'Failed to upload file'], 500);
-        }
-    } else {
-        // For demo/testing without actual file
-        $filename = 'LokAlert-v' . $version . '.apk';
-        $file_size = rand(15000000, 20000000); // Random size for demo
+    if (empty($download_url)) {
+        jsonResponse(['error' => 'Download URL is required (GitHub Releases, Google Drive, etc.)'], 400);
     }
+    
+    // Validate URL format
+    if (!filter_var($download_url, FILTER_VALIDATE_URL)) {
+        jsonResponse(['error' => 'Invalid download URL format'], 400);
+    }
+    
+    $filename = 'LokAlert-v' . $version . '.apk';
     
     try {
         $db = Database::getInstance()->getConnection();
+        
+        // Check if version already exists
+        $stmt = $db->prepare("SELECT id FROM apk_versions WHERE version = ?");
+        $stmt->execute([$version]);
+        if ($stmt->fetch()) {
+            jsonResponse(['error' => 'Version already exists'], 400);
+        }
         
         // If this is latest, unset previous latest
         if ($is_latest) {
             $db->exec("UPDATE apk_versions SET is_latest = 0");
         }
         
-        $stmt = $db->prepare("INSERT INTO apk_versions (version, filename, file_size, release_notes, is_latest) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$version, $filename, $file_size, $release_notes, $is_latest]);
+        $stmt = $db->prepare("
+            INSERT INTO apk_versions (version, filename, file_size, download_url, release_notes, is_latest) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([$version, $filename, $file_size, $download_url, $release_notes, $is_latest]);
         
         $versionId = $db->lastInsertId();
         
@@ -187,6 +218,19 @@ function updateVersion($id) {
         if (isset($data['version'])) {
             $updates[] = "version = ?";
             $params[] = sanitize($data['version']);
+        }
+        
+        if (isset($data['download_url'])) {
+            if (!empty($data['download_url']) && !filter_var($data['download_url'], FILTER_VALIDATE_URL)) {
+                jsonResponse(['error' => 'Invalid download URL format'], 400);
+            }
+            $updates[] = "download_url = ?";
+            $params[] = sanitize($data['download_url']);
+        }
+        
+        if (isset($data['file_size'])) {
+            $updates[] = "file_size = ?";
+            $params[] = (int)$data['file_size'];
         }
         
         if (isset($data['release_notes'])) {
@@ -232,19 +276,13 @@ function deleteVersion($id) {
     try {
         $db = Database::getInstance()->getConnection();
         
-        // Get version info for file deletion
-        $stmt = $db->prepare("SELECT filename FROM apk_versions WHERE id = ?");
+        // Check if version exists
+        $stmt = $db->prepare("SELECT * FROM apk_versions WHERE id = ?");
         $stmt->execute([$id]);
         $version = $stmt->fetch();
         
         if (!$version) {
             jsonResponse(['error' => 'Version not found'], 404);
-        }
-        
-        // Delete the file if exists
-        $filepath = UPLOAD_DIR . $version['filename'];
-        if (file_exists($filepath)) {
-            unlink($filepath);
         }
         
         // Delete from database

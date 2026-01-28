@@ -85,12 +85,12 @@ function initDownload() {
     try {
         $db = Database::getInstance()->getConnection();
         
-        // Get version info
+        // Get version info (including download_url)
         if ($versionId) {
-            $stmt = $db->prepare("SELECT id, filename, file_size FROM apk_versions WHERE id = ?");
+            $stmt = $db->prepare("SELECT id, filename, file_size, download_url FROM apk_versions WHERE id = ?");
             $stmt->execute([$versionId]);
         } else {
-            $stmt = $db->query("SELECT id, filename, file_size FROM apk_versions WHERE is_latest = 1 LIMIT 1");
+            $stmt = $db->query("SELECT id, filename, file_size, download_url FROM apk_versions WHERE is_latest = 1 LIMIT 1");
         }
         $version = $stmt->fetch();
         
@@ -118,6 +118,7 @@ function initDownload() {
             'log_id' => $logId,
             'file_size' => (int)$version['file_size'],
             'filename' => $version['filename'],
+            'download_url' => $version['download_url'] ?? null,
             'message' => 'Download initialized. Complete the download to update your count.'
         ]);
         
@@ -334,8 +335,15 @@ function getLatestVersion() {
     try {
         $db = Database::getInstance()->getConnection();
         
+        // Add download_url column if missing
+        try {
+            $db->exec("ALTER TABLE `apk_versions` ADD COLUMN `download_url` VARCHAR(500) NULL AFTER `file_size`");
+        } catch (PDOException $e) {
+            // Column already exists
+        }
+        
         $stmt = $db->query("
-            SELECT id, version, filename, file_size, release_notes, download_count, upload_date 
+            SELECT id, version, filename, file_size, download_url, release_notes, download_count, upload_date 
             FROM apk_versions 
             WHERE is_latest = 1 
             LIMIT 1
@@ -345,7 +353,7 @@ function getLatestVersion() {
         if (!$version) {
             // Get most recent version
             $stmt = $db->query("
-                SELECT id, version, filename, file_size, release_notes, download_count, upload_date 
+                SELECT id, version, filename, file_size, download_url, release_notes, download_count, upload_date 
                 FROM apk_versions 
                 ORDER BY upload_date DESC 
                 LIMIT 1
@@ -365,6 +373,7 @@ function getLatestVersion() {
                 'filename' => $version['filename'],
                 'file_size' => (int)$version['file_size'],
                 'file_size_formatted' => formatBytes($version['file_size']),
+                'download_url' => $version['download_url'] ?? null,
                 'release_notes' => $version['release_notes'],
                 'download_count' => (int)$version['download_count'],
                 'upload_date' => $version['upload_date']

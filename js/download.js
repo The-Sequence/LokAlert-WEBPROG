@@ -340,21 +340,40 @@ async function loadVersionInfo() {
         
         if (data.success && data.version) {
             const v = data.version;
+            const isExternal = v.download_url && v.download_url.startsWith('http');
+            const hostInfo = isExternal ? getHostFromUrl(v.download_url) : 'Local Server';
+            
             versionInfo.innerHTML = `
                 <div class="version-card">
                     <div class="version-header">
                         <span class="version-number">v${v.version}</span>
-                        <span class="version-size">${v.file_size_formatted}</span>
+                        <span class="version-size">${v.file_size_formatted || 'APK'}</span>
                     </div>
                     <div class="version-stats">
-                        <span>📥 ${v.download_count.toLocaleString()} downloads</span>
+                        <span>📥 ${(v.download_count || 0).toLocaleString()} downloads</span>
+                        <span style="margin-left: 12px; color: #94a3b8;">📦 ${hostInfo}</span>
                     </div>
-                    <div class="version-notes">${(v.release_notes || '').replace(/\n/g, '<br>')}</div>
+                    <div class="version-notes">${(v.release_notes || 'Latest stable release').replace(/\n/g, '<br>')}</div>
                 </div>
             `;
         }
     } catch (error) {
         versionInfo.innerHTML = '<p style="color: #ef4444;">Failed to load version info</p>';
+    }
+}
+
+/**
+ * Extract host name from URL for display
+ */
+function getHostFromUrl(url) {
+    try {
+        const hostname = new URL(url).hostname;
+        if (hostname.includes('github')) return 'GitHub';
+        if (hostname.includes('drive.google')) return 'Google Drive';
+        if (hostname.includes('dropbox')) return 'Dropbox';
+        return hostname;
+    } catch (e) {
+        return 'External';
     }
 }
 
@@ -639,6 +658,7 @@ async function handleLogout() {
 
 /**
  * Start download with tracking
+ * Supports external download URLs (GitHub Releases, Google Drive, etc.)
  */
 async function startDownload() {
     if (isDownloading) return;
@@ -656,12 +676,12 @@ async function startDownload() {
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill" style="width: 0%"></div>
             </div>
-            <p class="progress-text" id="progressText">0%</p>
+            <p class="progress-text" id="progressText">Preparing...</p>
         </div>
     `;
     
     try {
-        // 1. Initialize download - get token
+        // 1. Initialize download - get token and download URL
         const initResponse = await fetch(`${API_BASE}/downloads.php?action=init`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -675,14 +695,73 @@ async function startDownload() {
         }
         
         currentDownloadToken = initData.download_token;
-        const expectedSize = initData.file_size;
+        const downloadUrl = initData.download_url;
+        const expectedSize = initData.file_size || 0;
         const filename = initData.filename;
         
-        // 2. Start actual file download with progress tracking
+        // 2. Check if we have an external download URL
+        if (downloadUrl && downloadUrl.startsWith('http')) {
+            // External download (GitHub Releases, Google Drive, etc.)
+            downloadArea.innerHTML = `
+                <div class="download-progress">
+                    <div class="progress-icon">📥</div>
+                    <p>Redirecting to download...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 50%"></div>
+                    </div>
+                    <p class="progress-text">Opening external download link...</p>
+                </div>
+            `;
+            
+            // Open external download in new tab/window
+            window.open(downloadUrl, '_blank');
+            
+            // Mark download as complete (we can't track external downloads)
+            setTimeout(async () => {
+                try {
+                    await fetch(`${API_BASE}/downloads.php?action=complete`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            download_token: currentDownloadToken,
+                            bytes_downloaded: expectedSize || 1,
+                            verified: true
+                        })
+                    });
+                } catch (e) {
+                    console.log('Could not mark download complete:', e);
+                }
+                
+                // Show success
+                downloadArea.innerHTML = `
+                    <div class="download-success">
+                        <div class="success-icon">✅</div>
+                        <h3>Download Started!</h3>
+                        <p style="color: #94a3b8; margin-bottom: 15px;">
+                            The APK should be downloading in a new tab.<br>
+                            If it didn't start, <a href="${downloadUrl}" target="_blank" style="color: #6366f1;">click here</a>.
+                        </p>
+                        <p style="color: #64748b; font-size: 13px;">
+                            Thank you for downloading LokAlert!
+                        </p>
+                    </div>
+                `;
+                
+                isDownloading = false;
+                currentDownloadToken = null;
+                
+                // Refresh auth status
+                setTimeout(() => checkAuthStatus(), 2000);
+            }, 1500);
+            
+            return;
+        }
+        
+        // 3. Local file download (fallback) - original logic
         const fileResponse = await fetch(`releases/${encodeURIComponent(filename)}`);
         
         if (!fileResponse.ok) {
-            throw new Error('File not found');
+            throw new Error('File not found on server');
         }
         
         const reader = fileResponse.body.getReader();
@@ -698,7 +777,7 @@ async function startDownload() {
             receivedLength += value.length;
             
             // Update progress UI
-            const progress = Math.round((receivedLength / expectedSize) * 100);
+            const progress = expectedSize > 0 ? Math.round((receivedLength / expectedSize) * 100) : 50;
             const progressFill = document.getElementById('progressFill');
             const progressText = document.getElementById('progressText');
             
@@ -706,7 +785,7 @@ async function startDownload() {
             if (progressText) progressText.textContent = `${progress}% (${formatBytes(receivedLength)} / ${formatBytes(expectedSize)})`;
         }
         
-        // 3. Download complete - notify server
+        // 4. Download complete - notify server
         const completeResponse = await fetch(`${API_BASE}/downloads.php?action=complete`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
