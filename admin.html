@@ -530,14 +530,89 @@
             <div class="card">
                 <div class="card-header">
                     <h2>➕ Add New APK Release</h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-small" id="tabUpload" onclick="showReleaseTab('upload')" style="background: var(--primary);">📤 Direct Upload</button>
+                        <button class="btn btn-small btn-secondary" id="tabUrl" onclick="showReleaseTab('url')">🔗 From URL</button>
+                    </div>
                 </div>
                 
-                <div style="background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
-                    <p style="color: var(--secondary); margin: 0; font-size: 14px;">
-                        <strong>� Easy Mode:</strong> Just paste a GitHub Releases URL and we'll auto-fetch version, file size, and release notes!
-                        <br><a href="https://github.com/The-Sequence/LokAlert-WEBPROG/releases" target="_blank" style="color: var(--primary);">→ Upload APK to GitHub Releases first</a>
-                    </p>
+                <!-- TAB 1: Direct APK Upload to GitHub -->
+                <div id="uploadTab">
+                    <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 211, 238, 0.1) 100%); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+                        <p style="color: var(--success); margin: 0; font-size: 14px;">
+                            <strong>🚀 One-Click Publish:</strong> Upload your APK and we'll automatically publish it to GitHub Releases!
+                        </p>
+                        <div id="githubStatus" style="margin-top: 8px; font-size: 13px; color: var(--text-muted);">
+                            Checking GitHub connection...
+                        </div>
+                    </div>
+                    
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <!-- File Upload -->
+                        <div class="form-group">
+                            <label>APK File *</label>
+                            <div id="dropZone" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s ease;">
+                                <div id="dropZoneContent">
+                                    <div style="font-size: 48px; margin-bottom: 12px;">📱</div>
+                                    <p style="color: var(--text-light); margin: 0;">Drag & drop your APK here</p>
+                                    <p style="color: var(--text-muted); margin: 8px 0;">or click to browse</p>
+                                    <input type="file" id="apkFile" accept=".apk" style="display: none;">
+                                </div>
+                                <div id="filePreview" style="display: none;">
+                                    <div style="font-size: 48px; margin-bottom: 12px;">✅</div>
+                                    <p style="color: var(--success); font-weight: 600;" id="selectedFileName">-</p>
+                                    <p style="color: var(--text-muted);" id="selectedFileSize">-</p>
+                                    <button type="button" class="btn btn-small btn-secondary" onclick="clearFileSelection()" style="margin-top: 12px;">✕ Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Version Number *</label>
+                                <input type="text" id="uploadVersion" placeholder="e.g., 1.0.0" required pattern="\d+\.\d+(\.\d+)?">
+                                <small style="color: var(--text-muted);">Format: X.Y or X.Y.Z</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Release Name (Optional)</label>
+                                <input type="text" id="uploadReleaseName" placeholder="e.g., Bug fixes & improvements">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Release Notes / Changelog</label>
+                            <textarea id="uploadReleaseNotes" placeholder="• New feature 1&#10;• Bug fix 2&#10;• Improvement 3" rows="4"></textarea>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="uploadIsLatest" checked>
+                            <label for="uploadIsLatest">Set as Latest Release</label>
+                        </div>
+                        
+                        <!-- Upload Progress -->
+                        <div id="uploadProgress" style="display: none; margin: 20px 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span id="uploadStatusText">Uploading...</span>
+                                <span id="uploadPercent">0%</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; height: 8px; overflow: hidden;">
+                                <div id="uploadProgressBar" style="background: linear-gradient(90deg, var(--primary), var(--secondary)); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success" style="margin-top: 10px;" id="uploadBtn">
+                            🚀 Upload & Publish to GitHub
+                        </button>
+                    </form>
                 </div>
+                
+                <!-- TAB 2: Add from URL (existing) -->
+                <div id="urlTab" style="display: none;">
+                    <div style="background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+                        <p style="color: var(--secondary); margin: 0; font-size: 14px;">
+                            <strong>🔗 Link Mode:</strong> Already uploaded to GitHub? Just paste the URL and we'll auto-fetch the details!
+                        </p>
+                    </div>
                 
                 <form id="releaseForm">
                     <!-- Smart URL Input -->
@@ -605,6 +680,7 @@
                         📤 Add Release to Database
                     </button>
                 </form>
+                </div><!-- End urlTab -->
             </div>
 
             <!-- Releases List -->
@@ -1009,6 +1085,238 @@
             updateStats();
             // Try to load from database
             loadReleasesFromDB().catch(e => console.log('Using local data'));
+            // Check GitHub configuration
+            checkGitHubConfig();
+            // Setup upload handlers
+            setupUploadHandlers();
+        }
+
+        // ============================================
+        // Tab Switching
+        // ============================================
+        function showReleaseTab(tab) {
+            const uploadTab = document.getElementById('uploadTab');
+            const urlTab = document.getElementById('urlTab');
+            const tabUpload = document.getElementById('tabUpload');
+            const tabUrl = document.getElementById('tabUrl');
+            
+            if (tab === 'upload') {
+                uploadTab.style.display = 'block';
+                urlTab.style.display = 'none';
+                tabUpload.style.background = 'var(--primary)';
+                tabUpload.classList.remove('btn-secondary');
+                tabUrl.style.background = '';
+                tabUrl.classList.add('btn-secondary');
+            } else {
+                uploadTab.style.display = 'none';
+                urlTab.style.display = 'block';
+                tabUrl.style.background = 'var(--primary)';
+                tabUrl.classList.remove('btn-secondary');
+                tabUpload.style.background = '';
+                tabUpload.classList.add('btn-secondary');
+            }
+        }
+
+        // ============================================
+        // GitHub Direct Upload
+        // ============================================
+        let selectedFile = null;
+        
+        async function checkGitHubConfig() {
+            const statusEl = document.getElementById('githubStatus');
+            try {
+                const response = await fetch(`${API_BASE}/github.php?action=check-token`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.configured) {
+                    statusEl.innerHTML = `<span style="color: var(--success);">✅ Connected to GitHub: ${data.owner}/${data.repo}</span>`;
+                } else {
+                    let missing = [];
+                    if (!data.has_token) missing.push('GITHUB_TOKEN');
+                    if (!data.has_owner) missing.push('GITHUB_OWNER');
+                    if (!data.has_repo) missing.push('GITHUB_REPO');
+                    statusEl.innerHTML = `<span style="color: var(--warning);">⚠️ GitHub not configured. Missing: ${missing.join(', ')}</span>
+                        <br><small>Add these to includes/credentials.php</small>`;
+                }
+            } catch (error) {
+                statusEl.innerHTML = `<span style="color: var(--danger);">❌ Could not check GitHub status</span>`;
+            }
+        }
+        
+        function setupUploadHandlers() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('apkFile');
+            const uploadForm = document.getElementById('uploadForm');
+            
+            // Click to browse
+            dropZone.addEventListener('click', () => fileInput.click());
+            
+            // File input change
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileSelect(e.target.files[0]);
+                }
+            });
+            
+            // Drag and drop
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = 'var(--primary)';
+                dropZone.style.background = 'rgba(99, 102, 241, 0.1)';
+            });
+            
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = 'var(--border-color)';
+                dropZone.style.background = '';
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = 'var(--border-color)';
+                dropZone.style.background = '';
+                
+                if (e.dataTransfer.files.length > 0) {
+                    handleFileSelect(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // Form submit
+            uploadForm.addEventListener('submit', handleUploadSubmit);
+        }
+        
+        function handleFileSelect(file) {
+            // Validate file type
+            if (!file.name.toLowerCase().endsWith('.apk')) {
+                showAlert('Please select an APK file', 'error');
+                return;
+            }
+            
+            selectedFile = file;
+            
+            // Show preview
+            document.getElementById('dropZoneContent').style.display = 'none';
+            document.getElementById('filePreview').style.display = 'block';
+            document.getElementById('selectedFileName').textContent = file.name;
+            document.getElementById('selectedFileSize').textContent = formatBytesAdmin(file.size);
+            
+            // Try to extract version from filename
+            const versionMatch = file.name.match(/[vV]?(\d+\.\d+\.?\d*)/);
+            if (versionMatch && !document.getElementById('uploadVersion').value) {
+                document.getElementById('uploadVersion').value = versionMatch[1];
+            }
+        }
+        
+        function clearFileSelection() {
+            selectedFile = null;
+            document.getElementById('apkFile').value = '';
+            document.getElementById('dropZoneContent').style.display = 'block';
+            document.getElementById('filePreview').style.display = 'none';
+        }
+        
+        async function handleUploadSubmit(e) {
+            e.preventDefault();
+            
+            if (!selectedFile) {
+                showAlert('Please select an APK file', 'error');
+                return;
+            }
+            
+            const version = document.getElementById('uploadVersion').value.trim();
+            const releaseNotes = document.getElementById('uploadReleaseNotes').value.trim();
+            const isLatest = document.getElementById('uploadIsLatest').checked;
+            
+            if (!version) {
+                showAlert('Please enter a version number', 'error');
+                return;
+            }
+            
+            if (!/^\d+\.\d+(\.\d+)?$/.test(version)) {
+                showAlert('Invalid version format. Use X.Y or X.Y.Z', 'error');
+                return;
+            }
+            
+            // Disable form and show progress
+            const uploadBtn = document.getElementById('uploadBtn');
+            const uploadProgress = document.getElementById('uploadProgress');
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = '⏳ Uploading...';
+            uploadProgress.style.display = 'block';
+            
+            try {
+                // Create FormData
+                const formData = new FormData();
+                formData.append('apk', selectedFile);
+                formData.append('version', version);
+                formData.append('release_notes', releaseNotes);
+                formData.append('is_latest', isLatest ? '1' : '0');
+                
+                // Upload with progress tracking
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        document.getElementById('uploadProgressBar').style.width = percent + '%';
+                        document.getElementById('uploadPercent').textContent = percent + '%';
+                        
+                        if (percent < 100) {
+                            document.getElementById('uploadStatusText').textContent = 'Uploading to server...';
+                        } else {
+                            document.getElementById('uploadStatusText').textContent = 'Publishing to GitHub...';
+                        }
+                    }
+                });
+                
+                xhr.addEventListener('load', () => {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        
+                        if (response.success) {
+                            showAlert(`✅ ${response.message}`, 'success');
+                            
+                            // Reset form
+                            clearFileSelection();
+                            document.getElementById('uploadForm').reset();
+                            document.getElementById('uploadIsLatest').checked = true;
+                            
+                            // Reload releases
+                            loadReleasesFromDB();
+                            updateStats();
+                        } else {
+                            showAlert('❌ ' + (response.error || 'Upload failed'), 'error');
+                        }
+                    } catch (err) {
+                        showAlert('❌ Invalid server response', 'error');
+                    }
+                    
+                    // Reset UI
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = '🚀 Upload & Publish to GitHub';
+                    uploadProgress.style.display = 'none';
+                    document.getElementById('uploadProgressBar').style.width = '0%';
+                });
+                
+                xhr.addEventListener('error', () => {
+                    showAlert('❌ Network error during upload', 'error');
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = '🚀 Upload & Publish to GitHub';
+                    uploadProgress.style.display = 'none';
+                });
+                
+                xhr.open('POST', `${API_BASE}/github.php?action=upload`);
+                xhr.withCredentials = true;
+                xhr.send(formData);
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                showAlert('❌ ' + error.message, 'error');
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '🚀 Upload & Publish to GitHub';
+                uploadProgress.style.display = 'none';
+            }
         }
 
         // ============================================
