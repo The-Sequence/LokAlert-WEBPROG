@@ -543,7 +543,7 @@
                             <strong>🚀 One-Click Publish:</strong> Upload your APK and we'll automatically publish it to GitHub Releases!
                         </p>
                         <div id="githubStatus" style="margin-top: 8px; font-size: 13px; color: var(--text-muted);">
-                            Checking GitHub connection...
+                            Loading...
                         </div>
                     </div>
                     
@@ -976,10 +976,8 @@
         let isLoggedIn = false;
         let releases = [];
         
-        // API Base URL - dynamic for local vs production
-        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'api'  // Local development
-            : 'https://lokalert.infinityfree.me/api';  // Production - InfinityFree URL
+        // API Base URL - use relative path for same-origin (works both locally and in production)
+        const API_BASE = 'api';
         
         // Safe localStorage access
         try {
@@ -1045,13 +1043,44 @@
         // ============================================
         // Authentication
         // ============================================
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
+            const btn = document.querySelector('#loginForm button[type="submit"]');
+            const errorEl = document.getElementById('loginError');
+            
             try {
                 const username = document.getElementById('loginUsername').value.trim();
                 const password = document.getElementById('loginPassword').value;
                 
-                if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                if (errorEl) errorEl.style.display = 'none';
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = 'Logging in...';
+                }
+                
+                if (!username || !password) {
+                    if (errorEl) {
+                        errorEl.textContent = 'Please enter username and password';
+                        errorEl.style.display = 'block';
+                    }
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = 'Login';
+                    }
+                    return;
+                }
+                
+                // Authenticate with the server
+                const response = await fetch(`${API_BASE}/auth.php?action=login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ email: username, password: password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.user && data.user.is_admin) {
                     isLoggedIn = true;
                     try {
                         localStorage.setItem('adminLoggedIn', 'true');
@@ -1059,16 +1088,32 @@
                         console.warn('Could not save to localStorage:', storageErr);
                     }
                     showDashboard();
-                } else {
-                    const errorEl = document.getElementById('loginError');
+                } else if (data.success) {
+                    // User logged in but not an admin
                     if (errorEl) {
-                        errorEl.textContent = 'Invalid username or password';
+                        errorEl.textContent = 'Account does not have admin privileges';
+                        errorEl.style.display = 'block';
+                    }
+                } else {
+                    // Server auth failed - show error
+                    console.warn('Server auth failed:', data.error || 'Unknown error');
+                    if (errorEl) {
+                        errorEl.textContent = data.error || 'Login failed. Check database connection.';
                         errorEl.style.display = 'block';
                     }
                 }
             } catch (err) {
                 console.error('Login error:', err);
-                alert('An error occurred during login. Please try again.');
+                // Network error - show error message
+                if (errorEl) {
+                    errorEl.textContent = 'Connection error. Server may be unavailable.';
+                    errorEl.style.display = 'block';
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Login';
+                }
             }
         }
 
@@ -1126,40 +1171,27 @@
             const statusEl = document.getElementById('githubStatus');
             if (!statusEl) return;
             
+            // Set a timeout - don't wait forever
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
             try {
                 const response = await fetch(`${API_BASE}/github.php?action=check-token`, {
                     credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+                    signal: controller.signal
                 });
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const text = await response.text();
-                let data;
-                try {
-                    data = JSON.parse(text);
-                } catch (e) {
-                    console.error('Invalid JSON response:', text);
-                    throw new Error('Invalid server response');
-                }
+                clearTimeout(timeoutId);
+                const data = await response.json();
                 
                 if (data.configured) {
-                    statusEl.innerHTML = `<span style="color: var(--success);">✅ Connected to GitHub: ${data.owner}/${data.repo}</span>`;
+                    statusEl.innerHTML = `<span style="color: var(--success);">✅ Connected: ${data.owner}/${data.repo}</span>`;
                 } else {
-                    let missing = [];
-                    if (!data.has_token) missing.push('GITHUB_TOKEN');
-                    if (!data.has_owner) missing.push('GITHUB_OWNER');
-                    if (!data.has_repo) missing.push('GITHUB_REPO');
-                    statusEl.innerHTML = `<span style="color: var(--warning);">⚠️ GitHub not configured. Missing: ${missing.join(', ')}</span>
-                        <br><small>Add these to includes/credentials.php</small>`;
+                    statusEl.innerHTML = `<span style="color: var(--warning);">⚠️ GitHub not fully configured - upload may not work</span>`;
                 }
             } catch (error) {
-                console.error('GitHub check error:', error);
-                statusEl.innerHTML = `<span style="color: var(--danger);">❌ Could not check GitHub status: ${error.message}</span>`;
+                clearTimeout(timeoutId);
+                statusEl.innerHTML = `<span style="color: var(--text-muted);">GitHub check skipped - you can still upload</span>`;
             }
         }
         
@@ -2103,7 +2135,9 @@
             
             try {
                 // Load user stats
-                const statsResponse = await fetch(`${API_BASE}/users.php?action=stats`);
+                const statsResponse = await fetch(`${API_BASE}/users.php?action=stats`, {
+                    credentials: 'include'
+                });
                 const stats = await statsResponse.json();
                 
                 if (stats.total_users !== undefined) {
@@ -2115,7 +2149,9 @@
                 }
                 
                 // Load users list
-                const usersResponse = await fetch(`${API_BASE}/users.php`);
+                const usersResponse = await fetch(`${API_BASE}/users.php`, {
+                    credentials: 'include'
+                });
                 usersData = await usersResponse.json();
                 
                 if (Array.isArray(usersData) && usersData.length > 0) {
@@ -2178,6 +2214,7 @@
                 const response = await fetch(`${API_BASE}/users.php?id=${userId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify({ username, email })
                 });
                 
@@ -2201,7 +2238,8 @@
             
             try {
                 const response = await fetch(`${API_BASE}/users.php?id=${userId}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    credentials: 'include'
                 });
                 
                 const data = await response.json();
@@ -2240,6 +2278,7 @@
                 const response = await fetch(`${API_BASE}/users.php?action=send-reset-email`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify({ user_id: parseInt(userId) })
                 });
                 
@@ -2275,6 +2314,7 @@
                 const response = await fetch(`${API_BASE}/users.php?action=reset-password`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify({ 
                         user_id: parseInt(userId),
                         new_password: tempPassword || '',

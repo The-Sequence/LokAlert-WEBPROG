@@ -48,6 +48,30 @@ function formatSize($bytes) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Admin Login Button */
+        .nav-admin-btn {
+            background: rgba(99, 102, 241, 0.2) !important;
+            border: 1px solid rgba(99, 102, 241, 0.5) !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            color: #a5b4fc !important;
+            font-weight: 500 !important;
+        }
+        .nav-admin-btn:hover {
+            background: rgba(99, 102, 241, 0.3) !important;
+            color: #c7d2fe !important;
+        }
+        .mobile-admin-btn {
+            background: rgba(99, 102, 241, 0.2) !important;
+            border: 1px solid rgba(99, 102, 241, 0.5) !important;
+            padding: 12px 20px !important;
+            border-radius: 10px !important;
+            color: #a5b4fc !important;
+            text-align: center !important;
+            font-weight: 500 !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -62,7 +86,7 @@ function formatSize($bytes) {
                 <li><a href="#why">Why LokAlert</a></li>
                 <li><a href="#tech">Technology</a></li>
                 <li><a href="#team">Team</a></li>
-                <li><a href="contact.php">Contact</a></li>
+                <li><a href="admin.html" class="nav-admin-btn">🔐 Admin</a></li>
                 <li><a href="#" class="nav-download-btn">Download</a></li>
             </ul>
             <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
@@ -77,7 +101,7 @@ function formatSize($bytes) {
             <a href="#why">Why LokAlert</a>
             <a href="#tech">Technology</a>
             <a href="#team">Team</a>
-            <a href="contact.php">Contact</a>
+            <a href="admin.html" class="mobile-admin-btn">🔐 Admin Panel</a>
             <a href="#" class="mobile-download-btn">Download App</a>
         </div>
     </nav>

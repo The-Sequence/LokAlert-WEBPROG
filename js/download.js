@@ -3,12 +3,8 @@
  * Features: Signup, Email Verification, Download Tracking, Rate Limiting
  */
 
-// Production API URL - Update this to your PHP hosting URL
-// For local development: 'api'
-// For production: 'https://your-php-host.com/LokAlert/api'
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'api'  // Local development
-    : 'https://lokalert.infinityfree.me/api';  // Production - InfinityFree URL
+// Production API URL - use relative path for same-origin (works both locally and in production)
+const API_BASE = 'api';
 
 // Check if we're in production (cross-origin)
 const IS_PRODUCTION = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
@@ -209,7 +205,9 @@ function setupEventListeners() {
  */
 async function checkAuthStatus() {
     try {
-        const response = await fetch(`${API_BASE}/auth.php?action=check`);
+        const response = await fetch(`${API_BASE}/auth.php?action=check`, {
+            credentials: 'include'
+        });
         const data = await response.json();
         
         if (data.authenticated && data.user) {
@@ -335,7 +333,9 @@ async function loadVersionInfo() {
     if (!versionInfo) return;
     
     try {
-        const response = await fetch(`${API_BASE}/downloads.php?action=latest`);
+        const response = await fetch(`${API_BASE}/downloads.php?action=latest`, {
+            credentials: 'include'
+        });
         const data = await response.json();
         
         if (data.success && data.version) {
@@ -436,6 +436,7 @@ async function handleSignup(e) {
         const response = await fetch(`${API_BASE}/auth.php?action=signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ name, email, password })
         });
         
@@ -491,6 +492,7 @@ async function handleLogin(e) {
         const response = await fetch(`${API_BASE}/auth.php?action=login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ email, password })
         });
         
@@ -542,6 +544,7 @@ async function handleVerification(e) {
         const response = await fetch(`${API_BASE}/auth.php?action=verify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ email, code })
         });
         
@@ -574,6 +577,7 @@ async function resendCode() {
         const response = await fetch(`${API_BASE}/auth.php?action=resend-code`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ email })
         });
         
@@ -620,6 +624,7 @@ async function handleForgotPassword(e) {
         const response = await fetch(`${API_BASE}/auth.php?action=forgot-password`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ email })
         });
         
@@ -648,7 +653,9 @@ async function handleForgotPassword(e) {
  */
 async function handleLogout() {
     try {
-        await fetch(`${API_BASE}/auth.php?action=logout`);
+        await fetch(`${API_BASE}/auth.php?action=logout`, {
+            credentials: 'include'
+        });
     } catch (e) {}
     
     currentUser = null;
@@ -685,6 +692,7 @@ async function startDownload() {
         const initResponse = await fetch(`${API_BASE}/downloads.php?action=init`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({})
         });
         
@@ -722,6 +730,7 @@ async function startDownload() {
                     await fetch(`${API_BASE}/downloads.php?action=complete`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
                         body: JSON.stringify({
                             download_token: currentDownloadToken,
                             bytes_downloaded: expectedSize || 1,
@@ -789,6 +798,7 @@ async function startDownload() {
         const completeResponse = await fetch(`${API_BASE}/downloads.php?action=complete`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
                 download_token: currentDownloadToken,
                 bytes_downloaded: receivedLength,
@@ -839,6 +849,7 @@ async function startDownload() {
                 await fetch(`${API_BASE}/downloads.php?action=cancel`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify({
                         download_token: currentDownloadToken,
                         reason: 'error'

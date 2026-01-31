@@ -6,6 +6,9 @@
 
 require_once '../includes/config.php';
 
+// Auto-migrate database schema
+ensureDatabaseMigrated();
+
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     jsonResponse(['status' => 'ok']);
@@ -39,18 +42,25 @@ switch ($action) {
  * Check if GitHub token is configured
  */
 function checkGitHubToken() {
-    $hasToken = defined('GITHUB_TOKEN') && !empty(GITHUB_TOKEN);
-    $hasOwner = defined('GITHUB_OWNER') && !empty(GITHUB_OWNER);
-    $hasRepo = defined('GITHUB_REPO') && !empty(GITHUB_REPO);
-    
-    jsonResponse([
-        'configured' => $hasToken && $hasOwner && $hasRepo,
-        'has_token' => $hasToken,
-        'has_owner' => $hasOwner,
-        'has_repo' => $hasRepo,
-        'owner' => $hasOwner ? GITHUB_OWNER : null,
-        'repo' => $hasRepo ? GITHUB_REPO : null
-    ]);
+    try {
+        $hasToken = defined('GITHUB_TOKEN') && !empty(GITHUB_TOKEN);
+        $hasOwner = defined('GITHUB_OWNER') && !empty(GITHUB_OWNER);
+        $hasRepo = defined('GITHUB_REPO') && !empty(GITHUB_REPO);
+        
+        jsonResponse([
+            'configured' => $hasToken && $hasOwner && $hasRepo,
+            'has_token' => $hasToken,
+            'has_owner' => $hasOwner,
+            'has_repo' => $hasRepo,
+            'owner' => $hasOwner ? GITHUB_OWNER : null,
+            'repo' => $hasRepo ? GITHUB_REPO : null
+        ]);
+    } catch (Exception $e) {
+        jsonResponse([
+            'configured' => false,
+            'error' => $e->getMessage()
+        ]);
+    }
 }
 
 /**

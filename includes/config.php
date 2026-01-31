@@ -101,6 +101,157 @@ class Database {
     public function getConnection() {
         return $this->conn;
     }
+    
+    /**
+     * Auto-migrate database schema - creates tables and adds missing columns
+     */
+    public function autoMigrate() {
+        $db = $this->conn;
+        
+        // Create apk_versions table
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `apk_versions` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `version` VARCHAR(20) NOT NULL,
+                `filename` VARCHAR(255) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        // Add missing columns to apk_versions
+        $this->addColumnIfNotExists('apk_versions', 'file_size', 'BIGINT DEFAULT 0');
+        $this->addColumnIfNotExists('apk_versions', 'download_url', 'VARCHAR(500) NULL');
+        $this->addColumnIfNotExists('apk_versions', 'release_notes', 'TEXT NULL');
+        $this->addColumnIfNotExists('apk_versions', 'is_latest', 'TINYINT(1) DEFAULT 0');
+        $this->addColumnIfNotExists('apk_versions', 'download_count', 'INT DEFAULT 0');
+        $this->addColumnIfNotExists('apk_versions', 'upload_date', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+        
+        // Create users table
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `users` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `username` VARCHAR(50) NULL,
+                `email` VARCHAR(100) NOT NULL UNIQUE,
+                `password` VARCHAR(255) NOT NULL,
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        // Add missing columns to users
+        $this->addColumnIfNotExists('users', 'is_admin', 'TINYINT(1) DEFAULT 0');
+        $this->addColumnIfNotExists('users', 'is_verified', 'TINYINT(1) DEFAULT 0');
+        $this->addColumnIfNotExists('users', 'verification_code', 'VARCHAR(10) NULL');
+        $this->addColumnIfNotExists('users', 'verification_expires', 'DATETIME NULL');
+        $this->addColumnIfNotExists('users', 'reset_token', 'VARCHAR(100) NULL');
+        $this->addColumnIfNotExists('users', 'reset_expires', 'DATETIME NULL');
+        $this->addColumnIfNotExists('users', 'download_count', 'INT DEFAULT 0');
+        $this->addColumnIfNotExists('users', 'last_download_at', 'DATETIME NULL');
+        
+        // Create download_logs table
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `download_logs` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `user_id` INT NOT NULL,
+                `version_id` INT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        // Add missing columns to download_logs
+        $this->addColumnIfNotExists('download_logs', 'ip_address', 'VARCHAR(45) NULL');
+        $this->addColumnIfNotExists('download_logs', 'user_agent', 'TEXT NULL');
+        $this->addColumnIfNotExists('download_logs', 'download_token', 'VARCHAR(64) NULL');
+        $this->addColumnIfNotExists('download_logs', 'status', "ENUM('started','completed','failed','cancelled') DEFAULT 'started'");
+        $this->addColumnIfNotExists('download_logs', 'file_size', 'BIGINT DEFAULT 0');
+        $this->addColumnIfNotExists('download_logs', 'bytes_downloaded', 'BIGINT DEFAULT 0');
+        $this->addColumnIfNotExists('download_logs', 'started_at', 'DATETIME NULL');
+        $this->addColumnIfNotExists('download_logs', 'completed_at', 'DATETIME NULL');
+        
+        // Create contact_messages table
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `contact_messages` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `name` VARCHAR(100) NOT NULL,
+                `email` VARCHAR(100) NOT NULL,
+                `subject` VARCHAR(200) NOT NULL,
+                `message` TEXT NOT NULL,
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        $this->addColumnIfNotExists('contact_messages', 'is_read', 'TINYINT(1) DEFAULT 0');
+        
+        // Create email_logs table
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `email_logs` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `user_id` INT NULL,
+                `recipient_email` VARCHAR(100) NOT NULL,
+                `email_type` VARCHAR(50) NOT NULL,
+                `subject` VARCHAR(200) NULL,
+                `status` VARCHAR(20) DEFAULT 'pending',
+                `error_message` TEXT NULL,
+                `sent_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        // Create default admin user if not exists
+        $this->createDefaultAdmin();
+    }
+    
+    /**
+     * Create default admin user
+     */
+    private function createDefaultAdmin() {
+        try {
+            $stmt = $this->conn->prepare("SELECT id FROM users WHERE username = 'admin' LIMIT 1");
+            $stmt->execute();
+            
+            if (!$stmt->fetch()) {
+                // Create admin user - password is 'lokalert2024'
+                $hashedPassword = password_hash('lokalert2024', PASSWORD_DEFAULT);
+                $stmt = $this->conn->prepare("
+                    INSERT INTO users (username, email, password, is_admin, is_verified, created_at) 
+                    VALUES ('admin', 'admin', ?, 1, 1, NOW())
+                ");
+                $stmt->execute([$hashedPassword]);
+            }
+        } catch (PDOException $e) {
+            // Ignore - admin might already exist
+        }
+    }
+    
+    /**
+     * Add column to table if it doesn't exist
+     */
+    private function addColumnIfNotExists($table, $column, $definition) {
+        try {
+            $stmt = $this->conn->prepare("
+                SELECT COUNT(*) FROM information_schema.COLUMNS 
+                WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?
+            ");
+            $stmt->execute([DB_NAME, $table, $column]);
+            $exists = $stmt->fetchColumn() > 0;
+            
+            if (!$exists) {
+                $this->conn->exec("ALTER TABLE `{$table}` ADD COLUMN `{$column}` {$definition}");
+            }
+        } catch (PDOException $e) {
+            // Ignore errors
+        }
+    }
+}
+
+// Run auto-migration on first database access
+$_dbMigrated = false;
+function ensureDatabaseMigrated() {
+    global $_dbMigrated;
+    if (!$_dbMigrated) {
+        try {
+            Database::getInstance()->autoMigrate();
+            $_dbMigrated = true;
+        } catch (Exception $e) {
+            // Ignore migration errors
+        }
+    }
 }
 
 // Helper Functions

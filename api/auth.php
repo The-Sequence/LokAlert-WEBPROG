@@ -7,6 +7,9 @@
 require_once '../includes/config.php';
 require_once '../includes/email_service.php';
 
+// Auto-migrate database schema
+ensureDatabaseMigrated();
+
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     jsonResponse(['status' => 'ok']);

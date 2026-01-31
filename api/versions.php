@@ -7,13 +7,13 @@
 
 require_once '../includes/config.php';
 
+// Auto-migrate database schema
+ensureDatabaseMigrated();
+
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     jsonResponse(['status' => 'ok']);
 }
-
-// Ensure versions table has download_url column
-ensureVersionsTable();
 
 $method = $_SERVER['REQUEST_METHOD'];
 $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
@@ -71,11 +71,22 @@ function ensureVersionsTable() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ");
         
-        // Add download_url column if missing (for existing tables)
-        try {
-            $db->exec("ALTER TABLE `apk_versions` ADD COLUMN `download_url` VARCHAR(500) NULL AFTER `file_size`");
-        } catch (PDOException $e) {
-            // Column already exists, ignore
+        // Add missing columns for existing tables
+        $columnsToAdd = [
+            "ALTER TABLE `apk_versions` ADD COLUMN `file_size` BIGINT DEFAULT 0 AFTER `filename`",
+            "ALTER TABLE `apk_versions` ADD COLUMN `download_url` VARCHAR(500) NULL AFTER `file_size`",
+            "ALTER TABLE `apk_versions` ADD COLUMN `release_notes` TEXT NULL AFTER `download_url`",
+            "ALTER TABLE `apk_versions` ADD COLUMN `is_latest` TINYINT(1) DEFAULT 0 AFTER `release_notes`",
+            "ALTER TABLE `apk_versions` ADD COLUMN `download_count` INT DEFAULT 0 AFTER `is_latest`",
+            "ALTER TABLE `apk_versions` ADD COLUMN `upload_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER `download_count`"
+        ];
+        
+        foreach ($columnsToAdd as $sql) {
+            try {
+                $db->exec($sql);
+            } catch (PDOException $e) {
+                // Column already exists, ignore
+            }
         }
         
     } catch (PDOException $e) {

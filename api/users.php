@@ -7,6 +7,9 @@
 require_once '../includes/config.php';
 require_once '../includes/email_service.php';
 
+// Auto-migrate database schema
+ensureDatabaseMigrated();
+
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     jsonResponse(['status' => 'ok']);
@@ -82,8 +85,7 @@ function getUsers() {
                 is_verified,
                 download_count,
                 last_download_at,
-                created_at, 
-                updated_at 
+                created_at 
             FROM users 
             ORDER BY created_at DESC
         ");
@@ -188,8 +190,7 @@ function getUser($id) {
                 is_verified,
                 download_count,
                 last_download_at,
-                created_at, 
-                updated_at 
+                created_at 
             FROM users 
             WHERE id = ?
         ");

@@ -13,30 +13,29 @@ AddHandler application/x-httpd-php .php
 # Prevent directory listing
 Options -Indexes
 
-# Allow CORS for API endpoints
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
-</IfModule>
-
-# Protect includes folder
-<Files "config.php">
-    Order allow,deny
-    Deny from all
-</Files>
-
-<Files "credentials.php">
-    Order allow,deny
-    Deny from all
-</Files>
+# Protect includes folder from direct access
+<FilesMatch "^(config|credentials)\.php$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
 
 # Error pages
 ErrorDocument 404 /index.html
 ErrorDocument 500 /index.html
 
-# PHP settings (if allowed)
+# PHP settings (if allowed by host)
 <IfModule mod_php7.c>
+    php_value upload_max_filesize 50M
+    php_value post_max_size 50M
+    php_value max_execution_time 300
+</IfModule>
+
+<IfModule mod_php.c>
     php_value upload_max_filesize 50M
     php_value post_max_size 50M
     php_value max_execution_time 300

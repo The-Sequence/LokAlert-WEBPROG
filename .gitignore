@@ -1,2 +1,37 @@
+# Credentials (NEVER commit)
 includes/credentials.php
+
+# APK files
 *.apk
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+error_log
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+
+# Node modules (if any)
+node_modules/
+
+# Uploads directory contents (keep folder)
+uploads/*
+!uploads/.gitkeep
+!uploads/README.md
+
+# Releases directory contents (keep folder)  
+releases/*
+!releases/.gitkeep
+!releases/README.md
