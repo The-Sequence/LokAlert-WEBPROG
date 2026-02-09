@@ -54,7 +54,7 @@ class EmailService {
     /**
      * Core email sending function
      */
-    private function sendEmail($userId, $to, $subject, $htmlBody, $plainBody, $type) {
+    public function sendEmail($userId, $to, $subject, $htmlBody, $plainBody, $type) {
         // Log the email attempt
         $logId = $this->logEmail($userId, $to, $type, $subject, 'pending');
         

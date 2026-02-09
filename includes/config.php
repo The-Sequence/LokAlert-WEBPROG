@@ -108,7 +108,26 @@ class Database {
     public function autoMigrate() {
         $db = $this->conn;
         
-        // Create apk_versions table
+        // ── Roles table (must be created BEFORE users for FK) ──
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `roles` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `role_name` VARCHAR(50) NOT NULL UNIQUE,
+                `description` VARCHAR(255) NULL,
+                `permissions` TEXT NULL COMMENT 'JSON-encoded permission list',
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        // Seed default roles
+        try {
+            $db->exec("INSERT IGNORE INTO `roles` (`id`, `role_name`, `description`, `permissions`) VALUES
+                (1, 'admin', 'Full system access', '[\"users.read\",\"users.create\",\"users.update\",\"users.delete\",\"versions.read\",\"versions.create\",\"versions.update\",\"versions.delete\",\"messages.read\",\"messages.delete\",\"downloads.read\",\"settings.manage\",\"backup.create\"]'),
+                (2, 'user', 'Standard authenticated user', '[\"versions.read\",\"downloads.create\",\"messages.create\",\"profile.read\",\"profile.update\"]')
+            ");
+        } catch (PDOException $e) { /* ignore */ }
+        
+        // ── APK Versions table ──
         $db->exec("
             CREATE TABLE IF NOT EXISTS `apk_versions` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -125,7 +144,7 @@ class Database {
         $this->addColumnIfNotExists('apk_versions', 'download_count', 'INT DEFAULT 0');
         $this->addColumnIfNotExists('apk_versions', 'upload_date', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
         
-        // Create users table
+        // ── Users table ──
         $db->exec("
             CREATE TABLE IF NOT EXISTS `users` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -137,6 +156,7 @@ class Database {
         ");
         
         // Add missing columns to users
+        $this->addColumnIfNotExists('users', 'role_id', 'INT NOT NULL DEFAULT 2');
         $this->addColumnIfNotExists('users', 'is_admin', 'TINYINT(1) DEFAULT 0');
         $this->addColumnIfNotExists('users', 'is_verified', 'TINYINT(1) DEFAULT 0');
         $this->addColumnIfNotExists('users', 'verification_code', 'VARCHAR(10) NULL');
@@ -146,7 +166,10 @@ class Database {
         $this->addColumnIfNotExists('users', 'download_count', 'INT DEFAULT 0');
         $this->addColumnIfNotExists('users', 'last_download_at', 'DATETIME NULL');
         
-        // Create download_logs table
+        // Add FK from users.role_id → roles.id (best-effort)
+        $this->addForeignKeyIfNotExists('users', 'fk_users_role', 'role_id', 'roles', 'id');
+        
+        // ── Download Logs table ──
         $db->exec("
             CREATE TABLE IF NOT EXISTS `download_logs` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -165,7 +188,11 @@ class Database {
         $this->addColumnIfNotExists('download_logs', 'started_at', 'DATETIME NULL');
         $this->addColumnIfNotExists('download_logs', 'completed_at', 'DATETIME NULL');
         
-        // Create contact_messages table
+        // Add FKs for download_logs
+        $this->addForeignKeyIfNotExists('download_logs', 'fk_downloads_user', 'user_id', 'users', 'id');
+        $this->addForeignKeyIfNotExists('download_logs', 'fk_downloads_version', 'version_id', 'apk_versions', 'id');
+        
+        // ── Contact Messages table ──
         $db->exec("
             CREATE TABLE IF NOT EXISTS `contact_messages` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -179,19 +206,120 @@ class Database {
         
         $this->addColumnIfNotExists('contact_messages', 'is_read', 'TINYINT(1) DEFAULT 0');
         
-        // Create email_logs table
+        // ── Email Logs table ──
         $db->exec("
             CREATE TABLE IF NOT EXISTS `email_logs` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `user_id` INT NULL,
-                `recipient_email` VARCHAR(100) NOT NULL,
+                `email_to` VARCHAR(255) NOT NULL,
                 `email_type` VARCHAR(50) NOT NULL,
-                `subject` VARCHAR(200) NULL,
-                `status` VARCHAR(20) DEFAULT 'pending',
+                `subject` VARCHAR(255) NULL,
+                `status` ENUM('pending', 'sent', 'failed') DEFAULT 'pending',
                 `error_message` TEXT NULL,
-                `sent_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX `idx_user_id` (`user_id`),
+                INDEX `idx_status` (`status`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ");
+        
+        // ── Login Attempts table (brute-force protection) ──
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `login_attempts` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `email` VARCHAR(100) NOT NULL,
+                `ip_address` VARCHAR(45) NOT NULL,
+                `attempted_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                `success` TINYINT(1) DEFAULT 0,
+                INDEX `idx_login_email` (`email`),
+                INDEX `idx_login_ip` (`ip_address`),
+                INDEX `idx_login_time` (`attempted_at`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        // ── Audit Logs table (tracks all significant DB changes) ──
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `audit_logs` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `user_id` INT NULL,
+                `action` VARCHAR(100) NOT NULL,
+                `table_name` VARCHAR(100) NULL,
+                `record_id` INT NULL,
+                `old_values` TEXT NULL,
+                `new_values` TEXT NULL,
+                `ip_address` VARCHAR(45) NULL,
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX `idx_audit_user` (`user_id`),
+                INDEX `idx_audit_action` (`action`),
+                INDEX `idx_audit_table` (`table_name`),
+                INDEX `idx_audit_time` (`created_at`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        // ── Settings table (admin-configurable options) ──
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `settings` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `setting_key` VARCHAR(100) NOT NULL UNIQUE,
+                `setting_value` TEXT NULL,
+                `description` VARCHAR(255) NULL,
+                `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        // Seed default settings
+        try {
+            $defaults = [
+                ['session_timeout_minutes', '5', 'Auto-logout after N minutes of inactivity'],
+                ['download_cooldown_minutes', '5', 'Cooldown between downloads in minutes'],
+                ['max_login_attempts', '5', 'Max failed login attempts before lockout'],
+                ['login_lockout_minutes', '15', 'Lockout duration after max failed attempts'],
+                ['site_maintenance_mode', '0', 'Enable maintenance mode (0=off, 1=on)'],
+                ['maintenance_message', 'We are currently performing scheduled maintenance. Please check back soon.', 'Message shown during maintenance mode'],
+                ['invite_expiry_hours', '48', 'Admin invite link expiry in hours'],
+                ['apk_db_storage_enabled', '0', 'Allow storing APK files in database (0=off, 1=on)']
+            ];
+            $seedStmt = $db->prepare("INSERT IGNORE INTO settings (setting_key, setting_value, description) VALUES (?, ?, ?)");
+            foreach ($defaults as $s) {
+                $seedStmt->execute($s);
+            }
+        } catch (PDOException $e) { /* ignore */ }
+        
+        // ── Admin Invites table ──
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `admin_invites` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `name` VARCHAR(100) NULL,
+                `email` VARCHAR(100) NOT NULL,
+                `token` VARCHAR(100) NOT NULL UNIQUE,
+                `password_hash` VARCHAR(255) NULL,
+                `created_by` INT NULL,
+                `expires_at` DATETIME NOT NULL,
+                `used_at` DATETIME NULL,
+                `invalidated_at` DATETIME NULL,
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX `idx_invite_token` (`token`),
+                INDEX `idx_invite_email` (`email`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        // ── APK File Chunks table (stores APK binary in DB) ──
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `apk_file_chunks` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `version_id` INT NOT NULL,
+                `chunk_index` INT NOT NULL DEFAULT 0,
+                `chunk_data` LONGBLOB NOT NULL,
+                `chunk_size` INT NOT NULL DEFAULT 0,
+                `total_chunks` INT NOT NULL DEFAULT 1,
+                `filename` VARCHAR(255) NOT NULL,
+                `total_size` BIGINT NOT NULL DEFAULT 0,
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX `idx_version_chunk` (`version_id`, `chunk_index`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        
+        // Add apk_stored_in_db flag to apk_versions
+        $this->addColumnIfNotExists('apk_versions', 'stored_in_db', 'TINYINT(1) DEFAULT 0');
         
         // Create default admin user if not exists
         $this->createDefaultAdmin();
@@ -209,10 +337,13 @@ class Database {
                 // Create admin user - password is 'lokalert2024'
                 $hashedPassword = password_hash('lokalert2024', PASSWORD_DEFAULT);
                 $stmt = $this->conn->prepare("
-                    INSERT INTO users (username, email, password, is_admin, is_verified, created_at) 
-                    VALUES ('admin', 'admin', ?, 1, 1, NOW())
+                    INSERT INTO users (username, email, password, role_id, is_admin, is_verified, created_at) 
+                    VALUES ('admin', 'admin', ?, 1, 1, 1, NOW())
                 ");
                 $stmt->execute([$hashedPassword]);
+            } else {
+                // Ensure existing admin has role_id = 1
+                $this->conn->exec("UPDATE users SET role_id = 1 WHERE is_admin = 1 AND role_id != 1");
             }
         } catch (PDOException $e) {
             // Ignore - admin might already exist
@@ -236,6 +367,31 @@ class Database {
             }
         } catch (PDOException $e) {
             // Ignore errors
+        }
+    }
+    
+    /**
+     * Add foreign key constraint if it doesn't already exist
+     */
+    private function addForeignKeyIfNotExists($table, $fkName, $column, $refTable, $refColumn) {
+        try {
+            $stmt = $this->conn->prepare("
+                SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS
+                WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ? AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+            ");
+            $stmt->execute([DB_NAME, $table, $fkName]);
+            $exists = $stmt->fetchColumn() > 0;
+            
+            if (!$exists) {
+                $this->conn->exec("
+                    ALTER TABLE `{$table}` 
+                    ADD CONSTRAINT `{$fkName}` 
+                    FOREIGN KEY (`{$column}`) REFERENCES `{$refTable}`(`{$refColumn}`)
+                    ON DELETE CASCADE
+                ");
+            }
+        } catch (PDOException $e) {
+            // Ignore - FK might fail on inconsistent data
         }
     }
 }
@@ -359,7 +515,10 @@ function canUserDownload($userId) {
     try {
         $db = Database::getInstance()->getConnection();
         
-        // Check if user has downloaded in the last DOWNLOAD_COOLDOWN_MINUTES
+        // Use dynamic setting from DB, fallback to constant
+        $cooldown = (int)getSetting('download_cooldown_minutes', DOWNLOAD_COOLDOWN_MINUTES);
+        
+        // Check if user has downloaded in the last N minutes
         $stmt = $db->prepare("
             SELECT last_download_at 
             FROM users 
@@ -367,7 +526,7 @@ function canUserDownload($userId) {
             AND last_download_at IS NOT NULL 
             AND last_download_at > DATE_SUB(NOW(), INTERVAL ? MINUTE)
         ");
-        $stmt->execute([$userId, DOWNLOAD_COOLDOWN_MINUTES]);
+        $stmt->execute([$userId, $cooldown]);
         
         if ($stmt->fetch()) {
             return false;
@@ -382,13 +541,16 @@ function getTimeUntilNextDownload($userId) {
     try {
         $db = Database::getInstance()->getConnection();
         
+        // Use dynamic setting from DB, fallback to constant
+        $cooldown = (int)getSetting('download_cooldown_minutes', DOWNLOAD_COOLDOWN_MINUTES);
+        
         $stmt = $db->prepare("
             SELECT TIMESTAMPDIFF(SECOND, NOW(), DATE_ADD(last_download_at, INTERVAL ? MINUTE)) as seconds_remaining
             FROM users 
             WHERE id = ? 
             AND last_download_at IS NOT NULL
         ");
-        $stmt->execute([DOWNLOAD_COOLDOWN_MINUTES, $userId]);
+        $stmt->execute([$cooldown, $userId]);
         $result = $stmt->fetch();
         
         if ($result && $result['seconds_remaining'] > 0) {
@@ -397,6 +559,103 @@ function getTimeUntilNextDownload($userId) {
         return 0;
     } catch (PDOException $e) {
         return 0;
+    }
+}
+
+/**
+ * Log an action to the audit_logs table
+ */
+function logAudit($action, $tableName = null, $recordId = null, $oldValues = null, $newValues = null) {
+    try {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("
+            INSERT INTO audit_logs (user_id, action, table_name, record_id, old_values, new_values, ip_address, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+        ");
+        $stmt->execute([
+            $_SESSION['user_id'] ?? null,
+            $action,
+            $tableName,
+            $recordId,
+            $oldValues ? json_encode($oldValues) : null,
+            $newValues ? json_encode($newValues) : null,
+            getClientIP()
+        ]);
+    } catch (PDOException $e) {
+        // Audit logging should never break main flow
+    }
+}
+
+/**
+ * Log a login attempt
+ */
+function logLoginAttempt($email, $success) {
+    try {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("
+            INSERT INTO login_attempts (email, ip_address, attempted_at, success)
+            VALUES (?, ?, NOW(), ?)
+        ");
+        $stmt->execute([$email, getClientIP(), $success ? 1 : 0]);
+    } catch (PDOException $e) {
+        // Ignore
+    }
+}
+
+/**
+ * Check if an IP/email is rate-limited for login
+ */
+function isLoginRateLimited($email) {
+    try {
+        $db = Database::getInstance()->getConnection();
+        
+        // Use dynamic settings from DB, fallback to constants
+        $lockoutMinutes = (int)getSetting('login_lockout_minutes', LOGIN_LOCKOUT_MINUTES);
+        $maxAttempts = (int)getSetting('max_login_attempts', MAX_LOGIN_ATTEMPTS);
+        
+        $stmt = $db->prepare("
+            SELECT COUNT(*) as attempts FROM login_attempts
+            WHERE email = ? AND success = 0
+            AND attempted_at > DATE_SUB(NOW(), INTERVAL ? MINUTE)
+        ");
+        $stmt->execute([$email, $lockoutMinutes]);
+        $result = $stmt->fetch();
+        return ($result['attempts'] >= $maxAttempts);
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+/**
+ * Get a setting value from the database
+ */
+function getSetting($key, $default = null) {
+    try {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("SELECT setting_value FROM settings WHERE setting_key = ?");
+        $stmt->execute([$key]);
+        $result = $stmt->fetch();
+        return $result ? $result['setting_value'] : $default;
+    } catch (PDOException $e) {
+        return $default;
+    }
+}
+
+/**
+ * Set a setting value in the database
+ */
+function setSetting($key, $value) {
+    try {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("
+            INSERT INTO settings (setting_key, setting_value, updated_at) 
+            VALUES (?, ?, NOW())
+            ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = NOW()
+        ");
+        $stmt->execute([$key, $value]);
+        return true;
+    } catch (PDOException $e) {
+        return false;
     }
 }
 ?>

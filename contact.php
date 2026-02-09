@@ -194,15 +194,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Navigation -->
     <nav id="navbar">
         <div class="nav-container">
-            <a href="index.php" class="nav-logo">
+            <a href="index.html" class="nav-logo">
                 <span class="logo-icon">📍</span>
                 <span class="logo-text">LokAlert</span>
             </a>
             <ul class="nav-links">
-                <li><a href="index.php#features">Features</a></li>
-                <li><a href="index.php#why">Why LokAlert</a></li>
-                <li><a href="index.php#tech">Technology</a></li>
-                <li><a href="index.php#team">Team</a></li>
+                <li><a href="index.html#features">Features</a></li>
+                <li><a href="index.html#why">Why LokAlert</a></li>
+                <li><a href="index.html#tech">Technology</a></li>
+                <li><a href="index.html#team">Team</a></li>
                 <li><a href="contact.php" class="nav-download-btn">Contact</a></li>
             </ul>
             <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
@@ -216,7 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <main>
         <section class="contact-section">
             <div class="contact-container">
-                <a href="index.php" class="back-link">← Back to Home</a>
+                <a href="index.html" class="back-link">← Back to Home</a>
                 
                 <div class="contact-header">
                     <h1>📬 Contact Us</h1>

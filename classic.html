@@ -1,0 +1,669 @@
+﻿<!DOCTYPE html>
+<!-- Version: 3.0.0 - Updated: 2026-02-07 | DBA2 Final Project - Public Website -->
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>LokAlert - Smart Location-Based Arrival Alert | DBA2 Project</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ============================================
+           CRITICAL: HIDE CONTENT UNTIL MAINTENANCE CHECK
+           Content is hidden by default. JS reveals it after check.
+           ============================================ */
+        #navbar, main, #floatingDownload { visibility: hidden; opacity: 0; }
+        #maintenanceOverlay.active ~ #navbar,
+        #maintenanceOverlay.active ~ main,
+        #maintenanceOverlay.active ~ #floatingDownload { display: none !important; }
+
+        /* ============================================
+           THEME TOGGLE
+           ============================================ */
+        .theme-toggle {
+            position: relative;
+            width: 48px; height: 26px;
+            background: rgba(255,255,255,.12);
+            border-radius: 50px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,.15);
+            transition: all .4s cubic-bezier(.4,0,.2,1);
+            display: flex; align-items: center;
+            padding: 0 3px;
+            flex-shrink: 0;
+        }
+        .theme-toggle .toggle-thumb {
+            width: 20px; height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            transition: all .4s cubic-bezier(.4,0,.2,1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.25);
+        }
+        [data-theme="light"] .theme-toggle {
+            background: rgba(0,0,0,.08);
+            border-color: rgba(0,0,0,.12);
+        }
+        [data-theme="light"] .theme-toggle .toggle-thumb {
+            transform: translateX(20px);
+            background: #f59e0b;
+        }
+        .theme-toggle-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-right: 6px;
+            white-space: nowrap;
+            transition: color .4s;
+        }
+
+        /* ============================================
+           MAINTENANCE — COLOR EXPLOSION
+           ============================================ */
+        #maintenanceOverlay{position:fixed;inset:0;z-index:99999;display:none;overflow:hidden;background:#000}
+        #maintenanceOverlay.active{display:block}
+        #maintCanvas{position:absolute;inset:0;width:100%;height:100%}
+        .maint-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px}
+        .maint-card{background:rgba(0,0,0,.45);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:48px 56px;border-radius:28px;border:1px solid rgba(255,255,255,.12);max-width:520px;animation:maintCardIn .8s cubic-bezier(.16,1,.3,1) both;animation-delay:.3s}
+        @keyframes maintCardIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:none}}
+        .maint-icon{font-size:48px;margin-bottom:20px;display:inline-block;animation:maintPulse 2s ease-in-out infinite}
+        @keyframes maintPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.12);opacity:.85}}
+        .maint-title{font-size:clamp(28px,5vw,42px);font-weight:800;color:#fff;margin-bottom:12px;letter-spacing:-.03em}
+        .maint-msg{font-size:17px;color:rgba(255,255,255,.65);line-height:1.6;margin:0}
+
+        /* ============================================
+           FLOATING DOWNLOAD BUTTON
+           ============================================ */
+        .floating-download {
+            position: fixed; bottom: 30px; right: 30px; z-index: 999;
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px 28px;
+            background: linear-gradient(135deg, #6366f1, #22d3ee);
+            color: white; text-decoration: none; border-radius: 50px;
+            font-weight: 600; font-size: 16px;
+            box-shadow: 0 10px 40px rgba(99,102,241,.4);
+            transition: all .3s ease;
+            animation: pulse-glow 2s infinite;
+        }
+        .floating-download:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 50px rgba(99,102,241,.5); }
+        .floating-download .download-icon { font-size: 24px; }
+        .floating-download .download-text { display: flex; flex-direction: column; line-height: 1.2; }
+        .floating-download .download-text small { font-size: 11px; opacity: .9; font-weight: 400; }
+        @keyframes pulse-glow {
+            0%,100% { box-shadow: 0 10px 40px rgba(99,102,241,.4); }
+            50% { box-shadow: 0 10px 50px rgba(99,102,241,.6), 0 0 30px rgba(34,211,238,.3); }
+        }
+
+        /* ============================================
+           ADMIN BUTTON (Nav)
+           ============================================ */
+        .nav-admin-btn {
+            background: linear-gradient(135deg, #f59e0b, #ef4444) !important;
+            color: white !important; padding: 10px 20px !important;
+            border-radius: 25px !important; font-weight: 600 !important;
+            transition: all .3s ease !important; text-decoration: none !important;
+            box-shadow: 0 4px 15px rgba(245,158,11,.3);
+        }
+        .nav-admin-btn:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(245,158,11,.4) !important; }
+        .mobile-admin-btn {
+            background: linear-gradient(135deg, #f59e0b, #ef4444) !important;
+            color: white !important; padding: 12px 24px !important;
+            border-radius: 25px !important; font-weight: 600 !important;
+            text-align: center !important; margin: 10px 0 !important;
+        }
+
+        /* ============================================
+           RESPONSIVE ADJUSTMENTS
+           ============================================ */
+        @media (max-width: 768px) {
+            .floating-download { bottom: 20px; right: 20px; padding: 14px 20px; font-size: 14px; }
+            .floating-download .download-icon { font-size: 20px; }
+            .theme-toggle-label { display: none; }
+        }
+        @media (max-width: 480px) {
+            .floating-download { padding: 12px 16px; font-size: 13px; gap: 8px; }
+            .floating-download .download-text small { display: none; }
+        }
+
+        /* Version Toggle Link */
+        .version-switch {
+            font-size: 12px; color: var(--text-muted); text-decoration: none;
+            padding: 5px 12px; border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all .3s ease; white-space: nowrap;
+        }
+        [data-theme="light"] .version-switch { border-color: rgba(0,0,0,0.1); }
+        .version-switch:hover { color: var(--text-primary); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <!-- Maintenance Overlay — Color Explosion -->
+    <div id="maintenanceOverlay">
+        <canvas id="maintCanvas"></canvas>
+        <div class="maint-content">
+            <div class="maint-card">
+                <div class="maint-icon">🔧</div>
+                <h1 class="maint-title">Under Maintenance</h1>
+                <p class="maint-msg" id="maintenanceMessage">We're currently performing scheduled maintenance. We'll be back shortly. Thank you for your patience!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <span class="logo-icon">📍</span>
+                <span class="logo-text">LokAlert</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#why">Why LokAlert</a></li>
+                <li><a href="#tech">Technology</a></li>
+                <li><a href="#team">Team</a></li>
+                <li>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span class="theme-toggle-label">🌙</span>
+                        <div class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                            <div class="toggle-thumb">🌙</div>
+                        </div>
+                        <span class="theme-toggle-label">☀️</span>
+                    </div>
+                </li>
+                <li><a href="index.html" class="version-switch" title="Switch to modern animated view">✨ Modern</a></li>
+                <li><a href="admin.html" class="nav-admin-btn">🔐 Admin</a></li>
+                <li><a href="#" class="nav-download-btn">Download</a></li>
+            </ul>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div class="theme-toggle" id="themeToggleMobile" title="Toggle theme" style="display:none;">
+                    <div class="toggle-thumb">🌙</div>
+                </div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#features">Features</a>
+            <a href="#why">Why LokAlert</a>
+            <a href="#tech">Technology</a>
+            <a href="#team">Team</a>
+            <a href="admin.html" class="mobile-admin-btn">🔐 Admin Panel</a>
+            <a href="index.html" style="color:var(--accent);font-weight:600;">✨ Modern View</a>
+            <a href="#" class="mobile-download-btn">Download App</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-bg">
+                <div class="hero-gradient"></div>
+                <div class="hero-particles">
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                </div>
+            </div>
+            <div class="hero-content">
+                <div class="hero-badge animate-fade-in">
+                    <span class="badge-icon">🚀</span>
+                    <span>Smart Location Technology</span>
+                </div>
+                <h1 class="hero-title animate-fade-up">
+                    <span class="title-main">LokAlert</span>
+                    <span class="title-sub">Smart Location-Based Arrival Alert</span>
+                </h1>
+                <p class="hero-tagline animate-fade-up delay-1">Arrive Smart. Stay Alert.</p>
+                <p class="hero-description animate-fade-up delay-2">
+                    LokAlert is a mobile application designed to notify users automatically when they arrive at a selected destination. Whether you're commuting, traveling, or multitasking, LokAlert ensures you're alerted exactly when you reach your location—no constant checking required.
+                </p>
+                <div class="hero-cta animate-fade-up delay-3">
+                    <a href="#features" class="btn btn-primary">
+                        <span>Explore Features</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                    <a href="#why" class="btn btn-secondary">Learn More</a>
+                </div>
+                <div class="hero-visual animate-float">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="screen-map">
+                                <div class="map-grid"></div>
+                                <div class="location-pulse"></div>
+                                <div class="location-marker">📍</div>
+                                <div class="geofence-ring"></div>
+                            </div>
+                            <div class="screen-card">
+                                <div class="card-icon">🏠</div>
+                                <div class="card-info">
+                                    <span class="card-title">Home</span>
+                                    <span class="card-status">200m • Active</span>
+                                </div>
+                                <div class="card-toggle active"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator animate-bounce">
+                <span>Scroll</span>
+                <div class="scroll-arrow">↓</div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about">
+            <div class="container">
+                <div class="about-content">
+                    <div class="about-icon animate-on-scroll">
+                        <div class="icon-ring"></div>
+                        <span>🎯</span>
+                    </div>
+                    <h2 class="section-title animate-on-scroll">How It Works</h2>
+                    <p class="about-text animate-on-scroll">
+                        LokAlert uses real-time GPS tracking and location-based services to monitor a user's movement and trigger an alert once they enter a predefined arrival radius. The app runs efficiently in the background, making it reliable, user-friendly, and practical for everyday use.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <span class="section-badge">✨ Key Features</span>
+                    <h2 class="section-title">Everything You Need</h2>
+                    <p class="section-subtitle">Powerful features designed for effortless arrival alerts</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon"><span>📍</span></div>
+                        <h3>Location Search</h3>
+                        <p>Quickly search and select destinations using place names or addresses.</p>
+                    </div>
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon"><span>🗺️</span></div>
+                        <h3>Map View</h3>
+                        <p>Interactive map interface for easy navigation and destination selection.</p>
+                    </div>
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon"><span>📏</span></div>
+                        <h3>Set Arrival Radius</h3>
+                        <p>Customize the distance for alert triggers to match your needs.</p>
+                    </div>
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon"><span>▶️</span></div>
+                        <h3>Start Location Tracking</h3>
+                        <p>Begin tracking with one tap using GPS technology.</p>
+                    </div>
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon"><span>🔔</span></div>
+                        <h3>Arrival Alert / Alarm</h3>
+                        <p>Instant alert when destination is reached. Never miss your stop again.</p>
+                    </div>
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon"><span>🔄</span></div>
+                        <h3>Background Monitoring</h3>
+                        <p>Works even when minimized, with battery-optimized performance.</p>
+                    </div>
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon"><span>⭐</span></div>
+                        <h3>Saved Locations</h3>
+                        <p>Save frequent destinations like home or work for quick access.</p>
+                    </div>
+                    <div class="feature-card animate-on-scroll">
+                        <div class="feature-icon"><span>❌</span></div>
+                        <h3>Cancel Tracking</h3>
+                        <p>Stop tracking anytime with full control over your alerts.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why LokAlert Section -->
+        <section id="why" class="why-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <span class="section-badge">💡 Why LokAlert?</span>
+                    <h2 class="section-title">The Smart Choice</h2>
+                    <p class="section-subtitle">Designed for modern life on the move</p>
+                </div>
+                <div class="benefits-grid">
+                    <div class="benefit-card animate-on-scroll">
+                        <div class="benefit-icon">✅</div>
+                        <div class="benefit-content">
+                            <h3>No More Constant Checking</h3>
+                            <p>Eliminates the need to constantly check your location during travel</p>
+                        </div>
+                    </div>
+                    <div class="benefit-card animate-on-scroll">
+                        <div class="benefit-icon">🚌</div>
+                        <div class="benefit-content">
+                            <h3>Perfect for Everyone</h3>
+                            <p>Ideal for travelers, commuters, students, and drivers</p>
+                        </div>
+                    </div>
+                    <div class="benefit-card animate-on-scroll">
+                        <div class="benefit-icon">⚡</div>
+                        <div class="benefit-content">
+                            <h3>Simple Yet Powerful</h3>
+                            <p>Simple interface with powerful background functionality</p>
+                        </div>
+                    </div>
+                    <div class="benefit-card animate-on-scroll">
+                        <div class="benefit-icon">🛡️</div>
+                        <div class="benefit-content">
+                            <h3>Safety &amp; Convenience</h3>
+                            <p>Improves convenience, safety, and time management</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Section -->
+        <section id="tech" class="tech-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <span class="section-badge">⚙️ Technology Highlights</span>
+                    <h2 class="section-title">Built with Modern Tech</h2>
+                    <p class="section-subtitle">Cutting-edge technology for reliable performance</p>
+                </div>
+                <div class="tech-grid">
+                    <div class="tech-card animate-on-scroll">
+                        <div class="tech-icon">
+                            <div class="tech-icon-bg"></div>
+                            <span>🛰️</span>
+                        </div>
+                        <h3>GPS &amp; Location Services</h3>
+                        <p>Precise positioning using advanced satellite technology</p>
+                    </div>
+                    <div class="tech-card animate-on-scroll">
+                        <div class="tech-icon">
+                            <div class="tech-icon-bg"></div>
+                            <span>📊</span>
+                        </div>
+                        <h3>Real-time Tracking Algorithms</h3>
+                        <p>Smart algorithms for accurate arrival detection</p>
+                    </div>
+                    <div class="tech-card animate-on-scroll">
+                        <div class="tech-icon">
+                            <div class="tech-icon-bg"></div>
+                            <span>📱</span>
+                        </div>
+                        <h3>Mobile-friendly UI/UX</h3>
+                        <p>Intuitive design optimized for all screen sizes</p>
+                    </div>
+                    <div class="tech-card animate-on-scroll">
+                        <div class="tech-icon">
+                            <div class="tech-icon-bg"></div>
+                            <span>🔋</span>
+                        </div>
+                        <h3>Background Service Optimization</h3>
+                        <p>Efficient background processing with minimal battery drain</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section id="team" class="team-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <span class="section-badge">👥 Our Team</span>
+                    <h2 class="section-title">Meet the Members</h2>
+                    <p class="section-subtitle">The talented people behind LokAlert</p>
+                </div>
+                <div class="team-grid">
+                    <div class="team-card animate-on-scroll"><div class="team-avatar"><span>OA</span></div><h3>Alemana, Onyx Herod</h3></div>
+                    <div class="team-card animate-on-scroll"><div class="team-avatar"><span>RM</span></div><h3>Mabahin, Ryan</h3></div>
+                    <div class="team-card animate-on-scroll"><div class="team-avatar"><span>EA</span></div><h3>Adamos, Eurika</h3></div>
+                    <div class="team-card animate-on-scroll"><div class="team-avatar"><span>GB</span></div><h3>Billones, Gerald</h3></div>
+                    <div class="team-card animate-on-scroll"><div class="team-avatar"><span>TC</span></div><h3>Crisologo, Terence Joefrey</h3></div>
+                    <div class="team-card animate-on-scroll"><div class="team-avatar"><span>AR</span></div><h3>Royo, Aenard Ollyer</h3></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <span class="logo-icon">📍</span>
+                        <span class="logo-text">LokAlert</span>
+                    </div>
+                    <p class="footer-tagline">Arrive Smart. Stay Alert.</p>
+                    <p style="color: var(--text-muted); font-size: 13px; margin: 12px 0 4px;">Database Management &amp; Administration 2 — Final Project</p>
+                    <div style="margin: 12px 0;">
+                        <a href="admin.html" style="color: var(--text-muted); text-decoration: none; font-size: 13px; opacity: .7;">Admin</a>
+                        <span style="color: var(--text-muted); margin: 0 8px;">|</span>
+                        <a href="documentation/LOKALERT_DOCUMENTATION.md" style="color: var(--text-muted); text-decoration: none; font-size: 13px; opacity: .7;">Documentation</a>
+                    </div>
+                    <p class="footer-copyright">&copy; 2026 LokAlert. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Floating Download Button -->
+    <a href="#" onclick="openDownloadModal(); return false;" class="floating-download" id="floatingDownload">
+        <span class="download-icon">📥</span>
+        <span class="download-text">
+            <span>Download APK</span>
+            <small>Latest Version • Android</small>
+        </span>
+    </a>
+
+    <!-- Download Modal -->
+    <div class="modal-overlay" id="downloadModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-section" id="downloadSection">
+                <div class="modal-header">
+                    <div class="modal-icon">📥</div>
+                    <h2>Download LokAlert</h2>
+                    <p>Get the latest version of our app</p>
+                </div>
+                <div class="version-info" id="versionInfo">
+                    <div class="version-loading">Loading...</div>
+                </div>
+                <div class="download-buttons">
+                    <button class="btn btn-primary btn-download" id="downloadBtn">
+                        <span>📥</span> Download APK
+                    </button>
+                </div>
+                <p style="margin-top: 20px; color: var(--text-muted); font-size: 14px; text-align: center;">
+                    📱 Android only • <strong style="color: #f59e0b;">Account required</strong>
+                </p>
+            </div>
+            <div class="modal-section" id="loginSection" style="display: none;"></div>
+            <div class="modal-section" id="registerSection" style="display: none;"></div>
+            <div id="authButtons" style="display: none;"></div>
+            <div id="userInfoModal" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/download.js"></script>
+    <script>
+        // ============================================
+        // Theme Toggle (Light/Dark Mode)
+        // ============================================
+        (function initTheme() {
+            const saved = localStorage.getItem('lokalert-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+            updateToggleIcon(saved);
+
+            document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+            document.getElementById('themeToggleMobile')?.addEventListener('click', toggleTheme);
+
+            // Show mobile toggle
+            function showMobileToggle() {
+                const mobileToggle = document.getElementById('themeToggleMobile');
+                if (mobileToggle) mobileToggle.style.display = window.innerWidth <= 992 ? 'flex' : 'none';
+            }
+            showMobileToggle();
+            window.addEventListener('resize', showMobileToggle);
+        })();
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('lokalert-theme', next);
+            updateToggleIcon(next);
+        }
+
+        function updateToggleIcon(theme) {
+            document.querySelectorAll('.toggle-thumb').forEach(el => {
+                el.textContent = theme === 'dark' ? '🌙' : '☀️';
+            });
+        }
+
+        // ============================================
+        // Maintenance Mode Check — Color Explosion
+        // ============================================
+        (function checkMaintenance() {
+            const overlay = document.getElementById('maintenanceOverlay');
+            const msgEl = document.getElementById('maintenanceMessage');
+            const navbar = document.getElementById('navbar');
+            const mainEl = document.querySelector('main');
+            const fab = document.getElementById('floatingDownload');
+            const canvas = document.getElementById('maintCanvas');
+
+            function showSite() {
+                navbar.style.visibility = 'visible'; navbar.style.opacity = '1';
+                mainEl.style.visibility = 'visible'; mainEl.style.opacity = '1';
+                fab.style.visibility = 'visible'; fab.style.opacity = '1';
+                overlay.style.display = 'none';
+            }
+
+            function showMaintenance(message) {
+                if (message) msgEl.textContent = message;
+                overlay.classList.add('active');
+                navbar.style.display = 'none';
+                mainEl.style.display = 'none';
+                fab.style.display = 'none';
+                startExplosion(canvas);
+            }
+
+            /* --- async fetch with timeout --- */
+            const ctrl = new AbortController();
+            const tid = setTimeout(() => ctrl.abort(), 5000);
+            fetch('api/users.php?action=maintenance-check', { signal: ctrl.signal })
+                .then(r => r.json())
+                .then(data => { clearTimeout(tid); if (data && data.maintenance) { showMaintenance(data.message); } else { showSite(); } })
+                .catch(() => { clearTimeout(tid); showSite(); });
+
+            /* -----------------------------------------------
+               PARTICLE  ENGINE  —  5 Randomized Modes
+               0 Holi Powder · 1 Fireworks · 2 Nebula
+               3 Warp Speed  · 4 Particle Vortex
+            ----------------------------------------------- */
+            function startExplosion(cvs) {
+                const ctx = cvs.getContext('2d');
+                let W, H, cx, cy, frame = 0;
+                const parts = [];
+                function resize() { W = cvs.width = innerWidth; H = cvs.height = innerHeight; cx = W / 2; cy = H / 2; }
+                resize(); window.addEventListener('resize', resize);
+
+                const mode = Math.floor(Math.random() * 5);
+                const PAL = [
+                    ['#FF1493','#FF69B4','#FF007F','#FF4500','#FFA500','#FFD700','#ADFF2F','#7CFC00','#FFF','#E91E63','#C71585','#FF8C00','#DA70D6','#FAFAD2'],
+                    ['#FF0040','#FF4500','#FFD700','#00FF41','#00BFFF','#8B00FF','#FF1493','#FFF','#FF6B6B','#7FFFD4','#00CED1','#ADFF2F'],
+                    ['#8B5CF6','#A78BFA','#C084FC','#E879F9','#818CF8','#6366F1','#3B82F6','#06B6D4','#EC4899','#F472B6','#FFF','#93C5FD'],
+                    ['#00E5FF','#18FFFF','#40C4FF','#76FF03','#EEFF41','#FFF','#B388FF','#FF4081','#69F0AE','#FFAB00'],
+                    ['#FF6D00','#FF9100','#FFAB00','#FFD600','#00E676','#00BCD4','#E040FB','#FF1744','#FFF','#76FF03','#2979FF']
+                ];
+                const pal = PAL[mode];
+                const rC = () => pal[~~(Math.random() * pal.length)];
+                function addP(o) { o.g = o.g || 0; o.fr = o.fr || 1; o.bl = o.bl || 0; parts.push(o); }
+                const fadeA = [0.04, 0.055, 0.018, 0.12, 0.035][mode];
+                let mUpd = null;
+
+                /* === MODE 0 : HOLI POWDER BURST === */
+                if (mode === 0) {
+                    const arms = [
+                        { a: -0.5, c: ['#ADFF2F','#7CFC00','#CDDC39'] },
+                        { a: -0.9, c: ['#FF6D00','#FF4500','#FF8C00','#FFA726'] },
+                        { a: -0.2, c: ['#FF1493','#C71585','#E91E63'] },
+                        { a: 0.3, c: ['#FF0000','#D50000','#FF1744'] },
+                        { a: 0.8, c: ['#FF6D00','#FF9800','#F57C00'] },
+                        { a: 1.6, c: ['#FF69B4','#FF1493','#F48FB1','#DA70D6'] },
+                        { a: 2.2, c: ['#FFF','#FFE0E0','#FF69B4'] },
+                        { a: -1.6, c: ['#FFD600','#FFAB00','#ADFF2F'] }
+                    ];
+                    for (let i = 0; i < 90; i++) { const a = Math.random() * 6.28, s = Math.random() * 1.5; addP({ x: cx, y: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s, sz: Math.random() * 32 + 16, bl: 60, col: ['#FFF','#FAFAD2','#FFD700'][~~(Math.random() * 3)], a: 1, dc: .002, fr: .99, shrink: 1 }); }
+                    arms.forEach(arm => { for (let i = 0; i < 100; i++) { const sp = arm.a + (Math.random() - .5) * .55, t = Math.random(); let spd = Math.random() * 8 + 2, sz, bl, dc; if (t < .22) { sz = Math.random() * 42 + 18; bl = 55; dc = .0015; spd *= .28; } else if (t < .6) { sz = Math.random() * 7 + 2; bl = 16; dc = .005; } else { sz = Math.random() * 2.5 + .3; bl = 6; dc = .009; spd *= 1.6; } addP({ x: cx + (Math.random() - .5) * 20, y: cy + (Math.random() - .5) * 20, vx: Math.cos(sp) * spd, vy: Math.sin(sp) * spd, sz, bl, col: arm.c[~~(Math.random() * arm.c.length)], a: 1, dc, g: .008, fr: .988, shrink: 1 }); } });
+                    for (let i = 0; i < 400; i++) { const a = Math.random() * 6.28, spd = Math.random() * 11 + 3; addP({ x: cx, y: cy, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd, sz: Math.random() * 1.5 + .2, bl: 4, col: rC(), a: 1, dc: .004, g: .01, fr: .992 }); }
+                    setTimeout(() => { for (let i = 0; i < 220; i++) { const a = Math.random() * 6.28, s = Math.random() * 5 + 1; addP({ x: cx + (Math.random() - .5) * 80, y: cy + (Math.random() - .5) * 80, vx: Math.cos(a) * s, vy: Math.sin(a) * s, sz: Math.random() * 22 + 6, bl: 35, col: rC(), a: .8, dc: .003, g: .008, fr: .99, shrink: 1 }); } }, 400);
+                    mUpd = f => { if (f % 8 === 0) { const a = Math.random() * 6.28, s = Math.random() * 2 + .5; addP({ x: cx + (Math.random() - .5) * W * .4, y: cy + (Math.random() - .5) * H * .4, vx: Math.cos(a) * s, vy: Math.sin(a) * s, sz: Math.random() * 10 + 3, bl: 22, col: rC(), a: .6, dc: .003, g: .005, fr: .995, shrink: 1 }); } if (f % 120 === 0) { const bx = cx + (Math.random() - .5) * W * .5, by = cy + (Math.random() - .5) * H * .5; for (let i = 0; i < 70; i++) { const a = Math.random() * 6.28, s = Math.random() * 4 + 1; addP({ x: bx, y: by, vx: Math.cos(a) * s, vy: Math.sin(a) * s, sz: Math.random() * 6 + 1, bl: 14, col: rC(), a: .7, dc: .005, g: .01, fr: .99, shrink: 1 }); } } };
+                }
+
+                /* === MODE 1 : FIREWORKS FESTIVAL === */
+                else if (mode === 1) {
+                    const rockets = [];
+                    function launchR() { rockets.push({ x: Math.random() * W * .6 + W * .2, y: H, vy: -(Math.random() * 6 + 8), tgt: Math.random() * H * .25 + H * .15, col: rC() }); }
+                    function burstF(rx, ry, col) { const n = 140, bp = [col, col, rC(), rC(), '#FFF']; for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, s = Math.random() * 5.5 + 1, t = Math.random(); addP({ x: rx, y: ry, vx: Math.cos(a) * s, vy: Math.sin(a) * s, sz: t < .1 ? Math.random() * 4 + 3 : Math.random() * 2.5 + .5, bl: t < .1 ? 22 : 10, col: bp[~~(Math.random() * bp.length)], a: 1, dc: .009, g: .035, fr: .985, shrink: 1 }); } for (let j = 0; j < 3; j++) addP({ x: rx, y: ry, vx: 0, vy: 0, sz: 5, bl: 30, col, a: 1, dc: .025, g: 0, fr: 1, shape: 1, upd: p => { p.sz += 3; } }); }
+                    for (let i = 0; i < 5; i++) setTimeout(launchR, i * 300);
+                    mUpd = f => { for (let i = rockets.length - 1; i >= 0; i--) { const r = rockets[i]; r.y += r.vy; addP({ x: r.x + (Math.random() - .5) * 3, y: r.y, vx: (Math.random() - .5) * .5, vy: Math.random() * 2 + 1, sz: Math.random() * 2 + 1, bl: 8, col: '#FFA500', a: 1, dc: .04, g: .02, fr: .98, shrink: 1 }); if (r.y <= r.tgt) { burstF(r.x, r.y, r.col); rockets.splice(i, 1); } } if (f % 80 === 0) launchR(); if (f % 140 === 0) launchR(); };
+                }
+
+                /* === MODE 2 : COSMIC NEBULA === */
+                else if (mode === 2) {
+                    for (let i = 0; i < 200; i++) { const off = Math.random() * 100; addP({ x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0, sz: Math.random() * 1.5 + .3, bl: 3, col: '#FFF', a: Math.random() * .7 + .3, dc: 0, g: 0, fr: 1, upd: (p, f) => { p.a = .3 + Math.sin(f * .02 + off) * .35; } }); }
+                    function spawnNeb(bx, by, n) { for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, s = Math.random() * .8 + .1; addP({ x: bx + (Math.random() - .5) * 100, y: by + (Math.random() - .5) * 100, vx: Math.cos(a) * s, vy: Math.sin(a) * s, sz: Math.random() * 40 + 10, bl: 45, col: rC(), a: .35 + Math.random() * .3, dc: .0006, g: 0, fr: .999, shrink: 1 }); } }
+                    spawnNeb(cx, cy, 80); spawnNeb(cx - W * .2, cy - H * .1, 40); spawnNeb(cx + W * .15, cy + H * .15, 40);
+                    mUpd = f => { if (f % 3 === 0) { const ang = f * .02, r = 50 + Math.sin(f * .005) * 100; addP({ x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r, vx: Math.cos(ang + 1.57) * .5, vy: Math.sin(ang + 1.57) * .5, sz: Math.random() * 8 + 2, bl: 22, col: rC(), a: .7, dc: .002, g: 0, fr: .998, shrink: 1 }); } if (f % 180 === 0) { const sx = Math.random() * W; for (let i = 0; i < 20; i++) addP({ x: sx + i * 3, y: i * 3, vx: 3 + Math.random(), vy: 3 + Math.random(), sz: Math.random() * 2 + .5, bl: 10, col: '#FFF', a: 1 - i * .04, dc: .02, g: 0, fr: .99 }); } if (f % 200 === 0) spawnNeb(cx + (Math.random() - .5) * W * .4, cy + (Math.random() - .5) * H * .4, 25); };
+                }
+
+                /* === MODE 3 : WARP SPEED === */
+                else if (mode === 3) {
+                    const stars = [];
+                    function addStar() { stars.push({ x: cx + (Math.random() - .5) * 20, y: cy + (Math.random() - .5) * 20, z: Math.random() * 1e3 + 500, col: rC(), sz: Math.random() * 2 + 1 }); }
+                    for (let i = 0; i < 300; i++) addStar();
+                    mUpd = f => { for (let i = stars.length - 1; i >= 0; i--) { const s = stars[i]; s.z -= 8; if (s.z <= 1) { stars.splice(i, 1); addStar(); continue; } const sx = (s.x - cx) * (800 / s.z) + cx, sy = (s.y - cy) * (800 / s.z) + cy, psx = (s.x - cx) * (800 / (s.z + 8)) + cx, psy = (s.y - cy) * (800 / (s.z + 8)) + cy, r = Math.max(.5, (1 - s.z / 1500) * s.sz * 3); ctx.save(); ctx.strokeStyle = s.col; ctx.lineWidth = r; ctx.globalAlpha = Math.min(1, (1 - s.z / 1500) * 1.5); ctx.shadowBlur = 10; ctx.shadowColor = s.col; ctx.beginPath(); ctx.moveTo(psx, psy); ctx.lineTo(sx, sy); ctx.stroke(); ctx.restore(); } if (stars.length < 300) addStar(); if (f % 200 === 0) { for (let i = 0; i < 30; i++) { const a = Math.random() * 6.28, s = Math.random() * 2 + .5; addP({ x: cx, y: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s, sz: Math.random() * 5 + 2, bl: 15, col: rC(), a: .8, dc: .01, g: 0, fr: .99, shrink: 1 }); } } };
+                }
+
+                /* === MODE 4 : PARTICLE VORTEX === */
+                else {
+                    const vps = [];
+                    for (let i = 0; i < 200; i++) vps.push({ angle: Math.random() * 6.28, radius: Math.random() * 200 + 50, speed: .01 + Math.random() * .02, rSpd: Math.random() * .3 - .15, col: rC(), sz: Math.random() * 4 + 1, bl: 12 });
+                    mUpd = f => { for (let i = 0; i < vps.length; i++) { const v = vps[i]; v.angle += v.speed; v.radius += v.rSpd; if (v.radius > Math.min(W, H) * .45 || v.radius < 30) v.rSpd *= -1; const vx = cx + Math.cos(v.angle) * v.radius, vy = cy + Math.sin(v.angle) * v.radius; ctx.save(); ctx.globalAlpha = .8; ctx.shadowBlur = v.bl; ctx.shadowColor = v.col; ctx.fillStyle = v.col; ctx.beginPath(); ctx.arc(vx, vy, v.sz, 0, 6.28); ctx.fill(); ctx.restore(); if (f % 3 === 0) addP({ x: vx, y: vy, vx: 0, vy: 0, sz: v.sz * .6, bl: 6, col: v.col, a: .5, dc: .015, g: 0, fr: 1, shrink: 1 }); } const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 80); grad.addColorStop(0, 'rgba(255,255,255,0.08)'); grad.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = grad; ctx.fillRect(cx - 80, cy - 80, 160, 160); if (f % 100 === 0) { for (let j = 0; j < 25; j++) { const a = Math.random() * 6.28, s = Math.random() * 4 + 2; addP({ x: cx, y: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s, sz: Math.random() * 3 + 1, bl: 10, col: rC(), a: 1, dc: .008, g: .02, fr: .99, shrink: 1 }); } } };
+                }
+
+                /* === RENDER LOOP === */
+                ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+                function tick() {
+                    ctx.fillStyle = 'rgba(0,0,0,' + fadeA + ')'; ctx.fillRect(0, 0, W, H);
+                    for (let i = parts.length - 1; i >= 0; i--) {
+                        const p = parts[i]; p.x += p.vx; p.y += p.vy; p.vy += p.g; p.vx *= p.fr; p.vy *= p.fr; p.a -= p.dc;
+                        if (p.a <= 0) { parts.splice(i, 1); continue; }
+                        ctx.save(); ctx.globalAlpha = Math.min(1, p.a);
+                        if (p.bl) { ctx.shadowBlur = p.bl; ctx.shadowColor = p.col; }
+                        ctx.fillStyle = p.col;
+                        if (p.shape === 1) { ctx.strokeStyle = p.col; ctx.lineWidth = 2 * p.a; ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, 6.28); ctx.stroke(); }
+                        else { ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(.1, p.sz * (p.shrink ? p.a : 1)), 0, 6.28); ctx.fill(); if (p.sz > 14) { ctx.globalAlpha = p.a * .3; ctx.shadowBlur = (p.bl || 0) * 1.5; ctx.beginPath(); ctx.arc(p.x, p.y, p.sz * 1.4, 0, 6.28); ctx.fill(); } }
+                        ctx.restore();
+                        if (p.upd) p.upd(p, frame);
+                    }
+                    if (mUpd) mUpd(frame);
+                    frame++; requestAnimationFrame(tick);
+                }
+                tick();
+            }
+        })();
+    </script>
+</body>
+</html>

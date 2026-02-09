@@ -1,0 +1,452 @@
+{
+  "arrival-destination.jpg": {
+    "status": "fail",
+    "labels": [
+      "outdoor (52.8%)",
+      "sky (46.6%)",
+      "land (42.4%)",
+      "liquid (41.1%)",
+      "water (41.1%)",
+      "cloudy (41.0%)",
+      "water_body (40.7%)",
+      "ocean (40.7%)"
+    ],
+    "expected": [
+      "city",
+      "destination",
+      "building",
+      "travel"
+    ],
+    "matched": [],
+    "match_ratio": 0.0
+  },
+  "bus-commute.jpg": {
+    "status": "fail",
+    "labels": [
+      "frozen (68.1%)",
+      "liquid (68.1%)",
+      "snow (68.1%)",
+      "water (68.1%)",
+      "outdoor (64.2%)",
+      "sky (59.0%)",
+      "blue_sky (59.0%)",
+      "land (48.4%)"
+    ],
+    "expected": [
+      "bus",
+      "commut",
+      "transit",
+      "transport",
+      "vehicle"
+    ],
+    "matched": [],
+    "match_ratio": 0.0
+  },
+  "city-aerial.jpg": {
+    "status": "pass",
+    "labels": [
+      "outdoor (81.7%)",
+      "structure (77.9%)",
+      "building (77.9%)",
+      "skyscraper (74.9%)",
+      "sky (59.1%)",
+      "cloudy (59.0%)",
+      "cityscape (52.7%)",
+      "liquid (31.3%)"
+    ],
+    "expected": [
+      "city",
+      "aerial",
+      "building",
+      "urban",
+      "sky"
+    ],
+    "matched": [
+      "city",
+      "building",
+      "sky"
+    ],
+    "match_ratio": 0.6
+  },
+  "city-morning.jpg": {
+    "status": "pass",
+    "labels": [
+      "outdoor (82.6%)",
+      "structure (80.9%)",
+      "building (80.9%)",
+      "cityscape (80.7%)",
+      "sky (50.4%)",
+      "blue_sky (50.4%)",
+      "skyscraper (31.9%)",
+      "liquid (23.8%)"
+    ],
+    "expected": [
+      "city",
+      "morning",
+      "sky",
+      "building",
+      "sunrise"
+    ],
+    "matched": [
+      "city",
+      "sky",
+      "building"
+    ],
+    "match_ratio": 0.6
+  },
+  "city-night.jpg": {
+    "status": "pass",
+    "labels": [
+      "outdoor (81.7%)",
+      "structure (77.9%)",
+      "building (77.9%)",
+      "skyscraper (74.9%)",
+      "sky (59.1%)",
+      "cloudy (59.0%)",
+      "cityscape (52.7%)",
+      "liquid (31.3%)"
+    ],
+    "expected": [
+      "city",
+      "night",
+      "light",
+      "urban",
+      "dark"
+    ],
+    "matched": [
+      "city"
+    ],
+    "match_ratio": 0.2
+  },
+  "city-skyline.jpg": {
+    "status": "pass",
+    "labels": [
+      "outdoor (92.4%)",
+      "structure (92.4%)",
+      "building (92.4%)",
+      "cityscape (85.5%)",
+      "skyscraper (80.5%)",
+      "apartment (17.7%)",
+      "domicile (17.7%)",
+      "land (15.4%)"
+    ],
+    "expected": [
+      "city",
+      "skyline",
+      "building"
+    ],
+    "matched": [
+      "city",
+      "building"
+    ],
+    "match_ratio": 0.6666666666666666
+  },
+  "city-streets.jpg": {
+    "status": "pass",
+    "labels": [
+      "outdoor (88.3%)",
+      "land (87.5%)",
+      "road (87.5%)",
+      "street (87.5%)",
+      "automobile (54.6%)",
+      "machine (54.6%)",
+      "vehicle (54.6%)",
+      "car (54.4%)"
+    ],
+    "expected": [
+      "city",
+      "street",
+      "road",
+      "urban"
+    ],
+    "matched": [
+      "street",
+      "road"
+    ],
+    "match_ratio": 0.5
+  },
+  "commuter-phone.jpg": {
+    "status": "fail",
+    "labels": [
+      "clothing (28.7%)",
+      "lab_coat (28.7%)",
+      "consumer_electronics (25.4%)",
+      "machine (25.4%)",
+      "interior_room (9.2%)",
+      "hospital (9.2%)",
+      "people (4.6%)",
+      "adult (4.6%)"
+    ],
+    "expected": [
+      "phone",
+      "commut",
+      "person",
+      "mobile",
+      "train"
+    ],
+    "matched": [],
+    "match_ratio": 0.0
+  },
+  "earphones-commuter.jpg": {
+    "status": "pass",
+    "labels": [
+      "people (74.6%)",
+      "adult (74.6%)",
+      "headphones (65.7%)",
+      "material (55.9%)",
+      "raw_glass (55.4%)",
+      "clothing (17.8%)",
+      "hoodie (17.1%)",
+      "teen (15.8%)"
+    ],
+    "expected": [
+      "person",
+      "headphone",
+      "earphone",
+      "bus",
+      "train",
+      "commut"
+    ],
+    "matched": [
+      "headphone"
+    ],
+    "match_ratio": 0.16666666666666666
+  },
+  "happy-commuter.jpg": {
+    "status": "fail",
+    "labels": [
+      "people (69.3%)",
+      "adult (69.3%)",
+      "clothing (26.9%)",
+      "scarf (25.3%)",
+      "jacket (18.3%)",
+      "teen (10.6%)",
+      "machine (6.7%)",
+      "consumer_electronics (6.7%)"
+    ],
+    "expected": [
+      "person",
+      "woman",
+      "train",
+      "subway",
+      "bus",
+      "commut",
+      "smile"
+    ],
+    "matched": [],
+    "match_ratio": 0.0
+  },
+  "hero-city.jpg": {
+    "status": "pass",
+    "labels": [
+      "outdoor (92.5%)",
+      "land (91.6%)",
+      "road (91.5%)",
+      "street (91.5%)",
+      "structure (65.7%)",
+      "railroad (56.6%)",
+      "tramway (56.6%)",
+      "building (54.8%)"
+    ],
+    "expected": [
+      "city",
+      "skyline",
+      "urban",
+      "building",
+      "aerial"
+    ],
+    "matched": [
+      "building"
+    ],
+    "match_ratio": 0.2
+  },
+  "map-phone.jpg": {
+    "status": "pass",
+    "labels": [
+      "consumer_electronics (81.7%)",
+      "machine (81.7%)",
+      "document (55.5%)",
+      "map (55.5%)",
+      "screenshot (7.2%)",
+      "chart (4.4%)",
+      "diagram (4.4%)",
+      "people (3.4%)"
+    ],
+    "expected": [
+      "phone",
+      "map",
+      "screen",
+      "hand"
+    ],
+    "matched": [
+      "map",
+      "screen"
+    ],
+    "match_ratio": 0.5
+  },
+  "night-bus.jpg": {
+    "status": "pass",
+    "labels": [
+      "machine (89.9%)",
+      "automobile (89.8%)",
+      "vehicle (89.8%)",
+      "bus (89.8%)",
+      "outdoor (63.3%)",
+      "sky (63.2%)",
+      "blue_sky (63.2%)",
+      "wheel (28.3%)"
+    ],
+    "expected": [
+      "bus",
+      "night",
+      "light",
+      "transport"
+    ],
+    "matched": [
+      "bus"
+    ],
+    "match_ratio": 0.25
+  },
+  "person-walking-city.jpg": {
+    "status": "pass",
+    "labels": [
+      "outdoor (91.1%)",
+      "people (86.6%)",
+      "adult (86.6%)",
+      "land (82.5%)",
+      "night_sky (80.3%)",
+      "sky (80.3%)",
+      "road (75.2%)",
+      "street (75.2%)"
+    ],
+    "expected": [
+      "person",
+      "walk",
+      "street",
+      "city",
+      "night",
+      "urban"
+    ],
+    "matched": [
+      "walk",
+      "street",
+      "night"
+    ],
+    "match_ratio": 0.5
+  },
+  "phone-gps-closeup.jpg": {
+    "status": "fail",
+    "labels": [
+      "consumer_electronics (85.3%)",
+      "machine (85.3%)",
+      "clothing (24.0%)",
+      "beanie (21.5%)",
+      "hat (21.5%)",
+      "headgear (21.5%)",
+      "jacket (10.3%)",
+      "material (5.0%)"
+    ],
+    "expected": [
+      "phone",
+      "map",
+      "gps",
+      "mobile",
+      "screen",
+      "smartphone",
+      "hand"
+    ],
+    "matched": [],
+    "match_ratio": 0.0
+  },
+  "phone-navigate.jpg": {
+    "status": "fail",
+    "labels": [
+      "structure (69.7%)",
+      "wood_processed (69.7%)",
+      "media (28.0%)",
+      "record (28.0%)",
+      "music (25.1%)",
+      "musical_instrument (23.8%)",
+      "string_instrument (20.1%)",
+      "guitar (20.1%)"
+    ],
+    "expected": [
+      "phone",
+      "navigate",
+      "map",
+      "gps",
+      "hand"
+    ],
+    "matched": [],
+    "match_ratio": 0.0
+  },
+  "sunset-commute.jpg": {
+    "status": "pass",
+    "labels": [
+      "people (65.5%)",
+      "adult (65.5%)",
+      "outdoor (54.9%)",
+      "sky (54.9%)",
+      "cloudy (54.9%)",
+      "recreation (30.8%)",
+      "sport (30.8%)",
+      "watersport (30.2%)"
+    ],
+    "expected": [
+      "sunset",
+      "sky",
+      "commut",
+      "light",
+      "evening"
+    ],
+    "matched": [
+      "sky"
+    ],
+    "match_ratio": 0.2
+  },
+  "train-platform.jpg": {
+    "status": "fail",
+    "labels": [
+      "outdoor (76.2%)",
+      "land (76.2%)",
+      "road (76.2%)",
+      "street (76.2%)",
+      "structure (65.9%)",
+      "sign (65.9%)",
+      "billboards (65.9%)",
+      "automobile (58.7%)"
+    ],
+    "expected": [
+      "train",
+      "platform",
+      "station",
+      "rail"
+    ],
+    "matched": [],
+    "match_ratio": 0.0
+  },
+  "train-window.jpg": {
+    "status": "pass",
+    "labels": [
+      "machine (89.2%)",
+      "train (89.2%)",
+      "train_real (89.2%)",
+      "vehicle (89.2%)",
+      "structure (60.0%)",
+      "railroad (60.0%)",
+      "track_rail (60.0%)",
+      "outdoor (22.9%)"
+    ],
+    "expected": [
+      "train",
+      "window",
+      "rail",
+      "transport"
+    ],
+    "matched": [
+      "train",
+      "rail"
+    ],
+    "match_ratio": 0.5
+  }
+}

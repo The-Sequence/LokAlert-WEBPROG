@@ -338,13 +338,6 @@ function getLatestVersion() {
     try {
         $db = Database::getInstance()->getConnection();
         
-        // Add download_url column if missing
-        try {
-            $db->exec("ALTER TABLE `apk_versions` ADD COLUMN `download_url` VARCHAR(500) NULL AFTER `file_size`");
-        } catch (PDOException $e) {
-            // Column already exists
-        }
-        
         $stmt = $db->query("
             SELECT id, version, filename, file_size, download_url, release_notes, download_count, upload_date 
             FROM apk_versions 

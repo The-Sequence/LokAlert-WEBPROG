@@ -45,6 +45,12 @@ switch ($action) {
     case 'change-password':
         handleChangePassword();
         break;
+    case 'accept-invite':
+        handleAcceptInvite();
+        break;
+    case 'validate-invite':
+        handleValidateInvite();
+        break;
     case 'debug-db':
         debugDatabase();
         break;
@@ -88,66 +94,6 @@ function debugDatabase() {
 }
 
 /**
- * Check and auto-migrate database if needed
- */
-function ensureDatabaseSchema($db) {
-    try {
-        $stmt = $db->query("DESCRIBE users");
-        $columns = array_column($stmt->fetchAll(), 'Field');
-        
-        $migrations = [];
-        
-        if (!in_array('is_verified', $columns)) {
-            $migrations[] = "ALTER TABLE `users` ADD COLUMN `is_verified` TINYINT(1) DEFAULT 0";
-        }
-        if (!in_array('verification_code', $columns)) {
-            $migrations[] = "ALTER TABLE `users` ADD COLUMN `verification_code` VARCHAR(6) NULL";
-        }
-        if (!in_array('verification_expires', $columns)) {
-            $migrations[] = "ALTER TABLE `users` ADD COLUMN `verification_expires` DATETIME NULL";
-        }
-        if (!in_array('reset_token', $columns)) {
-            $migrations[] = "ALTER TABLE `users` ADD COLUMN `reset_token` VARCHAR(64) NULL";
-        }
-        if (!in_array('reset_expires', $columns)) {
-            $migrations[] = "ALTER TABLE `users` ADD COLUMN `reset_expires` DATETIME NULL";
-        }
-        if (!in_array('last_download_at', $columns)) {
-            $migrations[] = "ALTER TABLE `users` ADD COLUMN `last_download_at` DATETIME NULL";
-        }
-        if (!in_array('download_count', $columns)) {
-            $migrations[] = "ALTER TABLE `users` ADD COLUMN `download_count` INT DEFAULT 0";
-        }
-        
-        foreach ($migrations as $sql) {
-            try {
-                $db->exec($sql);
-            } catch (PDOException $e) {
-                // Column might already exist, ignore
-            }
-        }
-        
-        // Make username nullable if it's currently NOT NULL
-        try {
-            $db->exec("ALTER TABLE `users` MODIFY COLUMN `username` VARCHAR(50) NULL");
-        } catch (PDOException $e) {
-            // Ignore errors
-        }
-        
-        // Mark admin as verified
-        try {
-            $db->exec("UPDATE `users` SET `is_verified` = 1 WHERE `is_admin` = 1");
-        } catch (PDOException $e) {
-            // Ignore errors
-        }
-        
-        return true;
-    } catch (PDOException $e) {
-        return false;
-    }
-}
-
-/**
  * Handle user signup with email verification
  */
 function handleSignup() {
@@ -186,9 +132,6 @@ function handleSignup() {
     try {
         $db = Database::getInstance()->getConnection();
         
-        // Auto-migrate database schema if columns are missing
-        ensureDatabaseSchema($db);
-        
         // Check if email exists
         $stmt = $db->prepare("SELECT id, is_verified FROM users WHERE email = ?");
         $stmt->execute([$email]);
@@ -209,6 +152,9 @@ function handleSignup() {
                     WHERE id = ?
                 ");
                 $stmt->execute([$name, $hashedPassword, $verificationCode, $expiresAt, $existingUser['id']]);
+                
+                // Audit log for re-registration
+                logAudit('USER_RE_SIGNUP', 'users', $existingUser['id'], null, ['email' => $email]);
                 
                 // Send verification email
                 $emailService = new EmailService();
@@ -241,6 +187,9 @@ function handleSignup() {
         $stmt->execute([$name, $email, $hashedPassword, $verificationCode, $expiresAt]);
         
         $userId = $db->lastInsertId();
+        
+        // Audit log
+        logAudit('USER_SIGNUP', 'users', $userId, null, ['email' => $email]);
         
         // Send verification email
         $emailService = new EmailService();
@@ -283,9 +232,6 @@ function handleVerification() {
     
     try {
         $db = Database::getInstance()->getConnection();
-        
-        // Auto-migrate database schema if columns are missing
-        ensureDatabaseSchema($db);
         
         $stmt = $db->prepare("
             SELECT id, username, email, is_admin, verification_code, verification_expires 
@@ -360,9 +306,6 @@ function handleResendCode() {
     try {
         $db = Database::getInstance()->getConnection();
         
-        // Auto-migrate database schema if columns are missing
-        ensureDatabaseSchema($db);
-        
         $stmt = $db->prepare("SELECT id, is_verified FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
@@ -422,17 +365,20 @@ function handleLogin() {
         jsonResponse(['error' => 'Email and password are required'], 400);
     }
     
+    // Check login rate limiting
+    if (isLoginRateLimited($email)) {
+        jsonResponse(['error' => 'Too many failed attempts. Please try again in ' . LOGIN_LOCKOUT_MINUTES . ' minutes.'], 429);
+    }
+    
     try {
         $db = Database::getInstance()->getConnection();
-        
-        // Auto-migrate database schema if columns are missing
-        ensureDatabaseSchema($db);
         
         $stmt = $db->prepare("SELECT * FROM users WHERE email = ? OR username = ?");
         $stmt->execute([$email, $email]);
         $user = $stmt->fetch();
         
         if (!$user || !password_verify($password, $user['password'])) {
+            logLoginAttempt($email, false);
             jsonResponse(['error' => 'Invalid email or password'], 401);
         }
         
@@ -475,6 +421,11 @@ function handleLogin() {
         $_SESSION['email'] = $user['email'];
         $_SESSION['is_admin'] = $user['is_admin'];
         $_SESSION['is_verified'] = $user['is_verified'];
+        $_SESSION['last_activity'] = time();
+        
+        // Log successful login
+        logLoginAttempt($email, true);
+        logAudit('USER_LOGIN', 'users', $user['id']);
         
         jsonResponse([
             'success' => true,
@@ -509,11 +460,19 @@ function handleLogout() {
  */
 function checkAuth() {
     if (isLoggedIn()) {
+        // Check session timeout using DB setting
+        $timeoutMinutes = (int)getSetting('session_timeout_minutes', 5);
+        if (isset($_SESSION['last_activity'])) {
+            $elapsed = time() - $_SESSION['last_activity'];
+            if ($timeoutMinutes > 0 && $elapsed > ($timeoutMinutes * 60)) {
+                session_destroy();
+                jsonResponse(['authenticated' => false, 'reason' => 'session_timeout', 'message' => 'Session expired due to inactivity']);
+            }
+        }
+        $_SESSION['last_activity'] = time();
+        
         try {
             $db = Database::getInstance()->getConnection();
-            
-            // Auto-migrate database schema if columns are missing
-            ensureDatabaseSchema($db);
             
             $stmt = $db->prepare("SELECT id, username, email, is_admin, is_verified, last_download_at FROM users WHERE id = ?");
             $stmt->execute([$_SESSION['user_id']]);
@@ -529,6 +488,7 @@ function checkAuth() {
             
             jsonResponse([
                 'authenticated' => true,
+                'session_timeout_minutes' => $timeoutMinutes,
                 'user' => [
                     'id' => $user['id'],
                     'username' => $user['username'],
@@ -705,6 +665,154 @@ function handleChangePassword() {
             'success' => true,
             'message' => 'Password changed successfully'
         ]);
+        
+    } catch (PDOException $e) {
+        jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Validate an admin invite token (public, no auth)
+ */
+function handleValidateInvite() {
+    $token = sanitize($_GET['token'] ?? '');
+    
+    if (empty($token)) {
+        jsonResponse(['error' => 'Token is required'], 400);
+    }
+    
+    try {
+        $db = Database::getInstance()->getConnection();
+        
+        $stmt = $db->prepare("
+            SELECT id, name, email, password_hash, expires_at, used_at, invalidated_at
+            FROM admin_invites
+            WHERE token = ?
+        ");
+        $stmt->execute([$token]);
+        $invite = $stmt->fetch();
+        
+        if (!$invite) {
+            jsonResponse(['valid' => false, 'error' => 'Invalid invitation link']);
+        }
+        
+        if ($invite['used_at']) {
+            jsonResponse(['valid' => false, 'error' => 'This invitation has already been used']);
+        }
+        
+        if ($invite['invalidated_at']) {
+            jsonResponse(['valid' => false, 'error' => 'This invitation has been revoked']);
+        }
+        
+        if (strtotime($invite['expires_at']) < time()) {
+            jsonResponse(['valid' => false, 'error' => 'This invitation has expired']);
+        }
+        
+        jsonResponse([
+            'valid' => true,
+            'name' => $invite['name'],
+            'email' => $invite['email'],
+            'has_password' => !empty($invite['password_hash']),
+            'expires_at' => $invite['expires_at']
+        ]);
+        
+    } catch (PDOException $e) {
+        jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Accept an admin invitation and create the admin account
+ */
+function handleAcceptInvite() {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        jsonResponse(['error' => 'Method not allowed'], 405);
+    }
+    
+    $data = json_decode(file_get_contents('php://input'), true);
+    
+    $token = sanitize($data['token'] ?? '');
+    $password = $data['password'] ?? '';
+    
+    if (empty($token)) {
+        jsonResponse(['error' => 'Invitation token is required'], 400);
+    }
+    
+    try {
+        $db = Database::getInstance()->getConnection();
+        
+        // Validate token
+        $stmt = $db->prepare("
+            SELECT id, name, email, password_hash, expires_at, used_at, invalidated_at
+            FROM admin_invites
+            WHERE token = ?
+        ");
+        $stmt->execute([$token]);
+        $invite = $stmt->fetch();
+        
+        if (!$invite) {
+            jsonResponse(['error' => 'Invalid invitation token'], 400);
+        }
+        
+        if ($invite['used_at']) {
+            jsonResponse(['error' => 'This invitation has already been used'], 400);
+        }
+        
+        if ($invite['invalidated_at']) {
+            jsonResponse(['error' => 'This invitation has been revoked'], 400);
+        }
+        
+        if (strtotime($invite['expires_at']) < time()) {
+            jsonResponse(['error' => 'This invitation has expired'], 400);
+        }
+        
+        // Determine password
+        if (!empty($invite['password_hash'])) {
+            // Use pre-set password
+            $hashedPassword = $invite['password_hash'];
+        } elseif (!empty($password)) {
+            if (strlen($password) < 6) {
+                jsonResponse(['error' => 'Password must be at least 6 characters'], 400);
+            }
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        } else {
+            jsonResponse(['error' => 'Password is required'], 400);
+        }
+        
+        // Check if email already exists
+        $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->execute([$invite['email']]);
+        if ($stmt->fetch()) {
+            jsonResponse(['error' => 'An account with this email already exists'], 400);
+        }
+        
+        $db->beginTransaction();
+        try {
+            // Create admin user
+            $stmt = $db->prepare("
+                INSERT INTO users (username, email, password, role_id, is_admin, is_verified, created_at)
+                VALUES (?, ?, ?, 1, 1, 1, NOW())
+            ");
+            $stmt->execute([$invite['name'] ?: $invite['email'], $invite['email'], $hashedPassword]);
+            $userId = $db->lastInsertId();
+            
+            // Mark invite as used
+            $stmt = $db->prepare("UPDATE admin_invites SET used_at = NOW() WHERE id = ?");
+            $stmt->execute([$invite['id']]);
+            
+            logAudit('ADMIN_INVITE_ACCEPTED', 'users', $userId, null, ['email' => $invite['email'], 'invite_id' => $invite['id']]);
+            
+            $db->commit();
+            
+            jsonResponse([
+                'success' => true,
+                'message' => 'Admin account created successfully! You can now log in.',
+                'email' => $invite['email']
+            ]);
+        } catch (Exception $e) {
+            $db->rollBack();
+            jsonResponse(['error' => 'Failed to create account: ' . $e->getMessage()], 500);
+        }
         
     } catch (PDOException $e) {
         jsonResponse(['error' => 'Database error: ' . $e->getMessage()], 500);

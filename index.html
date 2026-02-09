@@ -1,490 +1,1963 @@
-﻿<!DOCTYPE html>
-<!-- Version: 2.0.1 - Updated: 2026-01-26 -->
-<html lang="en">
+<!DOCTYPE html>
+<!-- Version: 11.1.0 — 3-Column Feature Grid | Frosted Glass Why | Auto-scroll Demo | Production Ready -->
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>LokAlert - Smart Location-Based Arrival Alert</title>
+    <title>LokAlert — Arrive Smart. Stay Alert.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <noscript><style>#siteContent{visibility:visible!important;opacity:1!important}.r{opacity:1!important;transform:none!important}.fab-dl{display:none!important}.sh-stage{opacity:1!important;position:relative!important}.scroll-hero{height:auto!important}.sw{opacity:1!important}.sticky-reveal{height:auto!important}.sticky-inner{position:relative!important}</style></noscript>
     <style>
-        /* Floating Download Button */
-        .floating-download {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 28px;
-            background: linear-gradient(135deg, #6366f1 0%, #22d3ee 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 16px;
-            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
-            transition: all 0.3s ease;
-            animation: pulse-glow 2s infinite;
+        /* =========================================
+           HIDE UNTIL MAINTENANCE CHECK
+        ========================================= */
+        #siteContent{visibility:hidden;opacity:0}
+
+        /* =========================================
+           RESET
+        ========================================= */
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+        /* =========================================
+           VARIABLES
+        ========================================= */
+        :root,[data-theme="dark"]{
+            --bg:#000;--bg-alt:#0a0a0c;--bg-elevated:#1d1d1f;
+            --text:#f5f5f7;--text-dim:#86868b;--text-faint:#6e6e73;
+            --accent:#2997ff;--accent-hover:#0071e3;
+            --accent-warm:#ff9f0a;--accent-green:#30d158;--accent-purple:#bf5af2;
+            --border:rgba(255,255,255,.08);
+            --nav-bg:rgba(0,0,0,.82);
+            --card-bg:#1d1d1f;
+            --section-tint-1:linear-gradient(160deg,#0a0a0c 0%,#0d1117 50%,#0a0a0c 100%);
+            --section-tint-2:linear-gradient(160deg,#0a0a0c 0%,#12100e 50%,#0a0a0c 100%);
+            --section-tint-3:linear-gradient(160deg,#0a0a0c 0%,#0e0a14 50%,#0a0a0c 100%);
+            --bg-light:#141416;--card-bg-light:#1c1c1e;--text-on-light:var(--text);
+            --apple-ease:cubic-bezier(.28,.11,.32,1);
+            --apple-ease-soft:cubic-bezier(.25,.46,.45,.94);
         }
-        .floating-download:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 50px rgba(99, 102, 241, 0.5);
+        [data-theme="light"]{
+            --bg:#fff;--bg-alt:#f5f5f7;--bg-elevated:#fff;
+            --text:#1d1d1f;--text-dim:#6e6e73;--text-faint:#86868b;
+            --accent-warm:#e88600;--accent-green:#28a745;--accent-purple:#8e44ad;
+            --border:rgba(0,0,0,.08);
+            --nav-bg:rgba(255,255,255,.82);
+            --card-bg:#fff;
+            --bg-light:#ffffff;--card-bg-light:#ffffff;--text-on-light:var(--text);
+            --section-tint-1:linear-gradient(160deg,#f5f5f7 0%,#eef3f9 50%,#f5f5f7 100%);
+            --section-tint-2:linear-gradient(160deg,#f5f5f7 0%,#fdf5ee 50%,#f5f5f7 100%);
+            --section-tint-3:linear-gradient(160deg,#f5f5f7 0%,#f3eef8 50%,#f5f5f7 100%);
         }
-        .floating-download .download-icon {
-            font-size: 24px;
+        html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+        body{
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+            background:var(--bg);color:var(--text);
+            line-height:1.47;overflow-x:hidden;
+            transition:background .4s,color .4s;
         }
-        .floating-download .download-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
+
+        /* =========================================
+           INLINE SVG SIZING
+        ========================================= */
+        .ico{display:inline-block;vertical-align:middle;flex-shrink:0}
+        .ico svg{display:block}
+
+        /* =========================================
+           MAINTENANCE — COLOR EXPLOSION
+        ========================================= */
+        #maintOverlay{position:fixed;inset:0;z-index:99999;display:none;overflow:hidden;background:#000}
+        #maintOverlay.active{display:block}
+        #maintCanvas{position:absolute;inset:0;width:100%;height:100%}
+        .maint-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px}
+        .maint-card{background:rgba(0,0,0,.45);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:48px 56px;border-radius:28px;border:1px solid rgba(255,255,255,.12);max-width:520px;animation:maintCardIn .8s cubic-bezier(.16,1,.3,1) both;animation-delay:.3s}
+        @keyframes maintCardIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:none}}
+        .maint-icon{font-size:48px;margin-bottom:20px;display:inline-block;animation:maintPulse 2s ease-in-out infinite}
+        @keyframes maintPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.12);opacity:.85}}
+        .maint-title{font-size:clamp(28px,5vw,42px);font-weight:800;color:#fff;margin-bottom:12px;letter-spacing:-.03em}
+        .maint-msg{font-size:17px;color:rgba(255,255,255,.65);line-height:1.6;margin:0}
+
+        /* =========================================
+           NAV
+        ========================================= */
+        .g-nav{
+            position:fixed;top:0;left:0;right:0;z-index:9999;
+            height:44px;background:var(--nav-bg);
+            backdrop-filter:saturate(180%) blur(20px);
+            -webkit-backdrop-filter:saturate(180%) blur(20px);
+            border-bottom:.5px solid var(--border);
+            transition:transform .35s var(--apple-ease);
         }
-        .floating-download .download-text small {
-            font-size: 11px;
-            opacity: 0.9;
-            font-weight: 400;
+        .g-nav.hide{transform:translateY(-100%)}
+        .g-nav-inner{max-width:980px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 22px}
+        .g-nav-logo{font-size:15px;font-weight:600;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:6px}
+        .g-nav-logo svg{color:var(--accent)}
+        .g-nav-links{display:flex;align-items:center;gap:24px;list-style:none}
+        .g-nav-links a{font-size:12px;color:var(--text-dim);text-decoration:none;transition:color .25s}
+        .g-nav-links a:hover{color:var(--text)}
+        .g-nav-links .cta-link{background:var(--accent);color:#fff!important;padding:4px 14px;border-radius:980px;font-weight:500}
+        .g-nav-links .cta-link:hover{background:var(--accent-hover)}
+        .th-pill{display:flex;gap:2px;background:rgba(255,255,255,.06);border-radius:980px;padding:2px;cursor:pointer;border:none}
+        [data-theme="light"] .th-pill{background:rgba(0,0,0,.05)}
+        .th-opt{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .25s;color:var(--text-dim)}
+        .th-opt.on{background:rgba(255,255,255,.12);color:var(--text)}
+        [data-theme="light"] .th-opt.on{background:rgba(0,0,0,.08)}
+        .th-opt svg{width:11px;height:11px}
+        .ver-link{font-size:11px;color:var(--text-faint);text-decoration:none;border:1px solid var(--border);padding:3px 10px;border-radius:980px;transition:all .25s}
+        .ver-link:hover{color:var(--text);border-color:var(--text-dim)}
+        .g-mob-btn{display:none;background:none;border:none;cursor:pointer;width:28px;height:28px;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+        .g-mob-btn span{display:block;width:16px;height:1.5px;background:var(--text);border-radius:2px;transition:all .3s}
+        .g-mob-btn.on span:nth-child(1){transform:rotate(45deg) translate(2px,2px)}
+        .g-mob-btn.on span:nth-child(2){opacity:0}
+        .g-mob-btn.on span:nth-child(3){transform:rotate(-45deg) translate(2px,-2px)}
+        .g-mob-menu{display:none;position:fixed;top:44px;left:0;right:0;bottom:0;background:var(--nav-bg);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);flex-direction:column;align-items:center;justify-content:center;gap:28px;z-index:9998}
+        .g-mob-menu.on{display:flex}
+        .g-mob-menu a{font-size:17px;color:var(--text);text-decoration:none;font-weight:500}
+        .g-mob-th{display:none}
+        @media(max-width:768px){.g-nav-links{display:none}.g-mob-btn{display:flex}.g-mob-th{display:flex}}
+
+        /* =========================================
+           SCROLL-DRIVEN CINEMATIC HERO
+           600vh container, sticky viewport, 4 stages
+        ========================================= */
+        .scroll-hero{position:relative;height:600vh;background:#000}
+        .scroll-hero-sticky{
+            position:sticky;top:0;height:100vh;width:100%;
+            overflow:hidden;display:flex;align-items:center;justify-content:center;
         }
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4); }
-            50% { box-shadow: 0 10px 50px rgba(99, 102, 241, 0.6), 0 0 30px rgba(34, 211, 238, 0.3); }
+        .scroll-hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at center,rgba(41,151,255,.06) 0%,transparent 70%)}
+        /* Geo decoration */
+        .scroll-hero-geo{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.12}
+        .scroll-hero-geo line{stroke:var(--accent);stroke-width:.5;vector-effect:non-scaling-stroke}
+        .scroll-hero-geo circle{fill:none;stroke:var(--accent);stroke-width:.5;vector-effect:non-scaling-stroke}
+
+        /* Flanking images — BIGGER */
+        .flank-img{
+            position:absolute;z-index:2;
+            width:clamp(240px,34vw,520px);
+            height:clamp(300px,42vh,600px);
+            border-radius:24px;overflow:hidden;
+            will-change:transform,opacity;
+            box-shadow:0 24px 80px rgba(0,0,0,.6);
         }
-        @media (max-width: 768px) {
-            .floating-download {
-                bottom: 20px;
-                right: 20px;
-                padding: 14px 20px;
-                font-size: 14px;
-            }
-            .floating-download .download-icon { font-size: 20px; }
+        .flank-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.85) contrast(1.05)}
+        .flank-ul{top:4vh;left:4vw}
+        .flank-lr{bottom:4vh;right:4vw}
+
+
+        /* Stages */
+        .sh-stage{
+            position:absolute;inset:0;z-index:3;
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+            text-align:center;padding:0 24px;will-change:opacity,transform;pointer-events:none;
         }
-        /* Admin Login Button */
-        .nav-admin-btn {
-            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%) !important;
-            color: white !important;
-            padding: 10px 20px !important;
-            border-radius: 25px !important;
-            font-weight: 600 !important;
-            transition: all 0.3s ease !important;
-            text-decoration: none !important;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        .sh-title{
+            font-size:clamp(88px,20vw,200px);font-weight:900;
+            letter-spacing:-.06em;line-height:.86;color:#fff;
+            will-change:transform,opacity;user-select:none;
         }
-        .nav-admin-btn:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4) !important;
+        .sh-title-glow{
+            position:absolute;
+            width:clamp(350px,55vw,800px);height:clamp(350px,55vw,800px);
+            border-radius:50%;
+            background:radial-gradient(circle,rgba(41,151,255,.25) 0%,rgba(41,151,255,.08) 40%,transparent 70%);
+            pointer-events:none;z-index:-1;will-change:transform,opacity;
         }
-        .mobile-admin-btn {
-            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%) !important;
-            color: white !important;
-            padding: 12px 24px !important;
-            border-radius: 25px !important;
-            font-weight: 600 !important;
-            text-align: center !important;
-            margin: 10px 0 !important;
+        .sh-tagline{
+            font-size:clamp(32px,6vw,64px);font-weight:700;
+            letter-spacing:-.03em;line-height:1.08;color:#fff;max-width:720px;
+            will-change:opacity,transform;
         }
+        /* Stage 2 support images — LARGE for emphasis */
+        .sh-support-imgs{position:absolute;inset:0;z-index:2;pointer-events:none}
+        .sh-support-img{
+            position:absolute;
+            width:clamp(160px,24vw,340px);height:clamp(200px,28vh,400px);
+            border-radius:22px;overflow:hidden;will-change:transform,opacity;
+            box-shadow:0 20px 60px rgba(0,0,0,.55);
+        }
+        .sh-support-img img{width:100%;height:100%;object-fit:cover}
+        .sh-si-1{top:6vh;left:3vw}
+        .sh-si-2{bottom:6vh;right:3vw}
+        .sh-si-3{top:4vh;right:5vw}
+        .sh-si-4{bottom:4vh;left:5vw}
+
+        /* Stage 3: ultra-smooth sentence */
+        .sh-sentence-wrap{position:relative;z-index:3;max-width:780px;will-change:opacity,transform}
+        .sh-sentence{
+            font-size:clamp(21px,3vw,32px);font-weight:500;
+            line-height:1.55;color:rgba(255,255,255,.9);letter-spacing:-.01em;
+        }
+        .sh-sentence .s-word{
+            display:inline;
+            opacity:.12;
+            /* SMOOTH: use CSS transition for silky per-word fade */
+            transition:opacity .35s cubic-bezier(.25,.46,.45,.94);
+        }
+        .sh-sentence .s-word.lit{opacity:1}
+        /* Video scrub frame */
+        .sh-video-frame{position:absolute;inset:0;z-index:1;overflow:hidden}
+        .sh-video-frame video,.sh-video-frame img{width:100%;height:100%;object-fit:cover}
+        .sh-video-frame video{opacity:.25;filter:blur(3px) brightness(.5);will-change:opacity,filter}
+        .sh-video-frame img{opacity:.2;filter:blur(3px) brightness(.5);display:none}
+        .sh-video-frame.img-mode video{display:none}
+        .sh-video-frame.img-mode img{display:block}
+
+
+        /* Stage 4: mosaic — bigger for impact */
+        .sh-mosaic{position:absolute;inset:0;z-index:2;pointer-events:none}
+        .sh-mosaic-img{
+            position:absolute;
+            width:clamp(120px,16vw,220px);height:clamp(120px,16vw,220px);
+            border-radius:20px;overflow:hidden;will-change:transform,opacity;
+            box-shadow:0 16px 50px rgba(0,0,0,.55);
+        }
+        .sh-mosaic-img img{width:100%;height:100%;object-fit:cover}
+        .sh-final-tagline{
+            font-size:clamp(40px,8vw,80px);font-weight:800;
+            letter-spacing:-.04em;line-height:1;color:#fff;will-change:opacity,transform;
+        }
+        .sh-final-sub{
+            font-size:clamp(17px,2vw,24px);color:rgba(255,255,255,.6);
+            margin-top:16px;font-weight:400;will-change:opacity;
+        }
+        .sh-final-links{
+            display:flex;gap:24px;justify-content:center;margin-top:32px;will-change:opacity,transform;
+        }
+        .sh-final-links a{font-size:21px;font-weight:400;text-decoration:none;color:var(--accent)}
+        .sh-final-links a:hover{text-decoration:underline}
+
+        /* Scroll hint — prominent */
+        .scroll-hint{
+            position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+            z-index:10;text-align:center;will-change:opacity;
+        }
+        .scroll-hint-text{
+            font-size:13px;font-weight:500;letter-spacing:.1em;
+            text-transform:uppercase;color:rgba(255,255,255,.7);
+            margin-bottom:10px;
+        }
+        .scroll-hint-chevron{
+            width:20px;height:20px;margin:0 auto;
+            border-right:2px solid rgba(255,255,255,.4);
+            border-bottom:2px solid rgba(255,255,255,.4);
+            transform:rotate(45deg);
+            animation:chevBounce 2s var(--apple-ease) infinite;
+        }
+        @keyframes chevBounce{
+            0%,100%{transform:rotate(45deg) translate(0,0);opacity:.4}
+            50%{transform:rotate(45deg) translate(4px,4px);opacity:1}
+        }
+
+        /* Responsive hero */
+        @media(max-width:768px){
+            .flank-img{width:clamp(160px,44vw,260px);height:clamp(200px,34vh,320px);border-radius:16px}
+            .flank-ul{top:10vh;left:1vw}.flank-lr{bottom:10vh;right:1vw}
+            .sh-support-img{width:clamp(100px,28vw,180px);height:clamp(130px,22vh,220px);border-radius:14px}
+            .sh-mosaic-img{width:clamp(90px,22vw,140px);height:clamp(90px,22vw,140px)}
+        }
+
+        /* =========================================
+           ANDROID PHONE FRAME — generic/standard, NOT iOS
+        ========================================= */
+        .phone-frame{
+            position:relative;display:inline-block;
+            background:linear-gradient(145deg,#2c2c2e 0%,#1a1a1c 50%,#2c2c2e 100%);
+            border-radius:42px;padding:12px;
+            box-shadow:0 40px 100px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06),inset 0 1px 0 rgba(255,255,255,.05);
+        }
+        .phone-frame::before{
+            content:'';position:absolute;top:16px;left:50%;transform:translateX(-50%);
+            width:8px;height:8px;border-radius:50%;
+            background:radial-gradient(circle,#1a1a1a 40%,#0d0d0d 100%);
+            box-shadow:inset 0 0 2px rgba(255,255,255,.04);z-index:10;
+        }
+        .phone-screen{
+            width:100%;border-radius:32px;overflow:hidden;
+            aspect-ratio:1080/2376;background:#000;position:relative;
+        }
+        .phone-screen img{width:100%;height:100%;object-fit:cover;display:block}
+        .phone-sm .phone-screen{width:220px}
+        .phone-md{max-width:280px}
+        .phone-md .phone-screen{width:100%}
+        .phone-lg{max-width:320px}
+        .phone-lg .phone-screen{width:100%}
+        [data-theme="light"] .phone-frame{
+            background:linear-gradient(145deg,#e8e8ed 0%,#d1d1d6 50%,#e8e8ed 100%);
+            box-shadow:0 40px 100px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.04),inset 0 1px 0 rgba(255,255,255,.5);
+        }
+        [data-theme="light"] .phone-frame::before{background:radial-gradient(circle,#c7c7cc 40%,#aeaeb2 100%);box-shadow:inset 0 0 2px rgba(0,0,0,.1)}
+
+        /* =========================================
+           PHONE SHOWCASE — scroll-driven phone + text reveal
+        ========================================= */
+        .phone-showcase{position:relative;min-height:300vh;background:var(--bg)}
+        .phone-showcase-sticky{
+            position:sticky;top:0;height:100vh;
+            display:flex;align-items:center;justify-content:center;
+            overflow:hidden;gap:80px;padding:0 48px;
+        }
+        .phone-showcase-device{flex-shrink:0;will-change:transform,opacity}
+        .phone-showcase-text{max-width:440px;will-change:opacity,transform}
+        .phone-showcase-text .eyebrow{font-size:14px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+        .phone-showcase-text h2{font-size:clamp(32px,4vw,48px);font-weight:700;letter-spacing:-.03em;line-height:1.1;margin-bottom:16px}
+        .phone-showcase-text p{font-size:17px;color:var(--text-dim);line-height:1.47}
+        @media(max-width:768px){
+            .phone-showcase-sticky{flex-direction:column;gap:32px;padding:24px}
+            .phone-showcase-text{text-align:center}
+            .phone-sm .phone-screen{width:180px}
+            .phone-md{max-width:220px}
+            .phone-lg{max-width:260px}
+        }
+
+        /* =========================================
+           LIGHT SECTIONS — used for explanation/depth sections
+        ========================================= */
+        .section-light{background:var(--bg-light)!important}
+        .section-light .feat-card,.section-light .tech-card{
+            background:var(--card-bg-light);
+            border-color:rgba(0,0,0,.04);
+        }
+        [data-theme="dark"] .section-light .feat-card,[data-theme="dark"] .section-light .tech-card{
+            background:#1c1c1e;border-color:rgba(255,255,255,.06);
+        }
+        .section-light .why-row{border-color:rgba(0,0,0,.06)}
+        [data-theme="dark"] .section-light .why-row{border-color:rgba(255,255,255,.06)}
+
+        /* Section rhythm separator */
+        .section-sep{border-top:1px solid var(--border)}
+
+        /* =========================================
+           COLOR BANDS — enhanced with parallax images
+        ========================================= */
+        .color-band{
+            position:relative;width:100%;min-height:100vh;
+            display:flex;align-items:center;justify-content:center;
+            overflow:hidden;text-align:center;padding:80px 24px;
+        }
+        .color-band-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center}
+        .color-band-content{position:relative;z-index:2;max-width:900px;display:flex;align-items:center;gap:48px}
+        .color-band-text{flex:1}
+        .color-band-phone{flex-shrink:0;will-change:transform;opacity:0;transform:translateY(30px);transition:opacity 1.2s var(--apple-ease) .2s,transform 1.2s var(--apple-ease) .2s}
+        .color-band.in .color-band-phone{opacity:1;transform:none}
+        @media(max-width:768px){.color-band-content{flex-direction:column;gap:32px}.color-band-phone{order:-1}}
+        .color-band h2{
+            font-size:clamp(36px,6vw,64px);font-weight:700;letter-spacing:-.03em;line-height:1.08;
+            opacity:0;transform:translateY(20px);
+            transition:opacity 1s var(--apple-ease),transform 1s var(--apple-ease);
+        }
+        .color-band.in h2{opacity:1;transform:none}
+        .color-band p{
+            font-size:clamp(17px,2vw,21px);line-height:1.47;max-width:520px;margin:16px auto 0;
+            opacity:0;transform:translateY(14px);
+            transition:opacity 1s var(--apple-ease) .15s,transform 1s var(--apple-ease) .15s;
+        }
+        .color-band.in p{opacity:1;transform:none}
+        .band-blue{background:linear-gradient(135deg,#0071e3 0%,#2997ff 50%,#64d2ff 100%)}
+        .band-blue h2,.band-blue p{color:#fff}
+        .band-blue p{color:rgba(255,255,255,.8)}
+        /* Blue band parallax image */
+        .band-blue-img{
+            position:absolute;inset:0;z-index:0;
+            background-size:cover;background-position:center;background-repeat:no-repeat;
+            opacity:.2;will-change:transform;
+        }
+        .band-blue .floating-accent{
+            position:absolute;z-index:1;pointer-events:none;
+            border-radius:50%;border:1px solid rgba(255,255,255,.15);
+            animation:floatPulse 6s ease-in-out infinite;
+        }
+        @keyframes floatPulse{0%,100%{transform:scale(1);opacity:.15}50%{transform:scale(1.08);opacity:.3}}
+        .band-black{background:#000}
+        .band-black h2{color:#86868b}
+        .band-black h2 strong{color:#f5f5f7}
+        .band-black p{color:#6e6e73}
+        /* Black band background image */
+        .band-black-img{
+            position:absolute;inset:0;z-index:0;
+            background:url('assets/images/city-skyline.jpg') center/cover no-repeat;
+            opacity:.1;will-change:transform;
+        }
+
+
+        /* =========================================
+           CARD PAIRS
+        ========================================= */
+        .card-pair-section{padding:20px;max-width:980px;margin:0 auto;padding-top:80px;padding-bottom:80px}
+        .card-pair-wrap{background:#f5f5f7;padding:40px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+        [data-theme="dark"] .card-pair-wrap{background:#141416}
+        .card-pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+        .card{border-radius:28px;overflow:hidden;position:relative;min-height:580px}
+        .card-img{background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:40px 36px}
+        .card-img h3{font-size:clamp(24px,3vw,32px);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:8px;text-shadow:0 2px 20px rgba(0,0,0,.4)}
+        .card-img p{font-size:15px;color:rgba(255,255,255,.85);line-height:1.47;max-width:340px;text-shadow:0 1px 10px rgba(0,0,0,.3)}
+        .card-text{background:var(--card-bg);border:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;padding:52px 44px}
+        .card-text h3{font-size:clamp(32px,4vw,48px);font-weight:700;letter-spacing:-.03em;line-height:1.08;margin-bottom:16px}
+        .card-text p{font-size:17px;color:var(--text-dim);line-height:1.47}
+        .card-phone{
+            background:var(--card-bg);border:1px solid var(--border);
+            display:flex;align-items:center;justify-content:center;padding:40px 24px;
+            background:linear-gradient(180deg,rgba(41,151,255,.03) 0%,var(--card-bg) 100%);
+        }
+        .card-full{grid-column:1/-1;min-height:480px;display:grid;grid-template-columns:1fr 1fr}
+        .card-full .card-full-img{background-size:cover;background-position:center}
+        .card-full .card-full-text{background:var(--card-bg);border:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;padding:52px 48px}
+        .card-full .card-full-text h3{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.1;margin-bottom:16px}
+        .card-full .card-full-text p{font-size:17px;color:var(--text-dim);line-height:1.47}
+        .card-pair .card,.card-pair .card-full{opacity:0;transform:translateY(30px);transition:opacity .9s var(--apple-ease),transform .9s var(--apple-ease)}
+        .card-pair.in .card:nth-child(1){opacity:1;transform:none;transition-delay:0s}
+        .card-pair.in .card:nth-child(2){opacity:1;transform:none;transition-delay:.1s}
+        .card-pair.in .card-full{opacity:1;transform:none;transition-delay:0s}
+        @media(max-width:768px){
+            .card-pair-section{padding:12px;padding-top:40px;padding-bottom:40px}
+            .card-pair{grid-template-columns:1fr;gap:0;margin-bottom:20px;
+                background:var(--card-bg);border:1px solid var(--border);
+                border-radius:28px;overflow:hidden}
+            .card{min-height:auto;border-radius:0}
+            .card-phone{padding:32px 16px;border:none;background:none;border-radius:0}
+            .card-phone .phone-frame{max-width:220px}
+            .card-text{border:none;border-radius:0;padding:24px 28px 36px}
+            .card-full{grid-template-columns:1fr;min-height:auto}
+            .card-full .card-full-img{min-height:240px}
+            .card-full .card-full-text{padding:28px 24px}
+        }
+
+        /* =========================================
+           STICKY SCROLL REVEAL — video + card compact
+        ========================================= */
+        .sticky-reveal{position:relative;min-height:400vh}
+        .sticky-reveal-inner{
+            position:sticky;top:44px;height:calc(100vh - 44px);
+            display:flex;align-items:center;justify-content:center;
+            text-align:center;overflow:hidden;
+            will-change:transform;
+        }
+        .sticky-video-bg{
+            position:absolute;inset:0;z-index:0;
+        }
+        .sticky-video-bg video{
+            width:100%;height:100%;object-fit:cover;
+            opacity:.45;filter:brightness(.55);
+            transform:translateZ(0);
+        }
+        .sticky-video-bg img{
+            width:100%;height:100%;object-fit:cover;
+            opacity:.25;filter:brightness(.4);display:none;
+        }
+        .sticky-video-bg.img-mode video{display:none}
+        .sticky-video-bg.img-mode img{display:block}
+        .sticky-overlay{
+            position:absolute;inset:0;z-index:1;
+            background:linear-gradient(180deg,#000 0%,rgba(0,0,0,.6) 50%,#000 100%);
+            will-change:opacity;
+        }
+        .sticky-text{
+            font-size:clamp(28px,4.5vw,52px);font-weight:700;
+            letter-spacing:-.03em;line-height:1.25;max-width:800px;
+            position:relative;z-index:2;padding:24px;
+        }
+        .sticky-text .sw{
+            display:inline;
+            color:#f5f5f7;
+            opacity:.15;
+        }
+
+        /* =========================================
+           FEATURES — 3-column grid
+        ========================================= */
+        .feat-section{padding:100px 0 80px;background:#f5f5f7}
+        [data-theme="dark"] .feat-section{background:var(--bg-light)}
+        .feat-header{text-align:center;margin-bottom:48px;padding:0 48px}
+        .feat-header .eyebrow{font-size:14px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+        .feat-header h2{font-size:clamp(36px,6vw,56px);font-weight:700;letter-spacing:-.04em;line-height:1.07}
+        .feat-header p.feat-sub{font-size:clamp(16px,1.8vw,21px);color:var(--text-dim);max-width:560px;margin:14px auto 0;line-height:1.47}
+        .feat-grid{
+            display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+            max-width:980px;margin:0 auto;padding:0 48px;
+        }
+        .feat-tile{
+            border-radius:20px;overflow:hidden;background:#fff;
+        }
+        [data-theme="dark"] .feat-tile{background:rgba(255,255,255,.06)}
+        .feat-tile-img{width:100%;aspect-ratio:4/3.4;overflow:hidden}
+        .feat-tile-img img{width:100%;height:100%;object-fit:cover}
+        .feat-tile-text{padding:24px 24px 32px}
+        .feat-tile-text p{font-size:17px;line-height:1.47;color:var(--text-dim)}
+        .feat-tile-text p strong{color:#1d1d1f;font-weight:700}
+        [data-theme="dark"] .feat-tile-text p strong{color:var(--text)}
+        @media(max-width:768px){
+            .feat-header{padding:0 24px}
+            .feat-grid{grid-template-columns:repeat(2,1fr);padding:0 24px;gap:16px}
+        }
+        @media(max-width:480px){
+            .feat-grid{grid-template-columns:1fr}
+        }
+
+        /* =========================================
+           VIDEO BAND
+        ========================================= */
+        .video-band{position:relative;width:100%;overflow:hidden;background:#000}
+        .video-band video,.video-band img.vid-poster{width:100%;display:block;max-height:85vh;object-fit:cover}
+        .video-band video{opacity:.55}
+        .video-band img.vid-poster{opacity:.4;display:none}
+        .video-band.img-mode video{display:none}
+        .video-band.img-mode img.vid-poster{display:block}
+        .video-band-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+        .video-band-overlay h2{font-size:clamp(32px,5vw,56px);font-weight:700;letter-spacing:-.03em;color:#f5f5f7;margin-bottom:10px;opacity:0;transform:translateY(20px);transition:opacity 1s var(--apple-ease),transform 1s var(--apple-ease)}
+        .video-band.in .video-band-overlay h2{opacity:1;transform:none}
+        .video-band-overlay p{font-size:clamp(15px,1.8vw,21px);color:rgba(245,245,247,.6);max-width:480px;opacity:0;transform:translateY(12px);transition:opacity 1s var(--apple-ease) .15s,transform 1s var(--apple-ease) .15s}
+        .video-band.in .video-band-overlay p{opacity:1;transform:none}
+
+        /* =========================================
+           WHY — side-by-side photo + frosted glass
+        ========================================= */
+        .why-section{background:#000;position:relative;overflow:hidden}
+        .why-bg-ext{
+            position:absolute;inset:0;z-index:0;
+            background:url('assets/images/earphones-commuter.jpg') center/cover no-repeat;
+            opacity:.2;filter:blur(6px) brightness(.6);
+        }
+        .why-layout{
+            display:flex;align-items:stretch;
+            max-width:1200px;margin:0 auto;
+            min-height:620px;
+            position:relative;z-index:1;
+        }
+        .why-photo{
+            flex:1 1 50%;position:relative;overflow:hidden;
+        }
+        .why-photo img{
+            width:100%;height:100%;object-fit:cover;object-position:center;
+            display:block;
+        }
+        .why-photo::after{
+            content:'';position:absolute;top:0;right:0;bottom:0;width:80px;
+            background:linear-gradient(to right,transparent,#000);
+        }
+        .why-glass{
+            flex:1 1 50%;position:relative;z-index:1;
+            background:rgba(0,0,0,.55);
+            backdrop-filter:saturate(180%) blur(40px);
+            -webkit-backdrop-filter:saturate(180%) blur(40px);
+            padding:64px 48px;
+            display:flex;flex-direction:column;justify-content:center;
+        }
+        @media(max-width:900px){
+            .why-layout{flex-direction:column}
+            .why-photo{position:absolute;inset:0;flex:none}
+            .why-photo img{height:100%;opacity:.35}
+            .why-photo::after{display:none}
+            .why-glass{flex:none;width:100%;padding:80px 40px;min-height:560px}
+        }
+        @media(max-width:600px){
+            .why-glass{padding:60px 24px;min-height:auto}
+        }
+        .why-head h2{font-size:clamp(28px,5vw,48px);font-weight:700;letter-spacing:-.03em;line-height:1.1;margin-bottom:48px}
+        .t-grad{background:linear-gradient(90deg,#2997ff,#30d158);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .t-grad-warm{background:linear-gradient(90deg,#ff9f0a,#ff375f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .t-grad-purple{background:linear-gradient(90deg,#bf5af2,#2997ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .why-list{display:flex;flex-direction:column;gap:0}
+        .why-row{display:flex;gap:20px;align-items:flex-start;padding:28px 0;border-bottom:1px solid var(--border)}
+        .why-row:last-child{border-bottom:none}
+        .why-num{font-size:48px;font-weight:800;color:var(--accent);line-height:1;min-width:50px}
+        .why-row h3{font-size:21px;font-weight:600;margin-bottom:4px}
+        .why-row p{font-size:17px;color:var(--text-dim);line-height:1.47}
+
+        /* =========================================
+           TECH — with bg
+        ========================================= */
+        .tech-section{padding:100px 24px;background:var(--section-tint-1);position:relative;overflow:hidden}
+        .tech-bg{
+            position:absolute;inset:0;z-index:0;
+            background:url('assets/images/phone-gps-closeup.jpg') center/cover no-repeat;
+            opacity:.03;
+        }
+        .tech-inner{max-width:900px;margin:0 auto;position:relative;z-index:1}
+        .tech-header{text-align:center;margin-bottom:60px}
+        .tech-header .eyebrow{font-size:14px;font-weight:600;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+        .tech-header h2{font-size:clamp(40px,7vw,64px);font-weight:700;letter-spacing:-.04em;line-height:1.07}
+        .tech-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+        .tech-card{text-align:center;padding:40px 16px;background:var(--card-bg);border-radius:20px;border:1px solid var(--border);transition:transform .4s,border-color .4s}
+        .tech-card:hover{transform:translateY(-4px);border-color:var(--accent)}
+        .tc-icon{display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:16px;background:rgba(41,151,255,.08);margin:0 auto 16px;color:var(--accent)}
+        .tc-icon svg{width:28px;height:28px}
+        .tech-card h3{font-size:15px;font-weight:600;margin-bottom:4px}
+        .tech-card p{font-size:13px;color:var(--text-dim);line-height:1.4}
+        @media(max-width:768px){.tech-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:480px){.tech-grid{grid-template-columns:1fr}}
+
+        /* =========================================
+           TEAM
+        ========================================= */
+        .team-section{padding:100px 24px;background:var(--bg-light)}
+        .team-inner{max-width:720px;margin:0 auto}
+        .team-header{text-align:center;margin-bottom:60px}
+        .team-header .eyebrow{font-size:14px;font-weight:600;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+        .team-header h2{font-size:clamp(40px,7vw,64px);font-weight:700;letter-spacing:-.04em;line-height:1.07}
+        .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+        .team-card{text-align:center;padding:36px 16px;border-radius:20px;border:1px solid var(--border);background:var(--card-bg);transition:transform .4s,border-color .4s}
+        .team-card:hover{transform:translateY(-4px);border-color:var(--accent)}
+        .team-ava{width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;margin:0 auto 12px}
+        .team-card h3{font-size:14px;font-weight:600}
+        @media(max-width:640px){.team-grid{grid-template-columns:repeat(2,1fr)}}
+
+        /* =========================================
+           CTA
+        ========================================= */
+        .cta-section{padding:140px 24px;text-align:center;position:relative;background:var(--section-tint-2);overflow:hidden}
+        .cta-section .cta-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.06}
+        .cta-section .cta-content{position:relative;z-index:1}
+        .cta-btn{display:inline-flex;align-items:center;gap:8px;padding:16px 36px;border-radius:980px;background:var(--accent);color:#fff;font-size:17px;font-weight:600;border:none;cursor:pointer;transition:all .3s;text-decoration:none}
+        .cta-btn:hover{background:var(--accent-hover);transform:scale(1.03)}
+
+        /* =========================================
+           FOOTER
+        ========================================= */
+        .g-footer{padding:44px 24px;border-top:1px solid var(--border);text-align:center}
+        .g-footer-logo{font-size:17px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:6px}
+        .g-footer-logo svg{color:var(--accent)}
+        .g-footer-tag{font-size:14px;color:var(--text-dim);margin-bottom:4px}
+        .g-footer-sub{font-size:12px;color:var(--text-faint);margin-bottom:14px}
+        .g-footer-links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+        .g-footer-links a{font-size:12px;color:var(--text-faint);text-decoration:none}
+        .g-footer-links a:hover{color:var(--text)}
+        .g-footer-copy{font-size:11px;color:var(--text-faint)}
+
+        /* =========================================
+           FAB & MODAL
+        ========================================= */
+        .fab-dl{
+            position:fixed;bottom:28px;right:28px;z-index:999;
+            display:flex;align-items:center;gap:8px;padding:14px 24px;
+            border-radius:980px;background:var(--accent);color:#fff;
+            font-size:15px;font-weight:600;border:none;cursor:pointer;
+            box-shadow:0 8px 32px rgba(41,151,255,.35);
+            transition:all .4s var(--apple-ease);
+            text-decoration:none;
+            opacity:0;transform:translateY(20px);pointer-events:none;
+        }
+        .fab-dl.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+        .fab-dl:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(41,151,255,.45)}
+        .fab-dl svg{flex-shrink:0}
+        .fab-dl small{font-size:11px;font-weight:400;opacity:.85}
+        @media(max-width:480px){.fab-dl{padding:12px 18px;font-size:13px}.fab-dl small{display:none}}
+
+        /* ======= AUTH/DOWNLOAD MODAL (compatible with download.js) ======= */
+        .modal-overlay{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:all .3s ease}
+        .modal-overlay.active{opacity:1;visibility:visible}
+        .modal-content{background:var(--bg-elevated);border:1px solid var(--border);border-radius:18px;max-width:460px;width:100%;max-height:90vh;overflow-y:auto;position:relative;transform:translateY(20px) scale(.95);transition:all .3s ease}
+        .modal-overlay.active .modal-content{transform:translateY(0) scale(1)}
+        .modal-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.06);border:none;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10}
+        .modal-close:hover{background:rgba(255,255,255,.12)}
+        [data-theme="light"] .modal-close{background:rgba(0,0,0,.06);color:var(--text-dim)}
+        .modal-section{padding:36px 30px}
+        .modal-header{text-align:center;margin-bottom:24px}
+        .modal-icon{width:64px;height:64px;background:linear-gradient(135deg,var(--accent),var(--accent-green));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+        .modal-header h2{font-size:21px;font-weight:700;margin-bottom:6px}
+        .modal-header p{font-size:15px;color:var(--text-dim)}
+        .modal-section .form-group{margin-bottom:18px}
+        .modal-section .form-group label{display:block;color:var(--text-dim);font-size:13px;font-weight:500;margin-bottom:6px}
+        .modal-section .form-group input{width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;transition:border .2s}
+        [data-theme="light"] .modal-section .form-group input{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.12);color:var(--text)}
+        .modal-section .form-group input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(41,151,255,.15)}
+        .modal-section .form-group input::placeholder{color:var(--text-faint)}
+        .code-input{text-align:center;font-size:1.4rem!important;font-weight:600;letter-spacing:8px;font-family:monospace}
+        .form-error{color:#ff453a;font-size:13px;text-align:center;min-height:18px;margin-bottom:12px}
+        .form-success{color:#30d158;font-size:13px;text-align:center;min-height:18px;margin-bottom:12px}
+        .form-footer{text-align:center;color:var(--text-dim);font-size:13px;margin-top:16px}
+        .form-footer a{color:var(--accent);text-decoration:none}
+        .form-footer a:hover{text-decoration:underline}
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border-radius:980px;font-weight:600;font-size:15px;text-decoration:none;cursor:pointer;border:none;transition:all .3s;font-family:inherit}
+        .btn-primary{background:var(--accent);color:#fff}
+        .btn-primary:hover{background:var(--accent-hover)}
+        .btn-secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--border)}
+        .btn-secondary:hover{background:rgba(255,255,255,.14)}
+        .btn-full{width:100%}
+        .btn-text{background:none;border:none;color:var(--text-faint);cursor:pointer;padding:8px;font-size:13px;transition:color .2s;font-family:inherit}
+        .btn-text:hover{color:var(--text)}
+        .btn-download{width:100%;font-size:17px;padding:14px}
+        .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-radius:50%;border-top-color:#fff;animation:modalSpin .7s linear infinite}
+        @keyframes modalSpin{to{transform:rotate(360deg)}}
+        .version-info{margin-bottom:18px}
+        .version-card{background:var(--bg-alt);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
+        .version-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+        .version-number{font-size:1.15rem;font-weight:700;color:var(--accent)}
+        .version-size{color:var(--text-faint);font-size:13px}
+        .version-stats{color:var(--text-dim);font-size:13px;margin-bottom:8px}
+        .version-notes{color:var(--text-faint);font-size:12px;line-height:1.5}
+        .version-loading{text-align:center;color:var(--text-faint);font-size:14px;padding:20px}
+        .download-progress,.download-success,.download-error,.download-ready,.auth-prompt,.verify-prompt,.cooldown-active{text-align:center;padding:16px 0}
+        .progress-icon,.success-icon,.error-icon,.cooldown-icon{font-size:2.5rem;margin-bottom:12px}
+        .progress-bar{width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin:16px 0}
+        .progress-fill{height:100%;background:linear-gradient(135deg,var(--accent),var(--accent-green));border-radius:3px;transition:width .3s}
+        .progress-text{color:var(--text-dim);font-size:13px}
+        .cooldown-timer{font-size:2rem;font-weight:700;color:var(--accent-warm);font-family:monospace}
+
+        /* ======= GREETING BANNER ======= */
+        .greeting-banner{position:fixed;top:44px;left:0;right:0;z-index:9998;background:linear-gradient(135deg,rgba(41,151,255,.08),rgba(48,209,88,.06));backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid rgba(41,151,255,.15);padding:12px 22px;text-align:center;font-size:14px;color:var(--text);animation:greetSlide .6s var(--apple-ease)}
+        [data-theme="light"] .greeting-banner{background:linear-gradient(135deg,rgba(41,151,255,.06),rgba(48,209,88,.04));border-color:rgba(41,151,255,.12)}
+        @keyframes greetSlide{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+        .greeting-content{max-width:980px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:12px}
+        .greeting-text{line-height:1.5}
+        .greeting-text strong{color:var(--accent)}
+        .greeting-close{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:18px;padding:0 4px;line-height:1;transition:color .2s}
+        .greeting-close:hover{color:var(--text)}
+
+        /* ======= NAV LOGIN + PROMINENT ADMIN ======= */
+        .nav-login-link{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.12)!important;padding:4px 14px!important;border-radius:980px!important;font-weight:500!important;transition:all .25s!important}
+        .nav-login-link:hover{background:rgba(255,255,255,.16)!important;color:var(--text)!important}
+        [data-theme="light"] .nav-login-link{background:rgba(0,0,0,.05)!important;border-color:rgba(0,0,0,.1)!important}
+        .nav-admin-link{background:linear-gradient(135deg,#ff9f0a,#ff375f)!important;color:#fff!important;padding:4px 16px!important;border-radius:980px!important;font-weight:600!important;font-size:12px!important;box-shadow:0 2px 12px rgba(255,159,10,.3);transition:all .25s!important;animation:adminPulse 3s ease-in-out infinite}
+        .nav-admin-link:hover{transform:translateY(-1px)!important;box-shadow:0 4px 18px rgba(255,159,10,.45)!important}
+        @keyframes adminPulse{0%,100%{box-shadow:0 2px 12px rgba(255,159,10,.3)}50%{box-shadow:0 2px 20px rgba(255,159,10,.5),0 0 8px rgba(255,55,95,.2)}}
+        .nav-user-pill{display:flex;align-items:center;gap:4px;background:rgba(41,151,255,.1);border:1px solid rgba(41,151,255,.2);padding:3px 12px;border-radius:980px;font-size:12px;font-weight:500;color:var(--accent);white-space:nowrap}
+        .mob-admin-link{display:block;background:linear-gradient(135deg,#ff9f0a,#ff375f);color:#fff!important;text-align:center;padding:12px 24px;border-radius:980px;font-weight:600;margin:4px 0;font-size:15px}
+        .mob-login-link{display:block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);text-align:center;padding:12px 24px;border-radius:980px;font-weight:500;margin:4px 0}
+
+        /* prefers-reduced-motion fallback */
+        @media(prefers-reduced-motion:reduce){
+            *{animation-duration:0s!important;transition-duration:0s!important}
+            .scroll-hero{height:auto!important}
+            .sticky-reveal{min-height:auto!important}
+        }
+        /* =========================================
+           REVEAL UTILITY
+        ========================================= */
+        .r{opacity:0;transform:translateY(20px);transition:opacity .8s var(--apple-ease),transform .8s var(--apple-ease)}
+        .r.in{opacity:1;transform:none}
+        .r-d1{transition-delay:.08s}.r-d2{transition-delay:.16s}.r-d3{transition-delay:.24s}.r-d4{transition-delay:.32s}
+
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav id="navbar">
-        <div class="nav-container">
-            <a href="#" class="nav-logo">
-                <span class="logo-icon">&#x1F4CD;</span>
-                <span class="logo-text">LokAlert</span>
-            </a>
-            <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#why">Why LokAlert</a></li>
-                <li><a href="#tech">Technology</a></li>
-                <li><a href="#team">Team</a></li>
-                <li><a href="admin.html" class="nav-admin-btn">🔐 Admin</a></li>
-                <li><a href="#" class="nav-download-btn">Download</a></li>
-            </ul>
-            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
-                <span></span>
-                <span></span>
-                <span></span>
+
+<!-- ======= MAINTENANCE — COLOR EXPLOSION ======= -->
+<div id="maintOverlay">
+    <canvas id="maintCanvas"></canvas>
+    <div class="maint-content">
+        <div class="maint-card">
+            <div class="maint-icon">🔧</div>
+            <h1 class="maint-title">Under Maintenance</h1>
+            <p class="maint-msg" id="maintMsg">We're performing scheduled maintenance. We'll be back shortly.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ======= NAV ======= -->
+<nav class="g-nav" id="gNav">
+    <div class="g-nav-inner">
+        <a href="#" class="g-nav-logo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            LokAlert
+        </a>
+        <ul class="g-nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#why">Why LokAlert</a></li>
+            <li><a href="#tech">Technology</a></li>
+            <li><a href="#team">Team</a></li>
+            <li>
+                <button class="th-pill" id="themeToggle" aria-label="Toggle theme">
+                    <span class="th-opt on" data-v="dark"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+                    <span class="th-opt" data-v="light"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M4.2 4.2l2.1 2.1m11.4 11.4l2.1 2.1M2 12h3m14 0h3M4.2 19.8l2.1-2.1m11.4-11.4l2.1-2.1"/></svg></span>
+                </button>
+            </li>
+            <li><a href="classic.html" class="ver-link">🏛️ Classic</a></li>
+            <li id="navAuthItem"><a href="#" class="nav-login-link" onclick="openLoginPopup(); return false;">Login</a></li>
+            <li><a href="admin.html" class="nav-admin-link">🔐 Admin</a></li>
+        </ul>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <button class="th-pill g-mob-th" id="themeToggleMob" aria-label="Toggle theme">
+                <span class="th-opt on" data-v="dark"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+                <span class="th-opt" data-v="light"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M4.2 4.2l2.1 2.1m11.4 11.4l2.1 2.1M2 12h3m14 0h3M4.2 19.8l2.1-2.1m11.4-11.4l2.1-2.1"/></svg></span>
             </button>
+            <button class="g-mob-btn" id="mobBtn" aria-label="Menu"><span></span><span></span><span></span></button>
         </div>
-        <!-- Mobile Menu -->
-        <div class="mobile-menu" id="mobileMenu">
-            <a href="#features">Features</a>
-            <a href="#why">Why LokAlert</a>
-            <a href="#tech">Technology</a>
-            <a href="#team">Team</a>
-            <a href="admin.html" class="mobile-admin-btn">🔐 Admin Panel</a>
-            <a href="#" class="mobile-download-btn">Download App</a>
-        </div>
-    </nav>
+    </div>
+</nav>
+<div class="g-mob-menu" id="mobMenu">
+    <a href="#features">Features</a>
+    <a href="#why">Why LokAlert</a>
+    <a href="#tech">Technology</a>
+    <a href="#team">Team</a>
+    <a href="classic.html">🏛️ Classic View</a>
+    <a href="#" class="mob-login-link" id="mobAuthItem" onclick="openLoginPopup(); return false;">🔑 Login</a>
+    <a href="admin.html" class="mob-admin-link">🔐 Admin Panel</a>
+</div>
 
-    <main>
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-bg">
-                <div class="hero-gradient"></div>
-                <div class="hero-particles">
-                    <div class="particle"></div>
-                    <div class="particle"></div>
-                    <div class="particle"></div>
-                    <div class="particle"></div>
-                    <div class="particle"></div>
-                </div>
-            </div>
-            <div class="hero-content">
-                <div class="hero-badge animate-fade-in">
-                    <span class="badge-icon">&#x1F680;</span>
-                    <span>Smart Location Technology</span>
-                </div>
-                <h1 class="hero-title animate-fade-up">
-                    <span class="title-main">LokAlert</span>
-                    <span class="title-sub">Smart Location-Based Arrival Alert</span>
-                </h1>
-                <p class="hero-tagline animate-fade-up delay-1">Arrive Smart. Stay Alert.</p>
-                <p class="hero-description animate-fade-up delay-2">
-                    LokAlert is a mobile application designed to notify users automatically when they arrive at a selected destination. Whether you're commuting, traveling, or multitasking, LokAlert ensures you're alerted exactly when you reach your location&#8212;no constant checking required.
-                </p>
-                <div class="hero-cta animate-fade-up delay-3">
-                    <a href="#features" class="btn btn-primary">
-                        <span>Explore Features</span>
-                        <span class="btn-arrow">&#x2192;</span>
-                    </a>
-                    <a href="#why" class="btn btn-secondary">Learn More</a>
-                </div>
-                <div class="hero-visual animate-float">
-                    <div class="phone-mockup">
-                        <div class="phone-screen">
-                            <div class="screen-map">
-                                <div class="map-grid"></div>
-                                <div class="location-pulse"></div>
-                                <div class="location-marker">&#x1F4CD;</div>
-                                <div class="geofence-ring"></div>
-                            </div>
-                            <div class="screen-card">
-                                <div class="card-icon">&#x1F3E0;</div>
-                                <div class="card-info">
-                                    <span class="card-title">Home</span>
-                                    <span class="card-status">200m &#8226; Active</span>
-                                </div>
-                                <div class="card-toggle active"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="scroll-indicator animate-bounce">
-                <span>Scroll</span>
-                <div class="scroll-arrow">&#x2193;</div>
-            </div>
-        </section>
+<!-- ============================================================
+     SITE CONTENT
+============================================================ -->
+<div id="siteContent">
 
-        <!-- About Section -->
-        <section class="about">
-            <div class="container">
-                <div class="about-content">
-                    <div class="about-icon animate-on-scroll">
-                        <div class="icon-ring"></div>
-                        <span>&#x1F3AF;</span>
-                    </div>
-                    <h2 class="section-title animate-on-scroll">How It Works</h2>
-                    <p class="about-text animate-on-scroll">
-                        LokAlert uses real-time GPS tracking and location-based services to monitor a user's movement and trigger an alert once they enter a predefined arrival radius. The app runs efficiently in the background, making it reliable, user-friendly, and practical for everyday use.
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Features Section -->
-        <section id="features" class="features">
-            <div class="container">
-                <div class="section-header animate-on-scroll">
-                    <span class="section-badge">&#x2728; Key Features</span>
-                    <h2 class="section-title">Everything You Need</h2>
-                    <p class="section-subtitle">Powerful features designed for effortless arrival alerts</p>
-                </div>
-                
-                <div class="features-grid">
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon">
-                            <span>&#x1F4CD;</span>
-                        </div>
-                        <h3>Location Search</h3>
-                        <p>Quickly search and select destinations using place names or addresses.</p>
-                    </div>
-                    
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon">
-                            <span>&#x1F5FA;&#xFE0F;</span>
-                        </div>
-                        <h3>Map View</h3>
-                        <p>Interactive map interface for easy navigation and destination selection.</p>
-                    </div>
-                    
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon">
-                            <span>&#x1F4CF;</span>
-                        </div>
-                        <h3>Set Arrival Radius</h3>
-                        <p>Customize the distance for alert triggers to match your needs.</p>
-                    </div>
-                    
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon">
-                            <span>&#x25B6;&#xFE0F;</span>
-                        </div>
-                        <h3>Start Location Tracking</h3>
-                        <p>Begin tracking with one tap using GPS technology.</p>
-                    </div>
-                    
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon">
-                            <span>&#x1F514;</span>
-                        </div>
-                        <h3>Arrival Alert / Alarm</h3>
-                        <p>Instant alert when destination is reached. Never miss your stop again.</p>
-                    </div>
-                    
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon">
-                            <span>&#x1F504;</span>
-                        </div>
-                        <h3>Background Monitoring</h3>
-                        <p>Works even when minimized, with battery-optimized performance.</p>
-                    </div>
-                    
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon">
-                            <span>&#x2B50;</span>
-                        </div>
-                        <h3>Saved Locations</h3>
-                        <p>Save frequent destinations like home or work for quick access.</p>
-                    </div>
-                    
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon">
-                            <span>&#x274C;</span>
-                        </div>
-                        <h3>Cancel Tracking</h3>
-                        <p>Stop tracking anytime with full control over your alerts.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Why LokAlert Section -->
-        <section id="why" class="why-section">
-            <div class="container">
-                <div class="section-header animate-on-scroll">
-                    <span class="section-badge">&#x1F4A1; Why LokAlert?</span>
-                    <h2 class="section-title">The Smart Choice</h2>
-                    <p class="section-subtitle">Designed for modern life on the move</p>
-                </div>
-                
-                <div class="benefits-grid">
-                    <div class="benefit-card animate-on-scroll">
-                        <div class="benefit-icon">&#x2705;</div>
-                        <div class="benefit-content">
-                            <h3>No More Constant Checking</h3>
-                            <p>Eliminates the need to constantly check your location during travel</p>
-                        </div>
-                    </div>
-                    
-                    <div class="benefit-card animate-on-scroll">
-                        <div class="benefit-icon">&#x1F68C;</div>
-                        <div class="benefit-content">
-                            <h3>Perfect for Everyone</h3>
-                            <p>Ideal for travelers, commuters, students, and drivers</p>
-                        </div>
-                    </div>
-                    
-                    <div class="benefit-card animate-on-scroll">
-                        <div class="benefit-icon">&#x26A1;</div>
-                        <div class="benefit-content">
-                            <h3>Simple Yet Powerful</h3>
-                            <p>Simple interface with powerful background functionality</p>
-                        </div>
-                    </div>
-                    
-                    <div class="benefit-card animate-on-scroll">
-                        <div class="benefit-icon">&#x1F6E1;&#xFE0F;</div>
-                        <div class="benefit-content">
-                            <h3>Safety &amp; Convenience</h3>
-                            <p>Improves convenience, safety, and time management</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Technology Section -->
-        <section id="tech" class="tech-section">
-            <div class="container">
-                <div class="section-header animate-on-scroll">
-                    <span class="section-badge">&#x2699;&#xFE0F; Technology Highlights</span>
-                    <h2 class="section-title">Built with Modern Tech</h2>
-                    <p class="section-subtitle">Cutting-edge technology for reliable performance</p>
-                </div>
-                
-                <div class="tech-grid">
-                    <div class="tech-card animate-on-scroll">
-                        <div class="tech-icon">
-                            <div class="tech-icon-bg"></div>
-                            <span>&#x1F6F0;&#xFE0F;</span>
-                        </div>
-                        <h3>GPS &amp; Location Services</h3>
-                        <p>Precise positioning using advanced satellite technology</p>
-                    </div>
-                    
-                    <div class="tech-card animate-on-scroll">
-                        <div class="tech-icon">
-                            <div class="tech-icon-bg"></div>
-                            <span>&#x1F4CA;</span>
-                        </div>
-                        <h3>Real-time Tracking Algorithms</h3>
-                        <p>Smart algorithms for accurate arrival detection</p>
-                    </div>
-                    
-                    <div class="tech-card animate-on-scroll">
-                        <div class="tech-icon">
-                            <div class="tech-icon-bg"></div>
-                            <span>&#x1F4F1;</span>
-                        </div>
-                        <h3>Mobile-friendly UI/UX</h3>
-                        <p>Intuitive design optimized for all screen sizes</p>
-                    </div>
-                    
-                    <div class="tech-card animate-on-scroll">
-                        <div class="tech-icon">
-                            <div class="tech-icon-bg"></div>
-                            <span>&#x1F50B;</span>
-                        </div>
-                        <h3>Background Service Optimization</h3>
-                        <p>Efficient background processing with minimal battery drain</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Team Section -->
-        <section id="team" class="team-section">
-            <div class="container">
-                <div class="section-header animate-on-scroll">
-                    <span class="section-badge">&#x1F465; Our Team</span>
-                    <h2 class="section-title">Meet the Members</h2>
-                    <p class="section-subtitle">The talented people behind LokAlert</p>
-                </div>
-                
-                <div class="team-grid">
-                    <div class="team-card animate-on-scroll">
-                        <div class="team-avatar">
-                            <span>OA</span>
-                        </div>
-                        <h3>Alemana, Onyx Herod</h3>
-                    </div>
-                    
-                    <div class="team-card animate-on-scroll">
-                        <div class="team-avatar">
-                            <span>RM</span>
-                        </div>
-                        <h3>Mabahin, Ryan</h3>
-                    </div>
-                    
-                    <div class="team-card animate-on-scroll">
-                        <div class="team-avatar">
-                            <span>EA</span>
-                        </div>
-                        <h3>Adamos, Eurika</h3>
-                    </div>
-                    
-                    <div class="team-card animate-on-scroll">
-                        <div class="team-avatar">
-                            <span>GB</span>
-                        </div>
-                        <h3>Billones, Gerald</h3>
-                    </div>
-                    
-                    <div class="team-card animate-on-scroll">
-                        <div class="team-avatar">
-                            <span>TC</span>
-                        </div>
-                        <h3>Crisologo, Terence Joefrey</h3>
-                    </div>
-                    
-                    <div class="team-card animate-on-scroll">
-                        <div class="team-avatar">
-                            <span>AR</span>
-                        </div>
-                        <h3>Royo, Aenard Ollyer</h3>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="container">
-                <div class="footer-content">
-                    <div class="footer-logo">
-                        <span class="logo-icon">&#x1F4CD;</span>
-                        <span class="logo-text">LokAlert</span>
-                    </div>
-                    <p class="footer-tagline">Arrive Smart. Stay Alert.</p>
-                    <div style="margin: 20px 0;">
-                        <a href="admin.html" style="color: #64748b; text-decoration: none; font-size: 13px; opacity: 0.7;">Admin</a>
-                    </div>
-                    <p class="footer-copyright">&copy; 2026 LokAlert. All rights reserved.</p>
-                </div>
-            </div>
-        </footer>
-    </main>
-
-    <!-- Floating Download Button -->
-    <a href="#" onclick="openDownloadModal(); return false;" class="floating-download" id="floatingDownload">
-        <span class="download-icon">📥</span>
-        <span class="download-text">
-            <span>Download APK</span>
-            <small>v1.0.0 • 16.4 MB</small>
-        </span>
-    </a>
-
-    <!-- Download Modal -->
-    <div class="modal-overlay" id="downloadModal">
-        <div class="modal-content">
-            <button class="modal-close" id="modalClose">&times;</button>
-            
-            <!-- Download Section -->
-            <div class="modal-section" id="downloadSection">
-                <div class="modal-header">
-                    <div class="modal-icon">&#x1F4E5;</div>
-                    <h2>Download LokAlert</h2>
-                    <p>Get the latest version of our app</p>
-                </div>
-                <div class="version-info" id="versionInfo">
-                    <div class="version-loading">Loading...</div>
-                </div>
-                <div class="download-buttons">
-                    <button class="btn btn-primary btn-download" id="downloadBtn">
-                        <span>&#x1F4E5;</span> Download APK
-                    </button>
-                </div>
-                <p style="margin-top: 20px; color: #94a3b8; font-size: 14px; text-align: center;">
-                    📱 Android only • <strong style="color: #f59e0b;">Account required</strong>
-                </p>
-            </div>
-            
-            <!-- Hidden sections for compatibility -->
-            <div class="modal-section" id="loginSection" style="display: none;"></div>
-            <div class="modal-section" id="registerSection" style="display: none;"></div>
-            <div id="authButtons" style="display: none;"></div>
-            <div id="userInfoModal" style="display: none;"></div>
+    <!-- =================== GREETING BANNER (shown when logged in) =================== -->
+    <div class="greeting-banner" id="greetingBanner" style="display:none">
+        <div class="greeting-content">
+            <span class="greeting-text" id="greetingText"></span>
+            <button class="greeting-close" onclick="dismissGreeting()" aria-label="Dismiss greeting">&times;</button>
         </div>
     </div>
 
-    <script src="js/main.js"></script>
-    <script src="js/download.js"></script>
+    <!-- =================== SCROLL-DRIVEN CINEMATIC HERO =================== -->
+    <section class="scroll-hero" id="scrollHero">
+        <div class="scroll-hero-sticky" id="scrollHeroSticky">
+            <div class="scroll-hero-bg" id="shBg"></div>
+
+            <!-- Geometric decoration -->
+            <svg class="scroll-hero-geo" id="shGeo" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+                <line x1="0" y1="200" x2="1920" y2="200" opacity=".3"/>
+                <line x1="0" y1="540" x2="1920" y2="540" opacity=".2"/>
+                <line x1="0" y1="880" x2="1920" y2="880" opacity=".3"/>
+                <line x1="480" y1="0" x2="480" y2="1080" opacity=".15"/>
+                <line x1="960" y1="0" x2="960" y2="1080" opacity=".2"/>
+                <line x1="1440" y1="0" x2="1440" y2="1080" opacity=".15"/>
+                <circle cx="480" cy="200" r="40" opacity=".2"/>
+                <circle cx="960" cy="540" r="60" opacity=".15"/>
+                <circle cx="1440" cy="880" r="40" opacity=".2"/>
+                <circle cx="240" cy="540" r="25" opacity=".1"/>
+                <circle cx="1680" cy="540" r="25" opacity=".1"/>
+                <line x1="0" y1="0" x2="600" y2="1080" opacity=".06"/>
+                <line x1="1920" y1="0" x2="1320" y2="1080" opacity=".06"/>
+                <line x1="960" y1="0" x2="480" y2="1080" opacity=".04"/>
+                <line x1="960" y1="0" x2="1440" y2="1080" opacity=".04"/>
+            </svg>
+
+            <!-- Video scrub frame (stage 3 bg) -->
+            <div class="sh-video-frame" id="shVideoFrame" style="opacity:0">
+                <video muted playsinline preload="auto" poster="assets/images/hero-city.jpg"
+                       data-cdn-src="https://videos.pexels.com/video-files/5750738/5750738-hd_1920_1080_30fps.mp4">
+                    <source src="assets/videos/hero-city.mp4" type="video/mp4">
+                </video>
+                <img src="assets/images/hero-city.jpg" alt="City at night" loading="eager">
+            </div>
+
+            <!-- Flanking images — BIGGER, 3 images -->
+            <div class="flank-img flank-ul" id="flankUL">
+                <img src="assets/images/city-aerial.jpg" alt="Aerial city view" loading="eager">
+            </div>
+            <div class="flank-img flank-lr" id="flankLR">
+                <img src="assets/images/city-skyline.jpg" alt="City skyline" loading="eager">
+            </div>
+
+
+            <!-- Stage 2 support images — BIGGER -->
+            <div class="sh-support-imgs" id="shSupportImgs" style="opacity:0">
+                <div class="sh-support-img sh-si-1"><img src="assets/images/commuter-phone.jpg" alt="Commuter with phone" loading="eager"></div>
+                <div class="sh-support-img sh-si-2"><img src="assets/images/train-window.jpg" alt="Train window view" loading="eager"></div>
+                <div class="sh-support-img sh-si-3"><img src="assets/images/phone-navigate.jpg" alt="Phone navigation" loading="eager"></div>
+                <div class="sh-support-img sh-si-4"><img src="assets/images/happy-commuter.jpg" alt="Happy commuter" loading="eager"></div>
+            </div>
+
+
+
+            <!-- Mosaic images (stage 4) -->
+            <div class="sh-mosaic" id="shMosaic" style="opacity:0">
+                <div class="sh-mosaic-img" id="mosa1"><img src="assets/images/commuter-phone.jpg" alt="Commuter checking phone" loading="lazy"></div>
+                <div class="sh-mosaic-img" id="mosa2"><img src="assets/images/map-phone.jpg" alt="Map navigation on phone" loading="lazy"></div>
+                <div class="sh-mosaic-img" id="mosa3"><img src="assets/images/night-bus.jpg" alt="Night bus route" loading="lazy"></div>
+                <div class="sh-mosaic-img" id="mosa4"><img src="assets/images/train-window.jpg" alt="View from train window" loading="lazy"></div>
+                <div class="sh-mosaic-img" id="mosa5"><img src="assets/images/bus-commute.jpg" alt="Bus commute scene" loading="lazy"></div>
+                <div class="sh-mosaic-img" id="mosa6"><img src="assets/images/city-streets.jpg" alt="City streets at night" loading="lazy"></div>
+            </div>
+
+            <!-- STAGE 1: Giant title -->
+            <div class="sh-stage" id="shStage1">
+                <div class="sh-title-glow" id="shGlow"></div>
+                <h1 class="sh-title" id="shTitle">LokAlert</h1>
+            </div>
+
+            <!-- STAGE 2: Tagline -->
+            <div class="sh-stage" id="shStage2" style="opacity:0">
+                <p class="sh-tagline" id="shTagline">Arrive Smart.<br>Stay Alert.</p>
+            </div>
+
+            <!-- STAGE 3: Sentence word-by-word -->
+            <div class="sh-stage" id="shStage3" style="opacity:0">
+                <div class="sh-sentence-wrap">
+                    <p class="sh-sentence" id="shSentence"></p>
+                </div>
+            </div>
+
+            <!-- STAGE 4: Final -->
+            <div class="sh-stage" id="shStage4" style="opacity:0">
+                <h2 class="sh-final-tagline" id="shFinalTag">Your Commute,<br>Reimagined.</h2>
+                <p class="sh-final-sub" id="shFinalSub">Get notified when you reach your destination.</p>
+                <div class="sh-final-links" id="shFinalLinks">
+                    <a href="#features">Learn more &#8250;</a>
+                    <a href="#" onclick="openDownloadModal(); return false;">Download &#8250;</a>
+                </div>
+            </div>
+
+            <!-- Scroll hint — prominent -->
+            <div class="scroll-hint" id="scrollHint">
+                <div class="scroll-hint-text">Scroll to explore</div>
+                <div class="scroll-hint-chevron"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== BLUE BAND =================== -->
+    <section class="color-band band-blue" data-anim="band">
+        <div class="band-blue-img" id="blueBgImg" style="background-image:url('assets/images/city-night.jpg')"></div>
+        <div class="floating-accent" style="width:200px;height:200px;top:10%;left:10%;animation-delay:0s"></div>
+        <div class="floating-accent" style="width:140px;height:140px;bottom:15%;right:12%;animation-delay:2s"></div>
+        <div class="floating-accent" style="width:100px;height:100px;top:50%;left:60%;animation-delay:4s"></div>
+        <div class="color-band-content">
+            <div class="color-band-text">
+                <h2>Search anywhere.<br>Drop a pin.<br>Done.</h2>
+                <p>Find any destination worldwide with Google Places search. Type a name, pick from results, and LokAlert watches the distance for you.</p>
+            </div>
+            <div class="color-band-phone">
+                <div class="phone-frame phone-sm">
+                    <div class="phone-screen" style="--focus:50% 45%;--pan-x:0%;--pan-y:-3%">
+                        <img src="App Screenshots incomplete/app-search-autocomplete.jpg" alt="LokAlert search with Google Places" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== BLACK BAND =================== -->
+    <section class="color-band band-black" data-anim="band">
+        <div class="band-black-img" id="blackBgImg"></div>
+        <div class="color-band-content">
+            <div class="color-band-phone">
+                <div class="phone-frame phone-sm">
+                    <div class="phone-screen" style="--focus:50% 70%;--pan-x:0%;--pan-y:-5%">
+                        <img src="App Screenshots incomplete/app-new-alarm-config.jpg" alt="LokAlert alarm configuration" loading="lazy">
+                    </div>
+                </div>
+            </div>
+            <div class="color-band-text">
+                <h2><strong>A configurable alert radius</strong><br>that adapts to your journey.</h2>
+                <p>Slide to set your trigger distance from 100 meters to 5 kilometers. The map shows a live circle preview that updates in real time as you adjust.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- =================== STICKY SCROLL REVEAL — video + card compact =================== -->
+    <div class="sticky-reveal" id="stickyReveal">
+        <div class="sticky-reveal-inner" id="stickyInner">
+            <div class="sticky-video-bg" id="stickyVideoBg">
+                <video muted loop playsinline preload="none" poster="assets/images/train-platform.jpg">
+                    <source src="assets/videos/commuter-journey.mp4" type="video/mp4">
+                </video>
+                <img src="assets/images/train-platform.jpg" alt="Train journey" loading="lazy">
+            </div>
+            <div class="sticky-overlay"></div>
+            <h2 class="sticky-text" id="stickyText"></h2>
+        </div>
+    </div>
+
+    <!-- =================== TWO-COLUMN CARDS =================== -->
+    <div class="card-pair-wrap">
+    <div class="card-pair-section">
+        <div class="card-pair" data-anim="cards">
+            <div class="card card-phone">
+                <div class="phone-frame phone-md">
+                    <div class="phone-screen" style="--focus:50% 40%;--pan-x:0%;--pan-y:-2%">
+                        <img src="App Screenshots incomplete/app-alarms-list.jpg" alt="LokAlert alarms list" loading="lazy">
+                    </div>
+                </div>
+            </div>
+            <div class="card card-text">
+                <h3>Set it and forget it.</h3>
+                <p>Name your alarm, pick active days, choose a sound, and set gradual volume. LokAlert handles the rest silently in the background while you sleep, read, or relax.</p>
+            </div>
+        </div>
+        <div class="card-pair" data-anim="cards">
+            <div class="card card-text">
+                <h3>Never miss your stop.</h3>
+                <p>A full-screen alert appears right over your lock screen the moment you arrive. Choose how to dismiss it — slide, swipe, or tap a button. Gradual volume ensures a gentle wake-up.</p>
+            </div>
+            <div class="card card-phone">
+                <div class="phone-frame phone-md">
+                    <div class="phone-screen" style="--focus:50% 75%;--pan-x:0%;--pan-y:-6%">
+                        <img src="App Screenshots incomplete/app-alarm-triggered.jpg" alt="LokAlert alarm triggered" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-pair" data-anim="cards">
+            <div class="card card-phone">
+                <div class="phone-frame phone-md">
+                    <div class="phone-screen" style="--focus:50% 50%;--pan-x:2%;--pan-y:-2%">
+                        <img src="App Screenshots incomplete/app-settings-color-themes.jpg" alt="LokAlert color themes" loading="lazy">
+                    </div>
+                </div>
+            </div>
+            <div class="card card-text">
+                <h3>Seven color themes.</h3>
+                <p>Standard, Express, Ocean, Sunset, Forest, Retro, and Mono. Make LokAlert truly yours with one-tap theme switching.</p>
+            </div>
+        </div>
+        <div class="card-pair" data-anim="cards">
+            <div class="card card-text">
+                <h3>Dismiss your way.</h3>
+                <p>Slide across the screen, swipe up, or tap a button. Three dismiss styles let you silence your alarm exactly how you prefer. No fumbling with your phone in a rush.</p>
+            </div>
+            <div class="card card-phone">
+                <div class="phone-frame phone-md">
+                    <div class="phone-screen" style="--focus:50% 60%;--pan-x:0%;--pan-y:-4%">
+                        <img src="App Screenshots incomplete/app-alarm-display-swipe.jpg" alt="LokAlert swipe dismiss" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-pair" data-anim="cards">
+            <div class="card card-phone">
+                <div class="phone-frame phone-md">
+                    <div class="phone-screen" style="--focus:50% 55%;--pan-x:1%;--pan-y:-3%">
+                        <img src="App Screenshots incomplete/app-settings-sound-haptics.jpg" alt="LokAlert sound and haptics settings" loading="lazy">
+                    </div>
+                </div>
+            </div>
+            <div class="card card-text">
+                <h3>Sound and haptics.</h3>
+                <p>Pick from built-in alarm sounds, set vibration intensity, and enable gradual volume ramp. Every sensory detail is configurable to match your environment.</p>
+            </div>
+        </div>
+        <div class="card-pair" data-anim="cards">
+            <div class="card card-text">
+                <h3>Your privacy, first.</h3>
+                <p>LokAlert explains exactly what permissions it needs and why, before asking for them. Location data never leaves your device. No tracking, no analytics, no server uploads.</p>
+            </div>
+            <div class="card card-phone">
+                <div class="phone-frame phone-md">
+                    <div class="phone-screen" style="--focus:50% 45%;--pan-x:0%;--pan-y:-2%">
+                        <img src="App Screenshots incomplete/app-onboarding-privacy.jpg" alt="LokAlert privacy onboarding" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-pair" data-anim="cards">
+            <div class="card card-full" style="border-radius:28px;overflow:hidden;border:1px solid var(--border)">
+                <div class="card-full-img" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0a0c 0%,#1a1a2e 100%);padding:32px">
+                    <div class="phone-frame phone-md">
+                        <div class="phone-screen" style="--focus:50% 35%;--pan-x:-1%;--pan-y:-3%">
+                            <img src="App Screenshots incomplete/app-demo-national-harbor.jpg" alt="LokAlert demo mode" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-full-text">
+                    <h3>Try before you ride.</h3>
+                    <p>Demo mode simulates a full GPS journey with a moving blue dot, destination marker, and live distance tracking. An 8-step guided tour walks you through every feature. No real trip needed to explore the app.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div><!-- /card-pair-wrap -->
+
+    <!-- =================== VIDEO BAND =================== -->
+    <div class="video-band" data-anim="band" id="vidStreets">
+        <video muted loop playsinline preload="none" poster="assets/images/city-streets.jpg"
+               data-cdn-src="https://videos.pexels.com/video-files/5330927/5330927-hd_1920_1080_30fps.mp4">
+            <source src="assets/videos/streets-walking.mp4" type="video/mp4">
+        </video>
+        <img class="vid-poster" src="assets/images/city-streets.jpg" alt="City streets" loading="lazy">
+        <div class="video-band-overlay">
+            <h2>Designed for real commuters.</h2>
+            <p>Whether you ride the bus, take the train, or carpool home, LokAlert keeps watch so you can rest.</p>
+        </div>
+    </div>
+
+    <!-- =================== FEATURES =================== -->
+    <section id="features" class="feat-section">
+        <div class="feat-header">
+            <p class="eyebrow r" data-anim>Features</p>
+            <h2 class="r r-d1" data-anim>Everything you need.<br><span class="t-grad-warm">Nothing you don’t.</span></h2>
+            <p class="feat-sub r r-d2" data-anim>Tap into features designed for the way you actually commute — whether it’s the bus, train, or carpool.</p>
+        </div>
+        <div class="feat-grid">
+            <div class="feat-tile r" data-anim>
+                <div class="feat-tile-img">
+                    <img src="assets/images/feat-cards/feat-map-location.jpg" alt="LokAlert map with pinned location" loading="lazy">
+                </div>
+                <div class="feat-tile-text">
+                    <p><strong>Location-based alarms.</strong> Set a destination on the map, configure your alert distance, and let LokAlert watch the journey for you.</p>
+                </div>
+            </div>
+            <div class="feat-tile r r-d1" data-anim>
+                <div class="feat-tile-img">
+                    <img src="assets/images/feat-cards/feat-search.jpg" alt="LokAlert search autocomplete" loading="lazy">
+                </div>
+                <div class="feat-tile-text">
+                    <p><strong>Google Places search.</strong> Find any destination worldwide. Type a name, pick from results, and your alarm is set in seconds.</p>
+                </div>
+            </div>
+            <div class="feat-tile r r-d2" data-anim>
+                <div class="feat-tile-img">
+                    <img src="assets/images/feat-cards/feat-alarm-config.jpg" alt="LokAlert alarm configuration" loading="lazy">
+                </div>
+                <div class="feat-tile-text">
+                    <p><strong>Custom alert radius.</strong> Set your trigger distance from 100 m to 5 km. The map updates in real time as you slide.</p>
+                </div>
+            </div>
+            <div class="feat-tile r r-d3" data-anim>
+                <div class="feat-tile-img">
+                    <img src="assets/images/feat-cards/feat-alarm-display.jpg" alt="LokAlert alarm triggered" loading="lazy">
+                </div>
+                <div class="feat-tile-text">
+                    <p><strong>Works while you rest.</strong> Lock your phone, close your eyes. A full-screen alert appears the moment you arrive.</p>
+                </div>
+            </div>
+            <div class="feat-tile r r-d4" data-anim>
+                <div class="feat-tile-img">
+                    <img src="assets/images/feat-cards/feat-emoji-picker.jpg" alt="LokAlert emoji picker" loading="lazy">
+                </div>
+                <div class="feat-tile-text">
+                    <p><strong>Make it yours.</strong> Assign custom emoji icons to each alarm for instant recognition and personality.</p>
+                </div>
+            </div>
+            <div class="feat-tile r" data-anim>
+                <div class="feat-tile-img">
+                    <img src="assets/images/feat-cards/feat-color-themes.jpg" alt="LokAlert color themes" loading="lazy">
+                </div>
+                <div class="feat-tile-text">
+                    <p><strong>20+ settings.</strong> Seven color themes, three dismiss styles, cooldown timers, vibration presets, and more.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== WHY =================== -->
+    <section id="why" class="why-section">
+        <div class="why-bg-ext"></div>
+        <div class="why-layout">
+        <div class="why-photo">
+            <img src="assets/images/earphones-commuter.jpg" alt="Commuter with earphones on a bus" loading="lazy">
+        </div>
+        <div class="why-glass">
+            <div class="why-head">
+                <p class="eyebrow r" data-anim style="font-size:14px;font-weight:600;color:rgba(245,245,247,.5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Why LokAlert</p>
+                <h2 class="r r-d1" data-anim style="color:#f5f5f7">The smarter way to <span class="t-grad-warm">navigate everywhere.</span></h2>
+            </div>
+            <div class="why-list">
+                <div class="why-row r r-d1" data-anim><div class="why-num">01</div><div><h3 style="color:#f5f5f7">Location-Based, Not Time-Based</h3><p style="color:rgba(245,245,247,.6)">Traditional alarms guess when you will arrive. LokAlert knows exactly where you are and alerts you the moment you enter your configured radius.</p></div></div>
+                <div class="why-row r r-d2" data-anim><div class="why-num">02</div><div><h3 style="color:#f5f5f7">Fully Customizable Experience</h3><p style="color:rgba(245,245,247,.6)">Seven color themes, configurable dismiss options, vibration intensity, cooldown timers, and active day scheduling. Every detail is yours to control.</p></div></div>
+                <div class="why-row r r-d3" data-anim><div class="why-num">03</div><div><h3 style="color:#f5f5f7">Works Without Looking</h3><p style="color:rgba(245,245,247,.6)">Lock your screen, sleep, read. LokAlert runs silently in the background with precision GPS tracking. The full-screen alert appears right over your lock screen when you arrive.</p></div></div>
+                <div class="why-row r r-d4" data-anim><div class="why-num">04</div><div><h3 style="color:#f5f5f7">Demo Mode and Guided Tour</h3><p style="color:rgba(245,245,247,.6)">Never used a location alarm before? Demo mode simulates a GPS journey, and an 8-step guided tour shows you every feature before your first real trip.</p></div></div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- =================== TECH =================== -->
+    <section id="tech" class="tech-section">
+        <div class="tech-bg"></div>
+        <div class="tech-inner">
+            <div class="tech-header">
+                <p class="eyebrow r" data-anim>Technology</p>
+                <h2 class="r r-d1" data-anim>Built for reliability.</h2>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-card r r-d1" data-anim>
+                    <div class="tc-icon" style="background:rgba(61,220,132,.08);color:#3ddc84">
+                        <!-- Android robot icon -->
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48A5.84 5.84 0 0 0 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31A5.983 5.983 0 0 0 6 7h12c0-2.21-1.2-4.15-2.97-5.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/></svg>
+                    </div>
+                    <h3>Android Native</h3><p>Built from the ground up for Android</p>
+                </div>
+                <div class="tech-card r r-d2" data-anim>
+                    <div class="tc-icon" style="background:rgba(48,209,88,.08);color:#30d158">
+                        <!-- Google Maps icon -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                    </div>
+                    <h3>Google Maps</h3><p>Interactive map with live radius preview</p>
+                </div>
+                <div class="tech-card r r-d3" data-anim>
+                    <div class="tc-icon" style="background:rgba(255,159,10,.08);color:#ff9f0a">
+                        <!-- GPS/Satellite icon -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></svg>
+                    </div>
+                    <h3>Precision GPS</h3><p>High-accuracy background location tracking</p>
+                </div>
+                <div class="tech-card r r-d4" data-anim>
+                    <div class="tc-icon">
+                        <!-- Database/storage icon -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                    </div>
+                    <h3>Local Storage</h3><p>All your data stays on your device</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== TEAM =================== -->
+    <section id="team" class="team-section">
+        <div class="team-inner">
+            <div class="team-header">
+                <p class="eyebrow r" data-anim>Our Team</p>
+                <h2 class="r r-d1" data-anim>Meet the team.</h2>
+            </div>
+            <div class="team-grid">
+                <div class="team-card r r-d1" data-anim><div class="team-ava">OA</div><h3>Alemana, Onyx Herod</h3></div>
+                <div class="team-card r r-d2" data-anim><div class="team-ava">RM</div><h3>Mabahin, Ryan</h3></div>
+                <div class="team-card r r-d3" data-anim><div class="team-ava">EA</div><h3>Adamos, Eurika</h3></div>
+                <div class="team-card r r-d1" data-anim><div class="team-ava">GB</div><h3>Billones, Gerald</h3></div>
+                <div class="team-card r r-d2" data-anim><div class="team-ava">TC</div><h3>Crisologo, Terence Joefrey</h3></div>
+                <div class="team-card r r-d3" data-anim><div class="team-ava">AR</div><h3>Royo, Aenard Ollyer</h3></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================== CTA =================== -->
+    <section class="cta-section">
+        <div class="cta-bg" style="background-image:url('assets/images/city-night.jpg')"
+             data-cdn-bg="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&q=80&auto=format&fit=crop"
+             data-local-bg="assets/images/city-night.jpg"></div>
+        <div class="cta-content">
+            <h2 class="r" data-anim style="font-size:clamp(40px,7vw,64px);font-weight:700;letter-spacing:-.04em;line-height:1.07;margin-bottom:16px"><span class="t-grad">Download LokAlert.</span></h2>
+            <p class="r r-d1" data-anim style="font-size:clamp(17px,2vw,21px);color:var(--text-dim);max-width:500px;margin:0 auto 36px;line-height:1.47">Arrive smart. Stay alert. Available now for Android.</p>
+            <div class="r r-d2" data-anim><button class="cta-btn" onclick="openDownloadModal()">Download APK</button></div>
+        </div>
+    </section>
+
+    <!-- =================== FOOTER =================== -->
+    <footer class="g-footer">
+        <div class="g-footer-logo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            LokAlert
+        </div>
+        <p class="g-footer-tag">Arrive Smart. Stay Alert.</p>
+        <p class="g-footer-sub">Database Management &amp; Administration 2 — Final Project</p>
+        <div class="g-footer-links">
+            <a href="admin.html">Admin</a>
+            <a href="classic.html">Classic View</a>
+            <a href="#scrollHero">Back to Top</a>
+        </div>
+        <p class="g-footer-copy">&copy; 2026 LokAlert. All rights reserved.</p>
+    </footer>
+
+</div><!-- #siteContent -->
+
+<!-- ======= FAB ======= -->
+<button class="fab-dl" id="fabDl" onclick="openDownloadModal()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Download <small>Latest &bull; Android</small>
+</button>
+
+<!-- ======= DOWNLOAD/AUTH MODAL (populated by download.js) ======= -->
+<div class="modal-overlay" id="downloadModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <div class="modal-section" id="downloadSection">
+            <div class="modal-header">
+                <div class="modal-icon">📥</div>
+                <h2>Download LokAlert</h2>
+                <p>Get the latest version of our app</p>
+            </div>
+            <div class="version-info" id="versionInfo">
+                <div class="version-loading">Loading version info...</div>
+            </div>
+            <div id="downloadArea"></div>
+        </div>
+        <div class="modal-section" id="loginSection" style="display:none"></div>
+        <div class="modal-section" id="signupSection" style="display:none"></div>
+        <div class="modal-section" id="verifySection" style="display:none"></div>
+        <div class="modal-section" id="forgotSection" style="display:none"></div>
+    </div>
+</div>
+
+<script src="js/download.js"></script>
+<script>
+(function(){
+    'use strict';
+
+    /* =========================================================
+       MAINTENANCE CHECK  –  Color-Explosion Particle System
+    ========================================================= */
+    (function(){
+        var overlay=document.getElementById('maintOverlay');
+        var msgEl =document.getElementById('maintMsg');
+        var site  =document.getElementById('siteContent');
+        var nav   =document.getElementById('gNav');
+        var fab   =document.getElementById('fabDl');
+        var canvas=document.getElementById('maintCanvas');
+
+        /* --- helpers --- */
+        function showSite(){
+            site.style.visibility='visible';site.style.opacity='1';
+            overlay.style.display='none';
+        }
+        function showMaint(m){
+            if(m) msgEl.textContent=m;
+            overlay.classList.add('active');
+            site.style.display='none';
+            if(nav) nav.style.display='none';
+            if(fab) fab.style.display='none';
+            startExplosion(canvas);
+        }
+
+        /* --- async fetch with timeout --- */
+        var ctrl=new AbortController();
+        var tid=setTimeout(function(){ctrl.abort();},5000);
+        fetch('api/users.php?action=maintenance-check',{signal:ctrl.signal})
+            .then(function(r){return r.json();})
+            .then(function(d){clearTimeout(tid);if(d&&d.maintenance){showMaint(d.message);}else{showSite();}})
+            .catch(function(){clearTimeout(tid);showSite();});
+
+        /* -----------------------------------------------
+           PARTICLE  ENGINE  —  5 Randomized Modes
+           0 Holi Powder · 1 Fireworks · 2 Nebula
+           3 Warp Speed  · 4 Particle Vortex
+        ----------------------------------------------- */
+        function startExplosion(cvs){
+            var ctx=cvs.getContext('2d'),W,H,cx,cy,parts=[],frame=0;
+            function resize(){W=cvs.width=innerWidth;H=cvs.height=innerHeight;cx=W/2;cy=H/2;}
+            resize();window.addEventListener('resize',resize);
+
+            var mode=Math.floor(Math.random()*5);
+            var PAL=[
+                ['#FF1493','#FF69B4','#FF007F','#FF4500','#FFA500','#FFD700','#ADFF2F','#7CFC00','#FFF','#E91E63','#C71585','#FF8C00','#DA70D6','#FAFAD2'],
+                ['#FF0040','#FF4500','#FFD700','#00FF41','#00BFFF','#8B00FF','#FF1493','#FFF','#FF6B6B','#7FFFD4','#00CED1','#ADFF2F'],
+                ['#8B5CF6','#A78BFA','#C084FC','#E879F9','#818CF8','#6366F1','#3B82F6','#06B6D4','#EC4899','#F472B6','#FFF','#93C5FD'],
+                ['#00E5FF','#18FFFF','#40C4FF','#76FF03','#EEFF41','#FFF','#B388FF','#FF4081','#69F0AE','#FFAB00'],
+                ['#FF6D00','#FF9100','#FFAB00','#FFD600','#00E676','#00BCD4','#E040FB','#FF1744','#FFF','#76FF03','#2979FF']
+            ];
+            var pal=PAL[mode];
+            function rC(){return pal[~~(Math.random()*pal.length)];}
+            function addP(o){o.g=o.g||0;o.fr=o.fr||1;o.bl=o.bl||0;parts.push(o);}
+            var fadeA=[0.04,0.055,0.018,0.12,0.035][mode];
+            var mUpd=null;
+
+            /* === MODE 0 : HOLI POWDER BURST === */
+            if(mode===0){
+                var arms=[
+                    {a:-0.5,c:['#ADFF2F','#7CFC00','#CDDC39']},
+                    {a:-0.9,c:['#FF6D00','#FF4500','#FF8C00','#FFA726']},
+                    {a:-0.2,c:['#FF1493','#C71585','#E91E63']},
+                    {a:0.3, c:['#FF0000','#D50000','#FF1744']},
+                    {a:0.8, c:['#FF6D00','#FF9800','#F57C00']},
+                    {a:1.6, c:['#FF69B4','#FF1493','#F48FB1','#DA70D6']},
+                    {a:2.2, c:['#FFF','#FFE0E0','#FF69B4']},
+                    {a:-1.6,c:['#FFD600','#FFAB00','#ADFF2F']}
+                ];
+                for(var i=0;i<90;i++){var a=Math.random()*6.28,s=Math.random()*1.5;addP({x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s,sz:Math.random()*32+16,bl:60,col:['#FFF','#FAFAD2','#FFD700'][~~(Math.random()*3)],a:1,dc:.002,fr:.99,shrink:1});}
+                arms.forEach(function(arm){for(var i=0;i<100;i++){var sp=arm.a+(Math.random()-.5)*.55,spd=Math.random()*8+2,t=Math.random(),sz,bl,dc;if(t<.22){sz=Math.random()*42+18;bl=55;dc=.0015;spd*=.28;}else if(t<.6){sz=Math.random()*7+2;bl=16;dc=.005;}else{sz=Math.random()*2.5+.3;bl=6;dc=.009;spd*=1.6;}addP({x:cx+(Math.random()-.5)*20,y:cy+(Math.random()-.5)*20,vx:Math.cos(sp)*spd,vy:Math.sin(sp)*spd,sz:sz,bl:bl,col:arm.c[~~(Math.random()*arm.c.length)],a:1,dc:dc,g:.008,fr:.988,shrink:1});}});
+                for(var i=0;i<400;i++){var a=Math.random()*6.28,spd=Math.random()*11+3;addP({x:cx,y:cy,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,sz:Math.random()*1.5+.2,bl:4,col:rC(),a:1,dc:.004,g:.01,fr:.992});}
+                setTimeout(function(){for(var i=0;i<220;i++){var a=Math.random()*6.28,s=Math.random()*5+1;addP({x:cx+(Math.random()-.5)*80,y:cy+(Math.random()-.5)*80,vx:Math.cos(a)*s,vy:Math.sin(a)*s,sz:Math.random()*22+6,bl:35,col:rC(),a:.8,dc:.003,g:.008,fr:.99,shrink:1});}},400);
+                mUpd=function(f){if(f%8===0){var a=Math.random()*6.28,s=Math.random()*2+.5;addP({x:cx+(Math.random()-.5)*W*.4,y:cy+(Math.random()-.5)*H*.4,vx:Math.cos(a)*s,vy:Math.sin(a)*s,sz:Math.random()*10+3,bl:22,col:rC(),a:.6,dc:.003,g:.005,fr:.995,shrink:1});}if(f%120===0){var bx=cx+(Math.random()-.5)*W*.5,by=cy+(Math.random()-.5)*H*.5;for(var i=0;i<70;i++){var a=Math.random()*6.28,s=Math.random()*4+1;addP({x:bx,y:by,vx:Math.cos(a)*s,vy:Math.sin(a)*s,sz:Math.random()*6+1,bl:14,col:rC(),a:.7,dc:.005,g:.01,fr:.99,shrink:1});}}};
+            }
+
+            /* === MODE 1 : FIREWORKS FESTIVAL === */
+            else if(mode===1){
+                var rockets=[];
+                function launchR(){rockets.push({x:Math.random()*W*.6+W*.2,y:H,vy:-(Math.random()*6+8),tgt:Math.random()*H*.25+H*.15,col:rC()});}
+                function burstF(rx,ry,col){var n=140,bp=[col,col,rC(),rC(),'#FFF'];for(var i=0;i<n;i++){var a=Math.random()*6.28,s=Math.random()*5.5+1,t=Math.random();addP({x:rx,y:ry,vx:Math.cos(a)*s,vy:Math.sin(a)*s,sz:t<.1?Math.random()*4+3:Math.random()*2.5+.5,bl:t<.1?22:10,col:bp[~~(Math.random()*bp.length)],a:1,dc:.009,g:.035,fr:.985,shrink:1});}for(var j=0;j<3;j++){var rp={x:rx,y:ry,vx:0,vy:0,sz:5,bl:30,col:col,a:1,dc:.025,g:0,fr:1,shape:1,upd:function(p){p.sz+=3;}};addP(rp);}}
+                for(var i=0;i<5;i++)setTimeout(launchR,i*300);
+                mUpd=function(f){for(var i=rockets.length-1;i>=0;i--){var r=rockets[i];r.y+=r.vy;addP({x:r.x+(Math.random()-.5)*3,y:r.y,vx:(Math.random()-.5)*.5,vy:Math.random()*2+1,sz:Math.random()*2+1,bl:8,col:'#FFA500',a:1,dc:.04,g:.02,fr:.98,shrink:1});if(r.y<=r.tgt){burstF(r.x,r.y,r.col);rockets.splice(i,1);}}if(f%80===0)launchR();if(f%140===0)launchR();};
+            }
+
+            /* === MODE 2 : COSMIC NEBULA === */
+            else if(mode===2){
+                for(var i=0;i<200;i++){(function(){var px=Math.random()*W,py=Math.random()*H,off=Math.random()*100;addP({x:px,y:py,vx:0,vy:0,sz:Math.random()*1.5+.3,bl:3,col:'#FFF',a:Math.random()*.7+.3,dc:0,g:0,fr:1,upd:function(p,f){p.a=.3+Math.sin(f*.02+off)*.35;}});})();}
+                function spawnNeb(bx,by,n){for(var i=0;i<n;i++){var a=Math.random()*6.28,s=Math.random()*.8+.1;addP({x:bx+(Math.random()-.5)*100,y:by+(Math.random()-.5)*100,vx:Math.cos(a)*s,vy:Math.sin(a)*s,sz:Math.random()*40+10,bl:45,col:rC(),a:.35+Math.random()*.3,dc:.0006,g:0,fr:.999,shrink:1});}}
+                spawnNeb(cx,cy,80);spawnNeb(cx-W*.2,cy-H*.1,40);spawnNeb(cx+W*.15,cy+H*.15,40);
+                mUpd=function(f){if(f%3===0){var ang=f*.02,r=50+Math.sin(f*.005)*100;addP({x:cx+Math.cos(ang)*r,y:cy+Math.sin(ang)*r,vx:Math.cos(ang+1.57)*.5,vy:Math.sin(ang+1.57)*.5,sz:Math.random()*8+2,bl:22,col:rC(),a:.7,dc:.002,g:0,fr:.998,shrink:1});}if(f%180===0){var sx=Math.random()*W;for(var i=0;i<20;i++)addP({x:sx+i*3,y:i*3,vx:3+Math.random(),vy:3+Math.random(),sz:Math.random()*2+.5,bl:10,col:'#FFF',a:1-i*.04,dc:.02,g:0,fr:.99});}if(f%200===0)spawnNeb(cx+(Math.random()-.5)*W*.4,cy+(Math.random()-.5)*H*.4,25);};
+            }
+
+            /* === MODE 3 : WARP SPEED === */
+            else if(mode===3){
+                var stars=[];
+                function addStar(){stars.push({x:cx+(Math.random()-.5)*20,y:cy+(Math.random()-.5)*20,z:Math.random()*1e3+500,col:rC(),sz:Math.random()*2+1});}
+                for(var i=0;i<300;i++)addStar();
+                mUpd=function(f){for(var i=stars.length-1;i>=0;i--){var s=stars[i];s.z-=8;if(s.z<=1){stars.splice(i,1);addStar();continue;}var sx=(s.x-cx)*(800/s.z)+cx,sy=(s.y-cy)*(800/s.z)+cy,psx=(s.x-cx)*(800/(s.z+8))+cx,psy=(s.y-cy)*(800/(s.z+8))+cy,r=Math.max(.5,(1-s.z/1500)*s.sz*3);ctx.save();ctx.strokeStyle=s.col;ctx.lineWidth=r;ctx.globalAlpha=Math.min(1,(1-s.z/1500)*1.5);ctx.shadowBlur=10;ctx.shadowColor=s.col;ctx.beginPath();ctx.moveTo(psx,psy);ctx.lineTo(sx,sy);ctx.stroke();ctx.restore();}if(stars.length<300)addStar();if(f%200===0){for(var i=0;i<30;i++){var a=Math.random()*6.28,s=Math.random()*2+.5;addP({x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s,sz:Math.random()*5+2,bl:15,col:rC(),a:.8,dc:.01,g:0,fr:.99,shrink:1});}}};
+            }
+
+            /* === MODE 4 : PARTICLE VORTEX === */
+            else{
+                var vps=[];
+                for(var i=0;i<200;i++)vps.push({angle:Math.random()*6.28,radius:Math.random()*200+50,speed:.01+Math.random()*.02,rSpd:Math.random()*.3-.15,col:rC(),sz:Math.random()*4+1,bl:12});
+                mUpd=function(f){for(var i=0;i<vps.length;i++){var v=vps[i];v.angle+=v.speed;v.radius+=v.rSpd;if(v.radius>Math.min(W,H)*.45||v.radius<30)v.rSpd*=-1;var vx=cx+Math.cos(v.angle)*v.radius,vy=cy+Math.sin(v.angle)*v.radius;ctx.save();ctx.globalAlpha=.8;ctx.shadowBlur=v.bl;ctx.shadowColor=v.col;ctx.fillStyle=v.col;ctx.beginPath();ctx.arc(vx,vy,v.sz,0,6.28);ctx.fill();ctx.restore();if(f%3===0)addP({x:vx,y:vy,vx:0,vy:0,sz:v.sz*.6,bl:6,col:v.col,a:.5,dc:.015,g:0,fr:1,shrink:1});}var grad=ctx.createRadialGradient(cx,cy,0,cx,cy,80);grad.addColorStop(0,'rgba(255,255,255,0.08)');grad.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=grad;ctx.fillRect(cx-80,cy-80,160,160);if(f%100===0){for(var j=0;j<25;j++){var a=Math.random()*6.28,s=Math.random()*4+2;addP({x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s,sz:Math.random()*3+1,bl:10,col:rC(),a:1,dc:.008,g:.02,fr:.99,shrink:1});}}};
+            }
+
+            /* === RENDER LOOP === */
+            ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+            function tick(){
+                ctx.fillStyle='rgba(0,0,0,'+fadeA+')';ctx.fillRect(0,0,W,H);
+                for(var i=parts.length-1;i>=0;i--){
+                    var p=parts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=p.fr;p.vy*=p.fr;p.a-=p.dc;
+                    if(p.a<=0){parts.splice(i,1);continue;}
+                    ctx.save();ctx.globalAlpha=Math.min(1,p.a);
+                    if(p.bl){ctx.shadowBlur=p.bl;ctx.shadowColor=p.col;}
+                    ctx.fillStyle=p.col;
+                    if(p.shape===1){ctx.strokeStyle=p.col;ctx.lineWidth=2*p.a;ctx.beginPath();ctx.arc(p.x,p.y,p.sz,0,6.28);ctx.stroke();}
+                    else{ctx.beginPath();ctx.arc(p.x,p.y,Math.max(.1,p.sz*(p.shrink?p.a:1)),0,6.28);ctx.fill();if(p.sz>14){ctx.globalAlpha=p.a*.3;ctx.shadowBlur=(p.bl||0)*1.5;ctx.beginPath();ctx.arc(p.x,p.y,p.sz*1.4,0,6.28);ctx.fill();}}
+                    ctx.restore();
+                    if(p.upd)p.upd(p,frame);
+                }
+                if(mUpd)mUpd(frame);
+                frame++;requestAnimationFrame(tick);
+            }
+            tick();
+        }
+    })();
+
+    /* =========================================================
+       OFFLINE / CDN FALLBACK
+    ========================================================= */
+    var online=navigator.onLine;
+    if(online){
+        document.querySelectorAll('[data-cdn-bg]').forEach(function(el){
+            var cdn=el.dataset.cdnBg,local=el.dataset.localBg;
+            var img=new Image();
+            img.onload=function(){(el.querySelector('.color-band-bg')||el).style.backgroundImage="url('"+cdn+"')";};
+            img.onerror=function(){};
+            img.src=cdn;
+        });
+        document.querySelectorAll('video[data-cdn-src]').forEach(function(vid){
+            vid.addEventListener('error',function(){var c=vid.dataset.cdnSrc;if(c&&!vid.dataset.triedCdn){vid.dataset.triedCdn='1';vid.src=c;vid.load();}},true);
+        });
+    }
+    if(!online){document.querySelectorAll('.sh-video-frame,.video-band').forEach(function(el){el.classList.add('img-mode');});}
+    document.querySelectorAll('video').forEach(function(vid){vid.addEventListener('error',function(){var p=vid.closest('.sh-video-frame,.video-band');if(p)p.classList.add('img-mode');},true);});
+    window.addEventListener('offline',function(){document.querySelectorAll('.sh-video-frame,.video-band').forEach(function(el){el.classList.add('img-mode');});});
+    window.addEventListener('online',function(){document.querySelectorAll('.sh-video-frame.img-mode,.video-band.img-mode').forEach(function(el){var v=el.querySelector('video');if(v){v.load();v.play().then(function(){el.classList.remove('img-mode');}).catch(function(){});}});});
+
+    /* =========================================================
+       THEME
+    ========================================================= */
+    var saved=localStorage.getItem('lokalert-theme')||'dark';
+    document.documentElement.setAttribute('data-theme',saved);
+    syncUI(saved);
+    function toggleTheme(){var c=document.documentElement.getAttribute('data-theme'),n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('lokalert-theme',n);syncUI(n);}
+    function syncUI(t){document.querySelectorAll('.th-pill').forEach(function(p){p.querySelectorAll('.th-opt').forEach(function(o){o.classList.toggle('on',o.dataset.v===t);});});}
+    document.getElementById('themeToggle').addEventListener('click',toggleTheme);
+    var mobTheme=document.getElementById('themeToggleMob');if(mobTheme)mobTheme.addEventListener('click',toggleTheme);
+
+    /* =========================================================
+       MOBILE MENU
+    ========================================================= */
+    var mobBtn=document.getElementById('mobBtn'),mobMenu=document.getElementById('mobMenu');
+    mobBtn.addEventListener('click',function(){mobBtn.classList.toggle('on');mobMenu.classList.toggle('on');document.body.style.overflow=mobMenu.classList.contains('on')?'hidden':'';});
+    mobMenu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){mobBtn.classList.remove('on');mobMenu.classList.remove('on');document.body.style.overflow='';});});
+
+    /* =========================================================
+       NAV HIDE
+    ========================================================= */
+    var lastY=0,nav=document.getElementById('gNav');
+    window.addEventListener('scroll',function(){var y=window.pageYOffset;nav.classList.toggle('hide',y>lastY&&y>150);lastY=y;},{passive:true});
+
+    /* =========================================================
+       FAB — show after hero ends
+    ========================================================= */
+    var fabDl=document.getElementById('fabDl');
+    var heroSection=document.getElementById('scrollHero');
+    function updateFab(){
+        var heroBottom=heroSection.getBoundingClientRect().bottom;
+        if(heroBottom<0){fabDl.classList.add('visible');}
+        else{fabDl.classList.remove('visible');}
+    }
+    window.addEventListener('scroll',updateFab,{passive:true});
+
+    /* =========================================================
+       SCROLL-DRIVEN CINEMATIC HERO ENGINE
+       Ultra-smooth with CSS transition on words,
+       requestAnimationFrame-driven transforms,
+       video scrub via currentTime
+    ========================================================= */
+    (function(){
+        var hero=document.getElementById('scrollHero');
+        var bg=document.getElementById('shBg');
+        var geo=document.getElementById('shGeo');
+        var videoFrame=document.getElementById('shVideoFrame');
+        var heroVid=videoFrame.querySelector('video');
+        var flankUL=document.getElementById('flankUL');
+        var flankLR=document.getElementById('flankLR');
+        var supportImgs=document.getElementById('shSupportImgs');
+
+        var mosaic=document.getElementById('shMosaic');
+        var stage1=document.getElementById('shStage1');
+        var stage2=document.getElementById('shStage2');
+        var stage3=document.getElementById('shStage3');
+        var stage4=document.getElementById('shStage4');
+        var title=document.getElementById('shTitle');
+        var glow=document.getElementById('shGlow');
+        var tagline=document.getElementById('shTagline');
+        var sentenceEl=document.getElementById('shSentence');
+        var finalTag=document.getElementById('shFinalTag');
+        var finalSub=document.getElementById('shFinalSub');
+        var finalLinks=document.getElementById('shFinalLinks');
+        var scrollHint=document.getElementById('scrollHint');
+
+        /* Build sentence words — CSS transition handles smooth opacity */
+        var sentenceText="Set a destination. LokAlert tracks your GPS in real time and wakes you the moment you arrive.";
+        var sWords=sentenceText.split(' ');
+        sWords.forEach(function(w){
+            var span=document.createElement('span');
+            span.className='s-word';
+            span.textContent=w+' ';
+            sentenceEl.appendChild(span);
+        });
+        var sWordSpans=sentenceEl.querySelectorAll('.s-word');
+
+        var si=supportImgs.querySelectorAll('.sh-support-img');
+
+        var mosaics=mosaic.querySelectorAll('.sh-mosaic-img');
+
+        /* Mosaic scatter positions (vw-based from center) */
+        var mosaicStarts=[
+            {x:-42,y:-38},{x:42,y:-34},{x:44,y:14},
+            {x:-44,y:14},{x:-28,y:42},{x:36,y:38}
+        ];
+
+        /* Video scrub */
+        var vidReady=false,vidDuration=0;
+        if(heroVid){
+            heroVid.addEventListener('loadedmetadata',function(){vidDuration=heroVid.duration;vidReady=true;});
+            heroVid.load();
+        }
+
+        function lerp(a,b,t){return a+(b-a)*t;}
+        function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+        function remap(v,inLo,inHi){return clamp((v-inLo)/(inHi-inLo),0,1);}
+        function easeOut(t){return 1-Math.pow(1-t,3);}
+        function easeInOut(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+
+        /* Smooth scroll position using lerp for extra silkiness */
+        var smoothProgress=0;
+        var ticking=false;
+
+        function getRawProgress(){
+            var rect=hero.getBoundingClientRect();
+            var totalScroll=hero.offsetHeight-window.innerHeight;
+            return clamp(-rect.top/totalScroll,0,1);
+        }
+
+        function updateHero(){
+            var rawP=getRawProgress();
+            /* Interpolate towards raw for ultra-smoothness */
+            smoothProgress+=(rawP-smoothProgress)*0.18;
+            /* Snap if very close to avoid drift */
+            if(Math.abs(rawP-smoothProgress)<0.0005) smoothProgress=rawP;
+            var progress=smoothProgress;
+
+            /* BG: dark to slightly lighter */
+            var br=Math.round(lerp(0,20,progress));
+            bg.style.background='rgb('+br+','+br+','+Math.round(lerp(0,22,progress))+')';
+
+            /* Geo parallax */
+            geo.style.transform='translateY('+(-progress*50)+'px)';
+            geo.style.opacity=lerp(.04,.16,progress);
+
+            /* Scroll hint fade */
+            scrollHint.style.opacity=1-remap(progress,0,0.04);
+
+            /* ===== STAGE 1 (0.00–0.22) ===== */
+            var s1=remap(progress,0,0.22);
+
+            if(s1<0.55){
+                var rev=remap(s1,0,0.55);
+                var revE=easeOut(rev);
+                /* Smooth: title starts at full opacity/scale, gently shrinks+fades as user scrolls */
+                title.style.transform='scale('+lerp(1.05,1,revE)+')';
+                title.style.opacity=1-easeOut(remap(s1,0.3,0.55));
+                glow.style.transform='scale('+lerp(1,1.2,revE)+')';
+                glow.style.opacity=lerp(.9,.2,revE);
+            }else{
+                var fade=easeOut(remap(s1,0.55,1));
+                title.style.transform='scale('+lerp(1,.85,fade)+')';
+                title.style.opacity=lerp(0,0,fade);
+                glow.style.opacity=lerp(.2,0,fade);
+            }
+            stage1.style.opacity=s1<1?1:0;
+
+            /* Flanking images */
+            var fReveal=easeOut(remap(s1,0,0.35));
+            var fDrift=easeOut(remap(s1,0.25,1));
+            var fOp=s1<0.35?fReveal:(1-easeOut(remap(s1,0.75,1)));
+            flankUL.style.transform='translate('+lerp(0,-80,fDrift)+'px,'+lerp(0,-100,fDrift)+'px) rotate('+lerp(-2,-10,fDrift)+'deg)';
+            flankUL.style.opacity=clamp(fOp,0,1);
+            flankLR.style.transform='translate('+lerp(0,80,fDrift)+'px,'+lerp(0,100,fDrift)+'px) rotate('+lerp(2,10,fDrift)+'deg)';
+            flankLR.style.opacity=clamp(fOp,0,1);
+
+            /* ===== STAGE 2 (0.18–0.42) ===== */
+            var s2=remap(progress,0.18,0.42);
+            if(s2>0&&s2<1){
+                var tIn=easeOut(remap(s2,0,0.35));
+                var tOut=easeOut(remap(s2,0.7,1));
+                var tOp=s2<0.7?tIn:(1-tOut);
+                var tY=lerp(50,0,easeOut(remap(s2,0,0.45)));
+                if(s2>0.7)tY=lerp(0,-40,tOut);
+                stage2.style.opacity=clamp(tOp,0,1);
+                tagline.style.transform='translateY('+tY+'px)';
+
+                supportImgs.style.opacity=clamp(tOp,0,1);
+                var siD=lerp(100,0,easeOut(remap(s2,0.02,0.45)));
+                if(s2>0.7)siD=lerp(0,-80,tOut);
+                si[0].style.transform='translate('+(-siD)+'px,'+(-siD*.4)+'px) rotate(-4deg) scale('+lerp(.85,1,tIn)+')';
+                si[1].style.transform='translate('+(siD)+'px,'+(siD*.4)+'px) rotate(4deg) scale('+lerp(.85,1,tIn)+')';
+                si[2].style.transform='translate('+(siD*.6)+'px,'+(-siD*.5)+'px) rotate(2deg) scale('+lerp(.85,1,tIn)+')';
+                si[3].style.transform='translate('+(-siD*.6)+'px,'+(siD*.5)+'px) rotate(-3deg) scale('+lerp(.85,1,tIn)+')';
+            }else{
+                stage2.style.opacity=0;supportImgs.style.opacity=0;
+            }
+
+            /* ===== STAGE 3 (0.38–0.72) — ULTRA-SMOOTH WORD REVEAL ===== */
+            var s3=remap(progress,0.38,0.72);
+            if(s3>0&&s3<1){
+                var sIn=easeOut(remap(s3,0,0.08));
+                var sOut=easeOut(remap(s3,0.88,1));
+                var sOp=s3<0.88?sIn:(1-sOut);
+                stage3.style.opacity=clamp(sOp,0,1);
+
+                /* Smooth word-by-word: use fractional progress for CSS transition */
+                var wordP=remap(s3,0.04,0.88);
+                var totalWords=sWordSpans.length;
+                /* Calculate a smooth floating index */
+                var floatIndex=wordP*totalWords;
+                sWordSpans.forEach(function(sw,i){
+                    /* Each word fades smoothly: fully lit if below floatIndex,
+                       partially lit at the boundary, dim above */
+                    if(i<floatIndex-1){
+                        sw.classList.add('lit');
+                    }else if(i>floatIndex+0.5){
+                        sw.classList.remove('lit');
+                    }else{
+                        /* Boundary word — CSS transition handles the smooth fade */
+                        if(i<=floatIndex) sw.classList.add('lit');
+                        else sw.classList.remove('lit');
+                    }
+                });
+
+                /* Video frame */
+                videoFrame.style.opacity=clamp(sOp*.55,0,.55);
+                if(vidReady&&vidDuration>0){
+                    var targetT=wordP*vidDuration;
+                    if(Math.abs(heroVid.currentTime-targetT)>0.08){
+                        heroVid.currentTime=targetT;
+                    }
+                }
+                var blur=lerp(5,0,easeOut(remap(s3,0,0.5)));
+                var bright=lerp(.35,.6,easeOut(remap(s3,0,0.7)));
+                heroVid.style.filter='blur('+blur+'px) brightness('+bright+')';
+                var pImg=videoFrame.querySelector('img');
+                if(pImg)pImg.style.filter='blur('+blur+'px) brightness('+bright+')';
+
+
+            }else{
+                stage3.style.opacity=0;videoFrame.style.opacity=0;
+            }
+
+            /* ===== STAGE 4 (0.68–1.00) ===== */
+            var s4=remap(progress,0.68,1.00);
+            if(s4>0){
+                var mIn=easeOut(remap(s4,0,0.25));
+                var mConv=easeInOut(remap(s4,0.08,0.5));
+                var mFade=easeOut(remap(s4,0.4,0.6));
+                var fIn=easeOut(remap(s4,0.35,0.65));
+
+                mosaic.style.opacity=clamp(mIn<1?mIn:(1-mFade),0,1);
+                mosaics.forEach(function(m,i){
+                    var st=mosaicStarts[i];
+                    var sx=st.x/100*window.innerWidth;
+                    var sy=st.y/100*window.innerHeight;
+                    var mx=lerp(sx,0,mConv);
+                    var my=lerp(sy,0,mConv);
+                    var sc=lerp(1,.5,mConv);
+                    var rot=lerp(i%2===0?-15:15,0,mConv);
+                    m.style.left='50%';m.style.top='50%';
+                    m.style.transform='translate(calc(-50% + '+mx+'px),calc(-50% + '+my+'px)) scale('+sc+') rotate('+rot+'deg)';
+                });
+
+                stage4.style.opacity=clamp(fIn,0,1);
+                finalTag.style.transform='scale('+lerp(.65,1,fIn)+') translateY('+lerp(50,0,fIn)+'px)';
+                finalSub.style.opacity=clamp(easeOut(remap(s4,0.5,0.75)),0,1);
+                finalLinks.style.opacity=clamp(easeOut(remap(s4,0.6,0.85)),0,1);
+                finalLinks.style.transform='translateY('+lerp(24,0,easeOut(remap(s4,0.6,0.85)))+'px)';
+                stage4.style.pointerEvents=s4>0.6?'auto':'none';
+            }else{
+                stage4.style.opacity=0;mosaic.style.opacity=0;stage4.style.pointerEvents='none';
+            }
+
+            /* Continue animation loop if not at rest */
+            if(Math.abs(rawP-smoothProgress)>0.0003){
+                requestAnimationFrame(updateHero);
+            }else{
+                ticking=false;
+            }
+        }
+
+        function onScroll(){
+            if(!ticking){
+                ticking=true;
+                requestAnimationFrame(updateHero);
+            }
+        }
+        window.addEventListener('scroll',onScroll,{passive:true});
+        requestAnimationFrame(updateHero);
+    })();
+
+    /* =========================================================
+       STICKY SCROLL REVEAL — video + card compact
+    ========================================================= */
+    var stickyWords="Set a destination. LokAlert tracks your GPS in real time and wakes you the moment you arrive.".split(' ');
+    var stickyEl=document.getElementById('stickyText');
+    stickyWords.forEach(function(w){
+        var span=document.createElement('span');
+        span.className='sw';span.textContent=w+' ';
+        stickyEl.appendChild(span);
+    });
+    var stickySection=document.getElementById('stickyReveal');
+    var stickyInner=document.getElementById('stickyInner');
+    var stickySpans=stickyEl.querySelectorAll('.sw');
+    var stickyOverlay=stickyInner.querySelector('.sticky-overlay');
+    var stickyVideoBg=document.getElementById('stickyVideoBg');
+    var stickyVid=stickyVideoBg?stickyVideoBg.querySelector('video'):null;
+    var stickyVideoStarted=false;
+    var stickySmooth=0;
+    var stickyRunning=false;
+    var wordCount=stickySpans.length;
+
+    function getStickyRaw(){
+        var rect=stickySection.getBoundingClientRect();
+        var travel=stickySection.offsetHeight-window.innerHeight;
+        if(travel<=0)return 0;
+        return Math.max(0,Math.min(1,-rect.top/travel));
+    }
+
+    function renderSticky(){
+        var rawP=getStickyRaw();
+        /* Lerp: 0.15 factor = ~250ms to 96% — responsive but silk-smooth */
+        stickySmooth+=(rawP-stickySmooth)*0.15;
+        if(Math.abs(rawP-stickySmooth)<0.0002) stickySmooth=rawP;
+        var p=stickySmooth;
+
+        /* ---- CONTINUOUS WORD OPACITY (no class toggle, no CSS transition) ----
+           Float cursor glides through words. Each word gets a smooth
+           opacity gradient: fully lit behind cursor, partially lit at cursor,
+           dim ahead. Zero discrete jumps. */
+        var cursor=p*wordCount;
+        for(var i=0;i<wordCount;i++){
+            var dist=cursor-i;
+            var op;
+            if(dist>=1.0) op=1;
+            else if(dist<=0) op=0.15;
+            else op=0.15+dist*0.85;
+            stickySpans[i].style.opacity=op;
+        }
+
+        /* ---- VIDEO: start on entry ---- */
+        if(p>0.01&&!stickyVideoStarted&&stickyVid){
+            stickyVid.play().catch(function(){stickyVideoBg.classList.add('img-mode');});
+            stickyVideoStarted=true;
+        }
+
+        /* ---- OVERLAY OPACITY: controls perceived brightness (compositing-only, no repaint) ----
+           Overlay fades from 0.9 (dark) to 0.35 (bright) as user reads */
+        if(stickyOverlay){
+            stickyOverlay.style.opacity=0.9-p*0.55;
+        }
+
+        /* ---- CARD COMPACT: transform-only (no layout reflow) ---- */
+        var compact=Math.max(0,(p-0.75)/0.25);
+        var eC=compact*compact*(3-2*compact);
+        var s=1-eC*0.06;
+        var rad=eC*28;
+        stickyInner.style.transform='scale('+s+')';
+        stickyInner.style.borderRadius=rad+'px';
+
+        /* Keep rAF alive while interpolating */
+        if(Math.abs(rawP-stickySmooth)>0.0002){
+            requestAnimationFrame(renderSticky);
+        }else{
+            stickyRunning=false;
+        }
+    }
+
+    function onStickyScroll(){
+        if(!stickyRunning){stickyRunning=true;requestAnimationFrame(renderSticky);}
+    }
+    window.addEventListener('scroll',onStickyScroll,{passive:true});
+    requestAnimationFrame(renderSticky);
+
+    /* =========================================================
+       PARALLAX for color band images
+    ========================================================= */
+    var blueBg=document.getElementById('blueBgImg');
+    var blackBg=document.getElementById('blackBgImg');
+    function updateBandParallax(){
+        if(blueBg){
+            var r=blueBg.parentElement.getBoundingClientRect();
+            var p=(r.top/(window.innerHeight+r.height));
+            blueBg.style.transform='translateY('+(p*-40)+'px) scale(1.1)';
+        }
+        if(blackBg){
+            var r2=blackBg.parentElement.getBoundingClientRect();
+            var p2=(r2.top/(window.innerHeight+r2.height));
+            blackBg.style.transform='translateY('+(p2*-30)+'px) scale(1.1)';
+        }
+    }
+    window.addEventListener('scroll',updateBandParallax,{passive:true});
+
+    /* =========================================================
+       SCROLL REVEAL — IntersectionObserver with staggered thresholds
+       Sections are aware of their position and animate in harmony
+    ========================================================= */
+    var revealedSections=new Set();
+    function markRevealed(id){revealedSections.add(id);}
+
+    var obs=new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+            if(e.isIntersecting){
+                e.target.classList.add('in');
+                obs.unobserve(e.target);
+                var counter=e.target.querySelector('[data-count]');
+                if(counter)animateNum(counter);
+                markRevealed(e.target.id||e.target.className);
+            }
+        });
+    },{rootMargin:'0px 0px -60px 0px',threshold:0.08});
+    document.querySelectorAll('[data-anim]').forEach(function(el){obs.observe(el);});
+
+    /* Bands and cards — reveal when 15% visible with bottom margin */
+    var bandObs=new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+            if(e.isIntersecting){
+                e.target.classList.add('in');
+                var vid=e.target.querySelector('video');
+                if(vid&&!e.target.classList.contains('img-mode')){
+                    vid.play().catch(function(){e.target.classList.add('img-mode');});
+                }
+                bandObs.unobserve(e.target);
+                markRevealed(e.target.id||e.target.className);
+            }
+        });
+    },{rootMargin:'0px 0px -80px 0px',threshold:0.12});
+    document.querySelectorAll('[data-anim="band"],[data-anim="cards"]').forEach(function(el){bandObs.observe(el);});
+
+    /* =========================================================
+       ANIMATED COUNTERS
+    ========================================================= */
+    function animateNum(el){
+        var target=parseFloat(el.dataset.count),prefix=el.dataset.prefix||'',dur=2000,start=performance.now(),dec=target%1!==0;
+        (function tick(now){var t=Math.min((now-start)/dur,1),eased=1-Math.pow(1-t,3);el.textContent=prefix+(dec?(target*eased).toFixed(1):Math.round(target*eased));if(t<1)requestAnimationFrame(tick);})(start);
+    }
+
+    /* =========================================================
+       SMOOTH SCROLL
+    ========================================================= */
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+        a.addEventListener('click',function(e){var h=a.getAttribute('href');if(h==='#')return;var tgt=document.querySelector(h);if(tgt){e.preventDefault();window.scrollTo({top:tgt.getBoundingClientRect().top+window.pageYOffset-64,behavior:'smooth'});}});
+    });
+
+    /* =========================================================
+       GREETING SYSTEM — Time-based greeting with journey quotes
+    ========================================================= */
+    var journeyQuotes={
+        morning:[
+            'May your journey today be touched by light and clarity.',
+            'Every sunrise marks a new path to explore.',
+            'The road ahead is bright with possibility.',
+            'Step forward — your morning journey begins now.'
+        ],
+        afternoon:[
+            'May the afternoon carry you closer to where you belong.',
+            'Every step forward is a story worth telling.',
+            'The journey continues — and so does your momentum.',
+            'Keep moving forward. Great destinations await.'
+        ],
+        evening:[
+            'May the evening guide you gently homeward.',
+            'The best journeys always lead us back to where we\u2019re loved.',
+            'As the day winds down, may your path feel lighter.',
+            'Another day of journeys well traveled.'
+        ],
+        night:[
+            'Rest well tonight, for tomorrow holds a new journey.',
+            'The night is peaceful — your next adventure awaits.',
+            'Under the stars, every traveler finds their way home.',
+            'Dream of distant places. Tomorrow you\u2019ll reach them.'
+        ]
+    };
+
+    function getTimeOfDay(){
+        var h=new Date().getHours();
+        if(h>=5&&h<12) return 'morning';
+        if(h>=12&&h<17) return 'afternoon';
+        if(h>=17&&h<21) return 'evening';
+        return 'night';
+    }
+
+    function getTimeGreeting(tod){
+        var map={morning:'Good morning',afternoon:'Good afternoon',evening:'Good evening',night:'Good night'};
+        return map[tod]||'Welcome';
+    }
+
+    function updateGreeting(user){
+        var banner=document.getElementById('greetingBanner');
+        var textEl=document.getElementById('greetingText');
+        if(!banner||!textEl||!user){if(banner)banner.style.display='none';return;}
+        if(sessionStorage.getItem('lokalert-greeting-dismissed')){banner.style.display='none';return;}
+        var name=user.username||((user.email||'').split('@')[0])||'Traveler';
+        var tod=getTimeOfDay();
+        var greeting=getTimeGreeting(tod);
+        var quotes=journeyQuotes[tod]||journeyQuotes.morning;
+        var quote=quotes[Math.floor(Math.random()*quotes.length)];
+        textEl.innerHTML='\u2728 '+greeting+', <strong>'+name+'</strong>. '+quote;
+        banner.style.display='block';
+    }
+
+    window.dismissGreeting=function(){
+        var banner=document.getElementById('greetingBanner');
+        if(banner)banner.style.display='none';
+        sessionStorage.setItem('lokalert-greeting-dismissed','1');
+    };
+
+    /* =========================================================
+       NAV AUTH STATE — updates nav login button + mobile menu
+    ========================================================= */
+    function updateNavAuth(user){
+        var navItem=document.getElementById('navAuthItem');
+        var mobItem=document.getElementById('mobAuthItem');
+        if(user){
+            var name=user.username||((user.email||'').split('@')[0])||'User';
+            if(navItem) navItem.innerHTML='<span class="nav-user-pill">\ud83d\udc4b '+name+'</span>';
+            if(mobItem){mobItem.textContent='\ud83d\udc4b Hi, '+name;mobItem.onclick=null;mobItem.style.pointerEvents='none';}
+        }else{
+            if(navItem) navItem.innerHTML='<a href="#" class="nav-login-link" onclick="openLoginPopup(); return false;">Login</a>';
+            if(mobItem){mobItem.textContent='\ud83d\udd11 Login';mobItem.onclick=function(){openLoginPopup();return false;};mobItem.style.pointerEvents='auto';}
+        }
+    }
+
+    /* =========================================================
+       LOGIN POPUP — opens auth modal to login section
+    ========================================================= */
+    window.openLoginPopup=function(){
+        var modal=document.getElementById('downloadModal');
+        if(!modal) return;
+        /* If download.js has initialized and user is logged in, just show greeting */
+        if(typeof currentUser!=='undefined'&&currentUser){
+            updateGreeting(currentUser);
+            return;
+        }
+        /* Show login section */
+        if(typeof showSection==='function') showSection('login');
+        modal.classList.add('active');
+        document.body.style.overflow='hidden';
+    };
+
+    /* =========================================================
+       AUTH CHECK — update greeting + nav on page load
+    ========================================================= */
+    (function checkAuthForGreeting(){
+        try{
+            fetch('api/auth.php?action=check',{credentials:'include'})
+                .then(function(r){return r.json();})
+                .then(function(data){
+                    if(data.authenticated&&data.user){
+                        updateGreeting(data.user);
+                        updateNavAuth(data.user);
+                    }
+                })
+                .catch(function(){});
+        }catch(e){}
+    })();
+
+})();
+</script>
 </body>
 </html>

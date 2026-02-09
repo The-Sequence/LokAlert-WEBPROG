@@ -503,6 +503,7 @@ async function handleLogin(e) {
             await checkAuthStatus();
             showSection('download');
             updateUIForUser();
+            notifyAuthChange(currentUser);
         } else if (data.requires_verification) {
             currentUser = { email: data.email, is_verified: false };
             document.getElementById('verifyEmail').textContent = data.email;
@@ -555,6 +556,7 @@ async function handleVerification(e) {
             await checkAuthStatus();
             showSection('download');
             updateUIForUser();
+            notifyAuthChange(currentUser);
         } else {
             errorEl.textContent = data.error || 'Verification failed';
         }
@@ -661,6 +663,7 @@ async function handleLogout() {
     currentUser = null;
     if (cooldownInterval) clearInterval(cooldownInterval);
     updateUIForUser();
+    notifyAuthChange(null);
 }
 
 /**
@@ -724,44 +727,44 @@ async function startDownload() {
             // Open external download in new tab/window
             window.open(downloadUrl, '_blank');
             
-            // Mark download as complete (we can't track external downloads)
-            setTimeout(async () => {
-                try {
-                    await fetch(`${API_BASE}/downloads.php?action=complete`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({
-                            download_token: currentDownloadToken,
-                            bytes_downloaded: expectedSize || 1,
-                            verified: true
-                        })
-                    });
-                } catch (e) {
-                    console.log('Could not mark download complete:', e);
-                }
-                
-                // Show success
-                downloadArea.innerHTML = `
-                    <div class="download-success">
-                        <div class="success-icon">✅</div>
-                        <h3>Download Started!</h3>
-                        <p style="color: #94a3b8; margin-bottom: 15px;">
-                            The APK should be downloading in a new tab.<br>
-                            If it didn't start, <a href="${downloadUrl}" target="_blank" style="color: #6366f1;">click here</a>.
-                        </p>
-                        <p style="color: #64748b; font-size: 13px;">
-                            Thank you for downloading LokAlert!
-                        </p>
-                    </div>
-                `;
-                
-                isDownloading = false;
-                currentDownloadToken = null;
-                
-                // Refresh auth status
-                setTimeout(() => checkAuthStatus(), 2000);
-            }, 1500);
+            // Mark download as complete immediately (we can't track external downloads)
+            try {
+                const completeResp = await fetch(`${API_BASE}/downloads.php?action=complete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        download_token: currentDownloadToken,
+                        bytes_downloaded: expectedSize || 1,
+                        verified: true
+                    })
+                });
+                const completeData = await completeResp.json();
+                console.log('Download marked complete:', completeData);
+            } catch (e) {
+                console.log('Could not mark download complete:', e);
+            }
+            
+            // Show success
+            downloadArea.innerHTML = `
+                <div class="download-success">
+                    <div class="success-icon">✅</div>
+                    <h3>Download Started!</h3>
+                    <p style="color: #94a3b8; margin-bottom: 15px;">
+                        The APK should be downloading in a new tab.<br>
+                        If it didn't start, <a href="${downloadUrl}" target="_blank" style="color: #6366f1;">click here</a>.
+                    </p>
+                    <p style="color: #64748b; font-size: 13px;">
+                        Thank you for downloading LokAlert!
+                    </p>
+                </div>
+            `;
+            
+            isDownloading = false;
+            currentDownloadToken = null;
+            
+            // Refresh auth status
+            setTimeout(() => checkAuthStatus(), 2000);
             
             return;
         }
@@ -888,3 +891,34 @@ function formatBytes(bytes) {
 // Global function for modal
 window.openDownloadModal = openDownloadModal;
 window.closeModal = closeModal;
+
+/**
+ * Open Login Popup — shows auth modal on the login section
+ */
+function openLoginPopup() {
+    if (!modal) {
+        modal = document.getElementById('downloadModal');
+        if (!modal) return;
+    }
+    
+    checkAuthStatus().then(() => {
+        if (currentUser) {
+            // Already logged in — update greeting and nav
+            if (typeof updateGreeting === 'function') updateGreeting(currentUser);
+            if (typeof updateNavAuth === 'function') updateNavAuth(currentUser);
+            return;
+        }
+        showSection('login');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+}
+window.openLoginPopup = openLoginPopup;
+
+/**
+ * Notify page of auth state changes (greeting, nav)
+ */
+function notifyAuthChange(user) {
+    if (typeof updateGreeting === 'function') updateGreeting(user);
+    if (typeof updateNavAuth === 'function') updateNavAuth(user);
+}
