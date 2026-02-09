@@ -37,9 +37,15 @@ if ($isProduction) {
 }
 
 // Site Configuration
-define('SITE_URL', $isProduction 
-    ? 'https://lokalert.infinityfree.me'     // Your PHP hosting URL
-    : 'http://localhost/LokAlert');
+$_siteUrl = $isProduction 
+    ? 'https://lokalert.infinityfree.me'
+    : 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/api/includes\\');
+// Normalize: strip trailing slash, ensure no double-slash
+$_siteUrl = rtrim(preg_replace('#/+#', '/', $_siteUrl), '/');
+// Fix protocol that may get mangled
+$_siteUrl = preg_replace('#^http:/#', 'http://', $_siteUrl);
+$_siteUrl = preg_replace('#^https:/#', 'https://', $_siteUrl);
+define('SITE_URL', $_siteUrl);
 define('SITE_NAME', 'LokAlert');
 define('UPLOAD_DIR', __DIR__ . '/../uploads/');
 define('RELEASES_DIR', __DIR__ . '/../releases/');
@@ -432,13 +438,13 @@ function jsonResponse($data, $statusCode = 200) {
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
     if (in_array($origin, $allowedOrigins) || strpos($origin, 'localhost') !== false || strpos($origin, '127.0.0.1') !== false) {
         header('Access-Control-Allow-Origin: ' . $origin);
+        header('Access-Control-Allow-Credentials: true');
     } else {
-        header('Access-Control-Allow-Origin: *');  // Fallback for testing
+        header('Access-Control-Allow-Origin: *');  // Fallback for testing (no credentials)
     }
     
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Download-Token');
-    header('Access-Control-Allow-Credentials: true');
     header('Access-Control-Expose-Headers: X-Download-Token');
     echo json_encode($data);
     exit;

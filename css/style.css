@@ -2277,6 +2277,44 @@ main {
     margin-bottom: 15px;
 }
 
+/* Password Requirements Checklist */
+.pw-requirements {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 12px;
+}
+.pw-requirements li {
+    position: relative;
+    padding-left: 20px;
+    transition: color 0.2s;
+}
+.pw-requirements li::before {
+    content: '○';
+    position: absolute;
+    left: 0;
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+.pw-requirements li.met {
+    color: #22c55e;
+}
+.pw-requirements li.met::before {
+    content: '✓';
+    font-weight: 700;
+}
+.pw-requirements li.unmet {
+    color: #ef4444;
+}
+.pw-requirements li.unmet::before {
+    content: '✗';
+    font-weight: 700;
+}
+
 .form-success {
     color: #22c55e;
     font-size: 0.9rem;

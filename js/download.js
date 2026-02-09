@@ -84,7 +84,14 @@ function initModal() {
                     </div>
                     <div class="form-group">
                         <label>Password *</label>
-                        <input type="password" id="signupPassword" placeholder="Create a password (min 6 chars)" required minlength="6">
+                        <input type="password" id="signupPassword" placeholder="Create a strong password" required minlength="8" oninput="checkPasswordStrength(this.value)">
+                        <ul class="pw-requirements" id="pwRequirements">
+                            <li id="pwLen">At least 8 characters</li>
+                            <li id="pwUpper">An uppercase letter</li>
+                            <li id="pwLower">A lowercase letter</li>
+                            <li id="pwNum">A number</li>
+                            <li id="pwSpecial">A special character (!@#$%^&*)</li>
+                        </ul>
                     </div>
                     <div class="form-error" id="signupError"></div>
                     <button type="submit" class="btn btn-primary btn-full" id="signupBtn">
@@ -417,6 +424,33 @@ function closeModal() {
 }
 
 /**
+ * Real-time password strength checker
+ */
+function checkPasswordStrength(pw) {
+    const rules = [
+        { id: 'pwLen',     test: pw.length >= 8 },
+        { id: 'pwUpper',   test: /[A-Z]/.test(pw) },
+        { id: 'pwLower',   test: /[a-z]/.test(pw) },
+        { id: 'pwNum',     test: /[0-9]/.test(pw) },
+        { id: 'pwSpecial', test: /[^A-Za-z0-9]/.test(pw) }
+    ];
+    rules.forEach(r => {
+        const el = document.getElementById(r.id);
+        if (!el) return;
+        el.classList.toggle('met', r.test);
+        el.classList.toggle('unmet', !r.test && pw.length > 0);
+    });
+}
+
+function isPasswordValid(pw) {
+    return pw.length >= 8
+        && /[A-Z]/.test(pw)
+        && /[a-z]/.test(pw)
+        && /[0-9]/.test(pw)
+        && /[^A-Za-z0-9]/.test(pw);
+}
+
+/**
  * Handle signup
  */
 async function handleSignup(e) {
@@ -429,6 +463,13 @@ async function handleSignup(e) {
     const btn = document.getElementById('signupBtn');
     
     errorEl.textContent = '';
+
+    if (!isPasswordValid(password)) {
+        errorEl.textContent = 'Password does not meet all requirements';
+        checkPasswordStrength(password);
+        return;
+    }
+
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Creating account...';
     

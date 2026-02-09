@@ -94,6 +94,34 @@ function debugDatabase() {
 }
 
 /**
+ * Validate password strength
+ * Requirements: 8+ chars, uppercase, lowercase, number, special character
+ * @param string $password
+ * @return array List of unmet requirements (empty = valid)
+ */
+function validatePassword($password) {
+    $errors = [];
+
+    if (strlen($password) < 8) {
+        $errors[] = 'at least 8 characters';
+    }
+    if (!preg_match('/[A-Z]/', $password)) {
+        $errors[] = 'an uppercase letter';
+    }
+    if (!preg_match('/[a-z]/', $password)) {
+        $errors[] = 'a lowercase letter';
+    }
+    if (!preg_match('/[0-9]/', $password)) {
+        $errors[] = 'a number';
+    }
+    if (!preg_match('/[^A-Za-z0-9]/', $password)) {
+        $errors[] = 'a special character (!@#$%^&* etc.)';
+    }
+
+    return $errors;
+}
+
+/**
  * Handle user signup with email verification
  */
 function handleSignup() {
@@ -120,8 +148,9 @@ function handleSignup() {
         jsonResponse(['error' => 'Password is required'], 400);
     }
     
-    if (strlen($password) < 6) {
-        jsonResponse(['error' => 'Password must be at least 6 characters'], 400);
+    $pwErrors = validatePassword($password);
+    if (!empty($pwErrors)) {
+        jsonResponse(['error' => 'Password must contain ' . implode(', ', $pwErrors)], 400);
     }
     
     // Name validation (optional but if provided, check length)
@@ -581,8 +610,9 @@ function handleResetPassword() {
         jsonResponse(['error' => 'Token and new password are required'], 400);
     }
     
-    if (strlen($newPassword) < 6) {
-        jsonResponse(['error' => 'Password must be at least 6 characters'], 400);
+    $pwErrors = validatePassword($newPassword);
+    if (!empty($pwErrors)) {
+        jsonResponse(['error' => 'Password must contain ' . implode(', ', $pwErrors)], 400);
     }
     
     try {
@@ -639,8 +669,9 @@ function handleChangePassword() {
         jsonResponse(['error' => 'Current and new passwords are required'], 400);
     }
     
-    if (strlen($newPassword) < 6) {
-        jsonResponse(['error' => 'New password must be at least 6 characters'], 400);
+    $pwErrors = validatePassword($newPassword);
+    if (!empty($pwErrors)) {
+        jsonResponse(['error' => 'New password must contain ' . implode(', ', $pwErrors)], 400);
     }
     
     try {
@@ -771,8 +802,9 @@ function handleAcceptInvite() {
             // Use pre-set password
             $hashedPassword = $invite['password_hash'];
         } elseif (!empty($password)) {
-            if (strlen($password) < 6) {
-                jsonResponse(['error' => 'Password must be at least 6 characters'], 400);
+            $pwErrors = validatePassword($password);
+            if (!empty($pwErrors)) {
+                jsonResponse(['error' => 'Password must contain ' . implode(', ', $pwErrors)], 400);
             }
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         } else {

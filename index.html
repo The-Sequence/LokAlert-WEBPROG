@@ -9,8 +9,42 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <noscript><style>#siteContent{visibility:visible!important;opacity:1!important}.r{opacity:1!important;transform:none!important}.fab-dl{display:none!important}.sh-stage{opacity:1!important;position:relative!important}.scroll-hero{height:auto!important}.sw{opacity:1!important}.sticky-reveal{height:auto!important}.sticky-inner{position:relative!important}</style></noscript>
+    <noscript><style>#siteContent{visibility:visible!important;opacity:1!important}.r{opacity:1!important;transform:none!important}.fab-dl{display:none!important}.sh-stage{opacity:1!important;position:relative!important}.scroll-hero{height:auto!important}.sw{opacity:1!important}.sticky-reveal{height:auto!important}.sticky-inner{position:relative!important}.card-pair-wrap{height:auto!important}.card-pair-sticky{position:relative!important;height:auto!important}.card-pair{position:static!important;margin-bottom:20px!important}.card-pair .card,.card-pair .card-full{opacity:1!important;transform:none!important}</style></noscript>
     <style>
+        /* =========================================
+           PRELOADER / LOADING SCREEN
+        ========================================= */
+        #preloader{
+            position:fixed;inset:0;z-index:100000;
+            background:#000;display:flex;flex-direction:column;
+            align-items:center;justify-content:center;
+            transition:opacity .6s cubic-bezier(.25,.46,.45,.94),visibility .6s;
+        }
+        #preloader.done{opacity:0;visibility:hidden;pointer-events:none}
+        .preloader-logo{
+            font-size:28px;font-weight:700;letter-spacing:-.02em;
+            display:flex;align-items:center;gap:8px;
+            margin-bottom:28px;
+            animation:preloaderFadeIn .6s ease both;
+        }
+        .preloader-logo svg{color:#2997ff}
+        @keyframes preloaderFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+        .preloader-bar-track{
+            width:200px;height:3px;border-radius:3px;
+            background:rgba(255,255,255,.08);overflow:hidden;
+            animation:preloaderFadeIn .6s ease .2s both;
+        }
+        .preloader-bar-fill{
+            height:100%;width:0%;border-radius:3px;
+            background:linear-gradient(90deg,#2997ff,#30d158);
+            transition:width .3s cubic-bezier(.25,.46,.45,.94);
+        }
+        .preloader-text{
+            margin-top:14px;font-size:12px;color:rgba(255,255,255,.35);
+            letter-spacing:.04em;
+            animation:preloaderFadeIn .6s ease .4s both;
+        }
+
         /* =========================================
            HIDE UNTIL MAINTENANCE CHECK
         ========================================= */
@@ -383,13 +417,20 @@
 
 
         /* =========================================
-           CARD PAIRS
+           CARD PAIRS — Sticky scroll with split transitions
+           Tall container, sticky viewport, one pair at a time
         ========================================= */
-        .card-pair-section{padding:20px;max-width:980px;margin:0 auto;padding-top:80px;padding-bottom:80px}
-        .card-pair-wrap{background:#f5f5f7;padding:40px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+        .card-pair-wrap{position:relative;background:#f5f5f7;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
         [data-theme="dark"] .card-pair-wrap{background:#141416}
-        .card-pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
-        .card{border-radius:28px;overflow:hidden;position:relative;min-height:580px}
+        .card-pair-sticky{
+            position:sticky;top:0;height:100vh;
+            display:flex;align-items:center;justify-content:center;
+            overflow:hidden;padding:60px 0 20px;
+            box-sizing:border-box;
+        }
+        .card-pair-section{position:relative;max-width:980px;width:100%;height:100%;margin:0 auto;padding:0 20px}
+        .card-pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;position:absolute;top:50%;left:20px;right:20px;transform:translateY(-50%);will-change:transform,opacity;pointer-events:none}
+        .card{border-radius:28px;overflow:hidden;position:relative;min-height:min(520px, calc(100vh - 140px))}
         .card-img{background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:40px 36px}
         .card-img h3{font-size:clamp(24px,3vw,32px);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:8px;text-shadow:0 2px 20px rgba(0,0,0,.4)}
         .card-img p{font-size:15px;color:rgba(255,255,255,.85);line-height:1.47;max-width:340px;text-shadow:0 1px 10px rgba(0,0,0,.3)}
@@ -406,13 +447,39 @@
         .card-full .card-full-text{background:var(--card-bg);border:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;padding:52px 48px}
         .card-full .card-full-text h3{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.1;margin-bottom:16px}
         .card-full .card-full-text p{font-size:17px;color:var(--text-dim);line-height:1.47}
-        .card-pair .card,.card-pair .card-full{opacity:0;transform:translateY(30px);transition:opacity .9s var(--apple-ease),transform .9s var(--apple-ease)}
-        .card-pair.in .card:nth-child(1){opacity:1;transform:none;transition-delay:0s}
-        .card-pair.in .card:nth-child(2){opacity:1;transform:none;transition-delay:.1s}
-        .card-pair.in .card-full{opacity:1;transform:none;transition-delay:0s}
+        /* --- Card animation states (sticky scroll driven) --- */
+        .card-pair .card,.card-pair .card-full{opacity:0;transition:opacity .65s var(--apple-ease),transform .65s var(--apple-ease)}
+        /* Active — fully visible, centered */
+        .card-pair.cp-active{pointer-events:auto;z-index:2}
+        .card-pair.cp-active .card:nth-child(1){opacity:1;transform:none;transition-delay:0s}
+        .card-pair.cp-active .card:nth-child(2){opacity:1;transform:none;transition-delay:.08s}
+        .card-pair.cp-active .card.card-full{opacity:1;transform:none}
+        /* Exiting — left splits left, right splits right */
+        .card-pair.cp-exit{z-index:1}
+        .card-pair.cp-exit .card:nth-child(1){opacity:0;transform:translateX(-140px) scale(.88);transition:opacity .55s var(--apple-ease),transform .55s var(--apple-ease)}
+        .card-pair.cp-exit .card:nth-child(2){opacity:0;transform:translateX(140px) scale(.88);transition:opacity .55s var(--apple-ease),transform .55s var(--apple-ease)}
+        .card-pair.cp-exit .card.card-full{opacity:0;transform:scale(.9);transition:opacity .55s var(--apple-ease),transform .55s var(--apple-ease)}
+        /* Entering — pop in from below */
+        .card-pair.cp-enter{pointer-events:auto;z-index:3}
+        .card-pair.cp-enter .card:nth-child(1){opacity:1;transform:none;transition-delay:.05s}
+        .card-pair.cp-enter .card:nth-child(2){opacity:1;transform:none;transition-delay:.12s}
+        .card-pair.cp-enter .card.card-full{opacity:1;transform:none}
+        /* Done — already scrolled past, hidden instantly */
+        .card-pair.cp-done .card,.card-pair.cp-done .card-full{opacity:0;transition:none}
+        /* Progress counter dots */
+        .cp-counter{
+            position:absolute;right:28px;top:50%;transform:translateY(-50%);
+            display:flex;flex-direction:column;gap:10px;z-index:10;
+        }
+        .cp-dot{
+            width:8px;height:8px;border-radius:50%;
+            background:rgba(134,134,139,.25);
+            transition:background .35s var(--apple-ease),transform .35s var(--apple-ease),box-shadow .35s;
+        }
+        .cp-dot.active{background:var(--accent);transform:scale(1.4);box-shadow:0 0 8px rgba(41,151,255,.4)}
         @media(max-width:768px){
-            .card-pair-section{padding:12px;padding-top:40px;padding-bottom:40px}
-            .card-pair{grid-template-columns:1fr;gap:0;margin-bottom:20px;
+            .card-pair-section{padding:0 12px}
+            .card-pair{left:12px;right:12px;grid-template-columns:1fr;gap:0;
                 background:var(--card-bg);border:1px solid var(--border);
                 border-radius:28px;overflow:hidden}
             .card{min-height:auto;border-radius:0}
@@ -422,6 +489,11 @@
             .card-full{grid-template-columns:1fr;min-height:auto}
             .card-full .card-full-img{min-height:240px}
             .card-full .card-full-text{padding:28px 24px}
+            /* Mobile: vertical slide instead of horizontal split */
+            .card-pair.cp-exit .card:nth-child(1),
+            .card-pair.cp-exit .card:nth-child(2){transform:translateY(-50px) scale(.95)}
+            .cp-counter{right:8px;gap:8px}
+            .cp-dot{width:6px;height:6px}
         }
 
         /* =========================================
@@ -615,6 +687,36 @@
         /* =========================================
            FOOTER
         ========================================= */
+        /* =========================================
+           CONTACT US SECTION
+        ========================================= */
+        .contact-section{padding:100px 24px 80px;background:var(--section-tint-3);position:relative;overflow:hidden}
+        .contact-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+        .contact-info{padding:20px 0}
+        .contact-info .eyebrow{font-size:14px;font-weight:600;color:var(--accent-purple);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+        .contact-info h2{font-size:clamp(32px,5vw,48px);font-weight:700;letter-spacing:-.03em;line-height:1.1;margin-bottom:20px}
+        .contact-info p{font-size:17px;color:var(--text-dim);line-height:1.47;margin-bottom:24px}
+        .contact-detail{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--border)}
+        .contact-detail-icon{width:40px;height:40px;border-radius:12px;background:rgba(191,90,242,.08);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+        .contact-detail-text{font-size:14px;color:var(--text-dim)}
+        .contact-detail-text strong{color:var(--text);display:block;margin-bottom:2px}
+        .contact-form-card{background:var(--card-bg);border:1px solid var(--border);border-radius:20px;padding:36px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+        .contact-form-card h3{font-size:20px;font-weight:600;margin-bottom:20px}
+        .contact-form .cf-group{margin-bottom:16px}
+        .contact-form .cf-group label{display:block;font-size:13px;font-weight:500;color:var(--text-dim);margin-bottom:6px}
+        .contact-form .cf-group input,.contact-form .cf-group textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;transition:border .2s}
+        [data-theme="light"] .contact-form .cf-group input,[data-theme="light"] .contact-form .cf-group textarea{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.1)}
+        .contact-form .cf-group input:focus,.contact-form .cf-group textarea:focus{outline:none;border-color:var(--accent-purple);box-shadow:0 0 0 3px rgba(191,90,242,.12)}
+        .contact-form .cf-group textarea{resize:vertical;min-height:120px}
+        .contact-form .cf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .cf-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 24px;border-radius:12px;background:linear-gradient(135deg,var(--accent-purple),var(--accent));color:#fff;font-size:15px;font-weight:600;border:none;cursor:pointer;transition:all .3s;font-family:inherit}
+        .cf-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(191,90,242,.3)}
+        .cf-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+        .cf-msg{text-align:center;padding:10px;border-radius:10px;font-size:14px;margin-top:12px;display:none}
+        .cf-msg.success{display:block;background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.2);color:var(--accent-green)}
+        .cf-msg.error{display:block;background:rgba(255,69,58,.08);border:1px solid rgba(255,69,58,.2);color:#ff453a}
+        @media(max-width:768px){.contact-inner{grid-template-columns:1fr;gap:32px}.contact-form .cf-row{grid-template-columns:1fr}}
+
         .g-footer{padding:44px 24px;border-top:1px solid var(--border);text-align:center}
         .g-footer-logo{font-size:17px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:6px}
         .g-footer-logo svg{color:var(--accent)}
@@ -733,6 +835,18 @@
 </head>
 <body>
 
+<!-- ======= PRELOADER ======= -->
+<div id="preloader">
+    <div class="preloader-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        LokAlert
+    </div>
+    <div class="preloader-bar-track">
+        <div class="preloader-bar-fill" id="preloaderBar"></div>
+    </div>
+    <div class="preloader-text" id="preloaderText">Loading assets…</div>
+</div>
+
 <!-- ======= MAINTENANCE — COLOR EXPLOSION ======= -->
 <div id="maintOverlay">
     <canvas id="maintCanvas"></canvas>
@@ -757,6 +871,7 @@
             <li><a href="#why">Why LokAlert</a></li>
             <li><a href="#tech">Technology</a></li>
             <li><a href="#team">Team</a></li>
+            <li><a href="#contact">Contact</a></li>
             <li>
                 <button class="th-pill" id="themeToggle" aria-label="Toggle theme">
                     <span class="th-opt on" data-v="dark"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
@@ -781,6 +896,7 @@
     <a href="#why">Why LokAlert</a>
     <a href="#tech">Technology</a>
     <a href="#team">Team</a>
+    <a href="#contact">Contact</a>
     <a href="classic.html">🏛️ Classic View</a>
     <a href="#" class="mob-login-link" id="mobAuthItem" onclick="openLoginPopup(); return false;">🔑 Login</a>
     <a href="admin.html" class="mob-admin-link">🔐 Admin Panel</a>
@@ -951,8 +1067,9 @@
         </div>
     </div>
 
-    <!-- =================== TWO-COLUMN CARDS =================== -->
-    <div class="card-pair-wrap">
+    <!-- =================== TWO-COLUMN CARDS (sticky scroll) =================== -->
+    <div class="card-pair-wrap" id="cardPairWrap">
+    <div class="card-pair-sticky">
     <div class="card-pair-section">
         <div class="card-pair" data-anim="cards">
             <div class="card card-phone">
@@ -1047,6 +1164,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="cp-counter" id="cpCounter"></div>
     </div>
     </div><!-- /card-pair-wrap -->
 
@@ -1195,8 +1314,7 @@
             <div class="team-grid">
                 <div class="team-card r r-d1" data-anim><div class="team-ava">OA</div><h3>Alemana, Onyx Herod</h3></div>
                 <div class="team-card r r-d2" data-anim><div class="team-ava">RM</div><h3>Mabahin, Ryan</h3></div>
-                <div class="team-card r r-d3" data-anim><div class="team-ava">EA</div><h3>Adamos, Eurika</h3></div>
-                <div class="team-card r r-d1" data-anim><div class="team-ava">GB</div><h3>Billones, Gerald</h3></div>
+                <div class="team-card r r-d3" data-anim><div class="team-ava">GB</div><h3>Billones, Gerald</h3></div>
                 <div class="team-card r r-d2" data-anim><div class="team-ava">TC</div><h3>Crisologo, Terence Joefrey</h3></div>
                 <div class="team-card r r-d3" data-anim><div class="team-ava">AR</div><h3>Royo, Aenard Ollyer</h3></div>
             </div>
@@ -1215,6 +1333,57 @@
         </div>
     </section>
 
+    <!-- =================== CONTACT US =================== -->
+    <section id="contact" class="contact-section">
+        <div class="contact-inner">
+            <div class="contact-info r" data-anim>
+                <p class="eyebrow">Contact Us</p>
+                <h2>Get in <span class="t-grad-purple">touch.</span></h2>
+                <p>Have questions, feedback, or feature requests? We'd love to hear from you. Send us a message and our team will get back to you as soon as possible.</p>
+                <div class="contact-detail">
+                    <div class="contact-detail-icon">📧</div>
+                    <div class="contact-detail-text"><strong>Email</strong>support@lokalert.com</div>
+                </div>
+                <div class="contact-detail">
+                    <div class="contact-detail-icon">📍</div>
+                    <div class="contact-detail-text"><strong>Location</strong>Philippines</div>
+                </div>
+                <div class="contact-detail">
+                    <div class="contact-detail-icon">⏰</div>
+                    <div class="contact-detail-text"><strong>Response time</strong>Usually within 24 hours</div>
+                </div>
+            </div>
+            <div class="contact-form-card r r-d1" data-anim>
+                <h3>✉️ Send a Message</h3>
+                <form class="contact-form" id="contactForm" onsubmit="submitContactForm(event)">
+                    <div class="cf-row">
+                        <div class="cf-group">
+                            <label for="cfName">Your Name *</label>
+                            <input type="text" id="cfName" placeholder="Juan Dela Cruz" required>
+                        </div>
+                        <div class="cf-group">
+                            <label for="cfEmail">Email Address *</label>
+                            <input type="email" id="cfEmail" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+                    <div class="cf-group">
+                        <label for="cfSubject">Subject *</label>
+                        <input type="text" id="cfSubject" placeholder="How can we help?" required>
+                    </div>
+                    <div class="cf-group">
+                        <label for="cfMessage">Message *</label>
+                        <textarea id="cfMessage" placeholder="Tell us about your question, feedback, or suggestion..." required minlength="10"></textarea>
+                    </div>
+                    <button type="submit" class="cf-btn" id="cfSubmitBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        Send Message
+                    </button>
+                    <div class="cf-msg" id="cfMsg"></div>
+                </form>
+            </div>
+        </div>
+    </section>
+
     <!-- =================== FOOTER =================== -->
     <footer class="g-footer">
         <div class="g-footer-logo">
@@ -1226,6 +1395,7 @@
         <div class="g-footer-links">
             <a href="admin.html">Admin</a>
             <a href="classic.html">Classic View</a>
+            <a href="#contact">Contact Us</a>
             <a href="#scrollHero">Back to Top</a>
         </div>
         <p class="g-footer-copy">&copy; 2026 LokAlert. All rights reserved.</p>
@@ -1267,9 +1437,94 @@
     'use strict';
 
     /* =========================================================
-       MAINTENANCE CHECK  –  Color-Explosion Particle System
+       ASSET PRELOADER + MAINTENANCE CHECK (coordinated)
+       The preloader dismisses only when BOTH assets are ready
+       AND the maintenance check has resolved.
     ========================================================= */
     (function(){
+        var preloader = document.getElementById('preloader');
+        var bar = document.getElementById('preloaderBar');
+        var pText = document.getElementById('preloaderText');
+        var MAX_WAIT = 6000; // max wait before force-reveal
+        var MIN_SHOW = 500;  // minimum preloader visibility
+        var startTime = Date.now();
+
+        // --- Coordination gate ---
+        var assetsReady = false;
+        var maintDone   = false;
+
+        function tryDismissPreloader(){
+            if(!assetsReady || !maintDone) return;
+            if(bar) bar.style.width = '100%';
+            if(pText) pText.textContent = 'Ready';
+            var elapsed = Date.now() - startTime;
+            var delay = Math.max(0, MIN_SHOW - elapsed);
+            setTimeout(function(){
+                if(preloader) preloader.classList.add('done');
+                setTimeout(function(){ if(preloader) preloader.style.display='none'; }, 700);
+            }, delay);
+        }
+
+        function markAssetsReady(){
+            if(assetsReady) return;
+            assetsReady = true;
+            tryDismissPreloader();
+        }
+
+        function markMaintDone(){
+            if(maintDone) return;
+            maintDone = true;
+            tryDismissPreloader();
+        }
+
+        /* ----- ASSET PRELOADING ----- */
+        var criticalImages = [
+            'assets/images/hero-city.jpg',
+            'assets/images/city-aerial.jpg',
+            'assets/images/city-skyline.jpg',
+            'assets/images/commuter-phone.jpg',
+            'assets/images/train-window.jpg',
+            'assets/images/phone-navigate.jpg',
+            'assets/images/happy-commuter.jpg',
+            'assets/images/earphones-commuter.jpg',
+            'assets/images/phone-gps-closeup.jpg'
+        ];
+
+        // Also collect any feat-card images in the DOM
+        document.querySelectorAll('.feat-tile-img img, .card-img').forEach(function(el){
+            var src = el.getAttribute('src') || el.style.backgroundImage.replace(/url\(['"]?|['"]?\)/g,'');
+            if(src && src.length > 5 && criticalImages.indexOf(src) === -1) criticalImages.push(src);
+        });
+
+        var totalAssets = criticalImages.length + 1; // +1 for font
+        var loadedCount = 0;
+
+        function updateProgress(){
+            loadedCount++;
+            var pct = Math.min(100, Math.round((loadedCount / totalAssets) * 100));
+            if(bar) bar.style.width = pct + '%';
+            if(pText) pText.textContent = 'Loading assets… ' + pct + '%';
+            if(loadedCount >= totalAssets) markAssetsReady();
+        }
+
+        criticalImages.forEach(function(src){
+            var img = new Image();
+            img.onload = updateProgress;
+            img.onerror = updateProgress; // count failures too
+            img.src = src;
+        });
+
+        // Font loading
+        if(document.fonts && document.fonts.ready){
+            document.fonts.ready.then(updateProgress).catch(updateProgress);
+        } else {
+            updateProgress();
+        }
+
+        // Fallback: force-ready after MAX_WAIT
+        setTimeout(function(){ markAssetsReady(); }, MAX_WAIT);
+
+        /* ----- MAINTENANCE CHECK ----- */
         var overlay=document.getElementById('maintOverlay');
         var msgEl =document.getElementById('maintMsg');
         var site  =document.getElementById('siteContent');
@@ -1277,10 +1532,10 @@
         var fab   =document.getElementById('fabDl');
         var canvas=document.getElementById('maintCanvas');
 
-        /* --- helpers --- */
         function showSite(){
             site.style.visibility='visible';site.style.opacity='1';
             overlay.style.display='none';
+            markMaintDone();
         }
         function showMaint(m){
             if(m) msgEl.textContent=m;
@@ -1289,9 +1544,9 @@
             if(nav) nav.style.display='none';
             if(fab) fab.style.display='none';
             startExplosion(canvas);
+            markMaintDone();
         }
 
-        /* --- async fetch with timeout --- */
         var ctrl=new AbortController();
         var tid=setTimeout(function(){ctrl.abort();},5000);
         fetch('api/users.php?action=maintenance-check',{signal:ctrl.signal})
@@ -1813,7 +2068,7 @@
     },{rootMargin:'0px 0px -60px 0px',threshold:0.08});
     document.querySelectorAll('[data-anim]').forEach(function(el){obs.observe(el);});
 
-    /* Bands and cards — reveal when 15% visible with bottom margin */
+    /* Bands — reveal when 15% visible with bottom margin */
     var bandObs=new IntersectionObserver(function(entries){
         entries.forEach(function(e){
             if(e.isIntersecting){
@@ -1827,7 +2082,126 @@
             }
         });
     },{rootMargin:'0px 0px -80px 0px',threshold:0.12});
-    document.querySelectorAll('[data-anim="band"],[data-anim="cards"]').forEach(function(el){bandObs.observe(el);});
+    document.querySelectorAll('[data-anim="band"]').forEach(function(el){bandObs.observe(el);});
+
+    /* =========================================================
+       CARD PAIRS — Sticky scroll-driven split/reveal
+       Container pins the viewport; scroll progress drives
+       which pair is active. Current splits apart, next pops in.
+    ========================================================= */
+    (function initCardStickyScroll(){
+        var wrap=document.getElementById('cardPairWrap');
+        if(!wrap) return;
+        var section=wrap.querySelector('.card-pair-section');
+        var pairs=Array.prototype.slice.call(section.querySelectorAll('.card-pair'));
+        var counter=document.getElementById('cpCounter');
+        var n=pairs.length;
+        if(!n) return;
+
+        /* --- Measure tallest pair to set section height --- */
+        var maxH=0;
+        pairs.forEach(function(p){p.style.position='static';});
+        pairs.forEach(function(p){
+            var h=p.getBoundingClientRect().height;
+            if(h>maxH) maxH=h;
+        });
+        section.style.height=maxH+'px';
+        pairs.forEach(function(p){p.style.position='';});
+
+        /* --- Set tall container height for scroll room --- */
+        var VH_PER_PAIR=120; /* vh of scroll per card transition */
+        wrap.style.height=(n*VH_PER_PAIR)+'vh';
+
+        /* --- Build counter dots --- */
+        if(counter){
+            for(var d=0;d<n;d++){
+                var dot=document.createElement('div');
+                dot.className='cp-dot';
+                counter.appendChild(dot);
+            }
+        }
+        var dots=counter?Array.prototype.slice.call(counter.querySelectorAll('.cp-dot')):[];
+
+        /* --- First pair starts active --- */
+        pairs[0].classList.add('cp-active');
+        if(dots[0]) dots[0].classList.add('active');
+
+        var lastIdx=-1;
+        var STATES=['cp-active','cp-exit','cp-enter','cp-done'];
+
+        function clearStates(el){
+            STATES.forEach(function(c){el.classList.remove(c);});
+        }
+
+        /* --- Main scroll tick --- */
+        function tick(){
+            var rect=wrap.getBoundingClientRect();
+            var scrolled=-rect.top;
+            var scrollable=wrap.offsetHeight-window.innerHeight;
+            if(scrollable<=0) return;
+
+            var progress=Math.max(0,Math.min(1,scrolled/scrollable));
+            var raw=progress*n;
+            var idx=Math.min(n-1,Math.floor(raw));
+            var local=raw-idx; /* 0..1 within this pair's zone */
+
+            /* Transition zone: when local >= 0.45, current exits + next enters */
+            var transitioning=local>=0.45&&idx<n-1;
+
+            pairs.forEach(function(pair,i){
+                clearStates(pair);
+
+                if(i<idx){
+                    /* Already scrolled past */
+                    pair.classList.add('cp-done');
+                } else if(i===idx){
+                    if(transitioning){
+                        pair.classList.add('cp-exit');
+                    } else {
+                        pair.classList.add('cp-active');
+                    }
+                } else if(i===idx+1&&transitioning){
+                    pair.classList.add('cp-enter');
+                }
+                /* else: no state class → default hidden (translateY+opacity via CSS) */
+            });
+
+            /* Update dots */
+            var activeDot=transitioning?idx+1:idx;
+            dots.forEach(function(dot,i){
+                dot.classList.toggle('active',i===activeDot);
+            });
+
+            if(idx!==lastIdx){
+                lastIdx=idx;
+                markRevealed('card-pair-'+idx);
+            }
+        }
+
+        var ticking=false;
+        window.addEventListener('scroll',function(){
+            if(!ticking){ticking=true;requestAnimationFrame(function(){tick();ticking=false;});}
+        },{passive:true});
+
+        /* Handle resize — remeasure heights */
+        var resizeTimer;
+        window.addEventListener('resize',function(){
+            clearTimeout(resizeTimer);
+            resizeTimer=setTimeout(function(){
+                maxH=0;
+                pairs.forEach(function(p){p.style.position='static';});
+                pairs.forEach(function(p){
+                    var h=p.getBoundingClientRect().height;
+                    if(h>maxH) maxH=h;
+                });
+                section.style.height=maxH+'px';
+                pairs.forEach(function(p){p.style.position='';});
+            },200);
+        });
+
+        /* Initial tick */
+        tick();
+    })();
 
     /* =========================================================
        ANIMATED COUNTERS
@@ -1941,11 +2315,67 @@
     };
 
     /* =========================================================
+       CONTACT FORM SUBMISSION
+    ========================================================= */
+    window.submitContactForm = function(e) {
+        e.preventDefault();
+        var btn = document.getElementById('cfSubmitBtn');
+        var msgEl = document.getElementById('cfMsg');
+        var name = document.getElementById('cfName').value.trim();
+        var email = document.getElementById('cfEmail').value.trim();
+        var subject = document.getElementById('cfSubject').value.trim();
+        var message = document.getElementById('cfMessage').value.trim();
+
+        // Validation
+        if (!name || !email || !subject || !message) {
+            msgEl.className = 'cf-msg error';
+            msgEl.textContent = 'All fields are required.';
+            return;
+        }
+        if (message.length < 10) {
+            msgEl.className = 'cf-msg error';
+            msgEl.textContent = 'Message must be at least 10 characters long.';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Sending...';
+        msgEl.className = 'cf-msg';
+        msgEl.style.display = 'none';
+
+        fetch('api/messages.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, email: email, subject: subject, message: message })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                msgEl.className = 'cf-msg success';
+                msgEl.textContent = '\u2705 ' + (data.message || 'Message sent successfully! We\u2019ll get back to you soon.');
+                document.getElementById('contactForm').reset();
+            } else {
+                msgEl.className = 'cf-msg error';
+                msgEl.textContent = '\u274c ' + (data.error || 'Failed to send. Please try again.');
+            }
+        })
+        .catch(function(err) {
+            msgEl.className = 'cf-msg error';
+            msgEl.textContent = '\u274c Network error. Please check your connection and try again.';
+        })
+        .finally(function() {
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Message';
+        });
+    };
+
+    /* =========================================================
        AUTH CHECK — update greeting + nav on page load
     ========================================================= */
     (function checkAuthForGreeting(){
         try{
-            fetch('api/auth.php?action=check',{credentials:'include'})
+            var _opts = (window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1') ? {} : {credentials:'include'};
+            fetch('api/auth.php?action=check',_opts)
                 .then(function(r){return r.json();})
                 .then(function(data){
                     if(data.authenticated&&data.user){
