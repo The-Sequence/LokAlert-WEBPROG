@@ -1,0 +1,710 @@
+/* ============================================
+   ACCESSIBILITY STYLES — LokAlert
+   Shared across all pages for WCAG 2.1 AA compliance
+   ============================================ */
+
+/* ============================================
+   SCREEN READER ONLY
+   ============================================ */
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* ============================================
+   SKIP NAVIGATION LINK
+   ============================================ */
+.skip-nav {
+    position: fixed;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999999;
+    background: #1a1a2e;
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 0 0 12px 12px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transition: top 0.25s ease;
+    outline: none;
+    border: 2px solid #6366f1;
+}
+.skip-nav:focus {
+    top: 0;
+}
+
+/* ============================================
+   FOCUS VISIBLE — Global
+   ============================================ */
+*:focus-visible {
+    outline: 3px solid #6366f1 !important;
+    outline-offset: 2px !important;
+    border-radius: 4px;
+}
+
+/* Buttons and links focus */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid #6366f1 !important;
+    outline-offset: 2px !important;
+}
+
+/* Remove default outline for mouse users */
+:focus:not(:focus-visible) {
+    outline: none !important;
+}
+
+/* ============================================
+   ACCESSIBILITY WIDGET — Floating Button
+   ============================================ */
+.a11y-widget-btn {
+    position: fixed;
+    bottom: 28px;
+    left: 28px;
+    z-index: 99998;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #22d3ee);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: #fff;
+    padding: 0;
+}
+.a11y-widget-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 32px rgba(99, 102, 241, 0.5);
+}
+.a11y-widget-btn:focus-visible {
+    outline: 3px solid #fff !important;
+    outline-offset: 3px !important;
+}
+.a11y-widget-btn svg {
+    width: 26px;
+    height: 26px;
+    fill: #fff;
+}
+@media (max-width: 480px) {
+    .a11y-widget-btn {
+        bottom: 20px;
+        left: 20px;
+        width: 46px;
+        height: 46px;
+    }
+    .a11y-widget-btn svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY WIDGET — Panel
+   ============================================ */
+.a11y-panel {
+    position: fixed;
+    bottom: 90px;
+    left: 28px;
+    z-index: 99997;
+    width: 310px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    background: #1a1a2e;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    padding: 24px 20px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(16px) scale(0.95);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+}
+.a11y-panel.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+.a11y-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.a11y-panel-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.a11y-panel-title svg {
+    width: 20px;
+    height: 20px;
+    fill: #6366f1;
+}
+.a11y-panel-close {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: none;
+    color: #94a3b8;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.a11y-panel-close:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+/* Widget section label */
+.a11y-section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #6b7294;
+    font-weight: 600;
+    margin: 16px 0 8px;
+}
+.a11y-section-label:first-of-type {
+    margin-top: 0;
+}
+
+/* Font size controls */
+.a11y-font-controls {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.a11y-font-btn {
+    flex: 1;
+    padding: 10px 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    text-align: center;
+}
+.a11y-font-btn:hover {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+.a11y-font-btn.active {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+    color: #818cf8;
+}
+
+/* Toggle buttons */
+.a11y-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    color: #e2e8f0;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 6px;
+    font-family: inherit;
+    text-align: left;
+}
+.a11y-toggle:hover {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+.a11y-toggle.active {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: #6366f1;
+    color: #818cf8;
+}
+.a11y-toggle-icon {
+    font-size: 16px;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.a11y-toggle-label {
+    flex: 1;
+    margin-left: 10px;
+}
+.a11y-toggle-state {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #6b7294;
+    min-width: 32px;
+    text-align: center;
+}
+.a11y-toggle.active .a11y-toggle-state {
+    background: rgba(34, 197, 94, 0.12);
+    color: #22c55e;
+}
+
+/* Reset button */
+.a11y-reset-btn {
+    width: 100%;
+    padding: 11px 14px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 10px;
+    color: #ef4444;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 14px;
+    font-family: inherit;
+}
+.a11y-reset-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+@media (max-width: 480px) {
+    .a11y-panel {
+        bottom: 76px;
+        left: 12px;
+        right: 12px;
+        width: auto;
+    }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE
+   ============================================ */
+body.a11y-high-contrast {
+    --bg: #000 !important;
+    --bg-alt: #000 !important;
+    --bg-elevated: #111 !important;
+    --text: #fff !important;
+    --text-dim: #ddd !important;
+    --text-faint: #ccc !important;
+    --border: #fff !important;
+    --card-bg: #111 !important;
+    --nav-bg: #000 !important;
+    --bg-body: #000 !important;
+    --bg-sidebar: #000 !important;
+    --bg-card: #111 !important;
+    --bg-input: #111 !important;
+    --text-muted: #ddd !important;
+    --text-heading: #fff !important;
+}
+body.a11y-high-contrast,
+body.a11y-high-contrast * {
+    color: #fff !important;
+    border-color: #fff !important;
+}
+body.a11y-high-contrast a {
+    color: #ffff00 !important;
+    text-decoration: underline !important;
+}
+body.a11y-high-contrast button,
+body.a11y-high-contrast .btn,
+body.a11y-high-contrast [role="button"] {
+    border: 2px solid #fff !important;
+}
+body.a11y-high-contrast img {
+    filter: contrast(1.2) !important;
+}
+body.a11y-high-contrast .a11y-widget-btn,
+body.a11y-high-contrast .a11y-panel,
+body.a11y-high-contrast .a11y-ra-bar {
+    border: 2px solid #fff !important;
+}
+body.a11y-high-contrast .a11y-panel,
+body.a11y-high-contrast .a11y-ra-bar {
+    background: #000 !important;
+}
+/* Preserve gradient text visibility in high contrast */
+body.a11y-high-contrast .t-grad,
+body.a11y-high-contrast .t-grad-warm,
+body.a11y-high-contrast .t-grad-purple {
+    -webkit-text-fill-color: #ffff00 !important;
+    background: none !important;
+}
+
+/* ============================================
+   DYSLEXIA-FRIENDLY FONT
+   ============================================ */
+body.a11y-dyslexia-font,
+body.a11y-dyslexia-font * {
+    font-family: 'Comic Sans MS', 'OpenDyslexic', 'Trebuchet MS', Verdana, sans-serif !important;
+    letter-spacing: 0.05em !important;
+    word-spacing: 0.1em !important;
+}
+
+/* ============================================
+   UNDERLINE LINKS
+   ============================================ */
+body.a11y-underline-links a {
+    text-decoration: underline !important;
+    text-underline-offset: 3px !important;
+}
+
+/* ============================================
+   LARGE CURSOR
+   ============================================ */
+body.a11y-large-cursor,
+body.a11y-large-cursor * {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M4 4 L4 36 L14 26 L24 40 L30 36 L20 22 L34 22 Z' fill='%23000' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E") 4 4, auto !important;
+}
+
+/* ============================================
+   TEXT SPACING
+   ============================================ */
+body.a11y-text-spacing,
+body.a11y-text-spacing * {
+    line-height: 1.8 !important;
+    letter-spacing: 0.12em !important;
+    word-spacing: 0.16em !important;
+}
+body.a11y-text-spacing p,
+body.a11y-text-spacing li,
+body.a11y-text-spacing td {
+    margin-bottom: 0.5em !important;
+}
+
+/* ============================================
+   FONT SIZE ADJUSTMENTS
+   Uses zoom on html element to scale all content
+   including elements with explicit px font sizes.
+   Supported: Chrome, Edge, Safari, Firefox 126+
+   ============================================ */
+html.a11y-font-sm {
+    zoom: 0.9 !important;
+}
+html.a11y-font-lg {
+    zoom: 1.15 !important;
+}
+html.a11y-font-xl {
+    zoom: 1.3 !important;
+}
+html.a11y-font-xxl {
+    zoom: 1.5 !important;
+}
+
+/* ============================================
+   VIDEO DESCRIPTION BADGE
+   Visible text alternative for hearing-impaired
+   ============================================ */
+.video-a11y-desc {
+    background: rgba(0, 0, 0, 0.75);
+    color: #e2e8f0;
+    padding: 10px 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    border-radius: 8px;
+    margin-top: 8px;
+    border-left: 3px solid #6366f1;
+}
+.video-a11y-desc::before {
+    content: "Video description: ";
+    font-weight: 700;
+    color: #818cf8;
+}
+
+/* ============================================
+   ARIA LIVE REGION (screen reader announcements)
+   ============================================ */
+.a11y-live-region {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ============================================
+   READ ALOUD — Floating Toolbar
+   ============================================ */
+.a11y-ra-bar {
+    position: fixed;
+    bottom: 90px;
+    right: 28px;
+    z-index: 99996;
+    background: #1a1a2e;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    padding: 14px 16px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    width: 260px;
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.a11y-ra-bar.open {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+.a11y-ra-bar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.a11y-ra-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.a11y-ra-title svg {
+    width: 16px;
+    height: 16px;
+}
+.a11y-ra-close {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: none;
+    color: #94a3b8;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.a11y-ra-close:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+/* Transport controls */
+.a11y-ra-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.a11y-ra-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.a11y-ra-btn:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+.a11y-ra-btn.active {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+    color: #818cf8;
+}
+.a11y-ra-btn svg {
+    width: 16px;
+    height: 16px;
+}
+.a11y-ra-status {
+    flex: 1;
+    font-size: 11px;
+    color: #94a3b8;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 4px;
+}
+.a11y-ra-status.reading {
+    color: #818cf8;
+}
+
+/* Speed control */
+.a11y-ra-speed-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.a11y-ra-speed-label {
+    font-size: 11px;
+    color: #6b7294;
+    font-weight: 600;
+    flex-shrink: 0;
+    min-width: 42px;
+}
+.a11y-ra-speed-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+}
+.a11y-ra-speed-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #6366f1;
+    cursor: pointer;
+    border: none;
+}
+.a11y-ra-speed-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #6366f1;
+    cursor: pointer;
+    border: none;
+}
+.a11y-ra-speed-val {
+    font-size: 11px;
+    color: #818cf8;
+    font-weight: 700;
+    min-width: 28px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Voice selector */
+.a11y-ra-voice-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.a11y-ra-voice-label {
+    font-size: 11px;
+    color: #6b7294;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.a11y-ra-voice-select {
+    flex: 1;
+    padding: 5px 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    color: #e2e8f0;
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7294'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 22px;
+}
+.a11y-ra-voice-select:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+/* Click-to-read hint */
+.a11y-ra-hint {
+    font-size: 10px;
+    color: #4b5078;
+    text-align: center;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Read-aloud text highlighting */
+.a11y-ra-highlight {
+    background: rgba(99, 102, 241, 0.15) !important;
+    outline: 2px solid rgba(99, 102, 241, 0.4) !important;
+    outline-offset: 2px !important;
+    border-radius: 4px !important;
+    transition: background 0.2s ease, outline 0.2s ease;
+}
+
+/* Clickable text cursor when read-aloud is active */
+body.a11y-ra-active p,
+body.a11y-ra-active h1,
+body.a11y-ra-active h2,
+body.a11y-ra-active h3,
+body.a11y-ra-active h4,
+body.a11y-ra-active h5,
+body.a11y-ra-active h6,
+body.a11y-ra-active li,
+body.a11y-ra-active td,
+body.a11y-ra-active th,
+body.a11y-ra-active span.feat-tile-text,
+body.a11y-ra-active .card-text,
+body.a11y-ra-active .card-full-text,
+body.a11y-ra-active .why-row {
+    cursor: pointer !important;
+}
+body.a11y-ra-active p:hover,
+body.a11y-ra-active h1:hover,
+body.a11y-ra-active h2:hover,
+body.a11y-ra-active h3:hover,
+body.a11y-ra-active h4:hover,
+body.a11y-ra-active h5:hover,
+body.a11y-ra-active h6:hover,
+body.a11y-ra-active li:hover,
+body.a11y-ra-active td:hover,
+body.a11y-ra-active th:hover {
+    background: rgba(99, 102, 241, 0.06) !important;
+    border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .a11y-ra-bar {
+        bottom: 76px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+    }
+}

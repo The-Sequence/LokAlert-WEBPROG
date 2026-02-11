@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/accessibility.css">
     <style>
         /* ============================================
            CRITICAL: HIDE CONTENT UNTIL MAINTENANCE CHECK
@@ -144,11 +145,11 @@
 <body>
 
     <!-- Maintenance Overlay — Color Explosion -->
-    <div id="maintenanceOverlay">
-        <canvas id="maintCanvas"></canvas>
+    <div id="maintenanceOverlay" aria-hidden="true">
+        <canvas id="maintCanvas" aria-hidden="true"></canvas>
         <div class="maint-content">
-            <div class="maint-card">
-                <div class="maint-icon">🔧</div>
+            <div class="maint-card" role="alert">
+                <div class="maint-icon" aria-hidden="true">🔧</div>
                 <h1 class="maint-title">Under Maintenance</h1>
                 <p class="maint-msg" id="maintenanceMessage">We're currently performing scheduled maintenance. We'll be back shortly. Thank you for your patience!</p>
             </div>
@@ -156,10 +157,10 @@
     </div>
 
     <!-- Navigation -->
-    <nav id="navbar">
+    <nav id="navbar" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
             <a href="#" class="nav-logo">
-                <span class="logo-icon">📍</span>
+                <span class="logo-icon" aria-hidden="true">📍</span>
                 <span class="logo-text">LokAlert</span>
             </a>
             <ul class="nav-links">
@@ -169,11 +170,11 @@
                 <li><a href="#team">Team</a></li>
                 <li>
                     <div style="display:flex;align-items:center;gap:6px;">
-                        <span class="theme-toggle-label">🌙</span>
-                        <div class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
-                            <div class="toggle-thumb">🌙</div>
+                        <span class="theme-toggle-label" aria-hidden="true">🌙</span>
+                        <div class="theme-toggle" id="themeToggle" title="Toggle light/dark mode" role="button" tabindex="0" aria-label="Toggle light/dark mode">
+                            <div class="toggle-thumb" aria-hidden="true">🌙</div>
                         </div>
-                        <span class="theme-toggle-label">☀️</span>
+                        <span class="theme-toggle-label" aria-hidden="true">☀️</span>
                     </div>
                 </li>
                 <li><a href="index.html" class="version-switch" title="Switch to modern animated view">✨ Modern</a></li>
@@ -181,7 +182,7 @@
                 <li><a href="#" class="nav-download-btn">Download</a></li>
             </ul>
             <div style="display:flex;align-items:center;gap:12px;">
-                <div class="theme-toggle" id="themeToggleMobile" title="Toggle theme" style="display:none;">
+                <div class="theme-toggle" id="themeToggleMobile" title="Toggle theme" role="button" tabindex="0" aria-label="Toggle light/dark mode" style="display:none;">
                     <div class="toggle-thumb">🌙</div>
                 </div>
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
@@ -201,12 +202,12 @@
         </div>
     </nav>
 
-    <main>
+    <main id="main-content" role="main">
         <!-- Hero Section -->
         <section class="hero">
-            <div class="hero-bg">
+            <div class="hero-bg" aria-hidden="true">
                 <div class="hero-gradient"></div>
-                <div class="hero-particles">
+                <div class="hero-particles" aria-hidden="true">
                     <div class="particle"></div>
                     <div class="particle"></div>
                     <div class="particle"></div>
@@ -216,7 +217,7 @@
             </div>
             <div class="hero-content">
                 <div class="hero-badge animate-fade-in">
-                    <span class="badge-icon">🚀</span>
+                    <span class="badge-icon" aria-hidden="true">🚀</span>
                     <span>Smart Location Technology</span>
                 </div>
                 <h1 class="hero-title animate-fade-up">
@@ -234,7 +235,7 @@
                     </a>
                     <a href="#why" class="btn btn-secondary">Learn More</a>
                 </div>
-                <div class="hero-visual animate-float">
+                <div class="hero-visual animate-float" aria-hidden="true">
                     <div class="phone-mockup">
                         <div class="phone-screen">
                             <div class="screen-map">
@@ -265,7 +266,7 @@
         <section class="about">
             <div class="container">
                 <div class="about-content">
-                    <div class="about-icon animate-on-scroll">
+                    <div class="about-icon animate-on-scroll" aria-hidden="true">
                         <div class="icon-ring"></div>
                         <span>🎯</span>
                     </div>
@@ -287,42 +288,42 @@
                 </div>
                 <div class="features-grid">
                     <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon"><span>📍</span></div>
+                        <div class="feature-icon" aria-hidden="true"><span>📍</span></div>
                         <h3>Location Search</h3>
                         <p>Quickly search and select destinations using place names or addresses.</p>
                     </div>
                     <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon"><span>🗺️</span></div>
+                        <div class="feature-icon" aria-hidden="true"><span>🗺️</span></div>
                         <h3>Map View</h3>
                         <p>Interactive map interface for easy navigation and destination selection.</p>
                     </div>
                     <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon"><span>📏</span></div>
+                        <div class="feature-icon" aria-hidden="true"><span>📏</span></div>
                         <h3>Set Arrival Radius</h3>
                         <p>Customize the distance for alert triggers to match your needs.</p>
                     </div>
                     <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon"><span>▶️</span></div>
+                        <div class="feature-icon" aria-hidden="true"><span>▶️</span></div>
                         <h3>Start Location Tracking</h3>
                         <p>Begin tracking with one tap using GPS technology.</p>
                     </div>
                     <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon"><span>🔔</span></div>
+                        <div class="feature-icon" aria-hidden="true"><span>🔔</span></div>
                         <h3>Arrival Alert / Alarm</h3>
                         <p>Instant alert when destination is reached. Never miss your stop again.</p>
                     </div>
                     <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon"><span>🔄</span></div>
+                        <div class="feature-icon" aria-hidden="true"><span>🔄</span></div>
                         <h3>Background Monitoring</h3>
                         <p>Works even when minimized, with battery-optimized performance.</p>
                     </div>
                     <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon"><span>⭐</span></div>
+                        <div class="feature-icon" aria-hidden="true"><span>⭐</span></div>
                         <h3>Saved Locations</h3>
                         <p>Save frequent destinations like home or work for quick access.</p>
                     </div>
                     <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon"><span>❌</span></div>
+                        <div class="feature-icon" aria-hidden="true"><span>❌</span></div>
                         <h3>Cancel Tracking</h3>
                         <p>Stop tracking anytime with full control over your alerts.</p>
                     </div>
@@ -340,28 +341,28 @@
                 </div>
                 <div class="benefits-grid">
                     <div class="benefit-card animate-on-scroll">
-                        <div class="benefit-icon">✅</div>
+                        <div class="benefit-icon" aria-hidden="true">✅</div>
                         <div class="benefit-content">
                             <h3>No More Constant Checking</h3>
                             <p>Eliminates the need to constantly check your location during travel</p>
                         </div>
                     </div>
                     <div class="benefit-card animate-on-scroll">
-                        <div class="benefit-icon">🚌</div>
+                        <div class="benefit-icon" aria-hidden="true">🚌</div>
                         <div class="benefit-content">
                             <h3>Perfect for Everyone</h3>
                             <p>Ideal for travelers, commuters, students, and drivers</p>
                         </div>
                     </div>
                     <div class="benefit-card animate-on-scroll">
-                        <div class="benefit-icon">⚡</div>
+                        <div class="benefit-icon" aria-hidden="true">⚡</div>
                         <div class="benefit-content">
                             <h3>Simple Yet Powerful</h3>
                             <p>Simple interface with powerful background functionality</p>
                         </div>
                     </div>
                     <div class="benefit-card animate-on-scroll">
-                        <div class="benefit-icon">🛡️</div>
+                        <div class="benefit-icon" aria-hidden="true">🛡️</div>
                         <div class="benefit-content">
                             <h3>Safety &amp; Convenience</h3>
                             <p>Improves convenience, safety, and time management</p>
@@ -436,11 +437,11 @@
         </section>
 
         <!-- Footer -->
-        <footer class="footer">
+        <footer class="footer" role="contentinfo">
             <div class="container">
                 <div class="footer-content">
                     <div class="footer-logo">
-                        <span class="logo-icon">📍</span>
+                        <span class="logo-icon" aria-hidden="true">📍</span>
                         <span class="logo-text">LokAlert</span>
                     </div>
                     <p class="footer-tagline">Arrive Smart. Stay Alert.</p>
@@ -457,8 +458,8 @@
     </main>
 
     <!-- Floating Download Button -->
-    <a href="#" onclick="openDownloadModal(); return false;" class="floating-download" id="floatingDownload">
-        <span class="download-icon">📥</span>
+    <a href="#" onclick="openDownloadModal(); return false;" class="floating-download" id="floatingDownload" aria-label="Download LokAlert APK">
+        <span class="download-icon" aria-hidden="true">📥</span>
         <span class="download-text">
             <span>Download APK</span>
             <small>Latest Version • Android</small>
@@ -466,12 +467,12 @@
     </a>
 
     <!-- Download Modal -->
-    <div class="modal-overlay" id="downloadModal">
+    <div class="modal-overlay" id="downloadModal" role="dialog" aria-modal="true" aria-label="Download LokAlert">
         <div class="modal-content">
-            <button class="modal-close" id="modalClose">&times;</button>
+            <button class="modal-close" id="modalClose" aria-label="Close dialog">&times;</button>
             <div class="modal-section" id="downloadSection">
                 <div class="modal-header">
-                    <div class="modal-icon">📥</div>
+                    <div class="modal-icon" aria-hidden="true">📥</div>
                     <h2>Download LokAlert</h2>
                     <p>Get the latest version of our app</p>
                 </div>
@@ -496,6 +497,7 @@
 
     <script src="js/main.js"></script>
     <script src="js/download.js"></script>
+    <script src="js/accessibility.js"></script>
     <script>
         // ============================================
         // Theme Toggle (Light/Dark Mode)

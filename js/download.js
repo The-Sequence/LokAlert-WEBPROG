@@ -51,12 +51,12 @@ function initModal() {
     // Build modal structure
     if (modalContent) {
         modalContent.innerHTML = `
-            <button class="modal-close" onclick="closeModal()">&times;</button>
-            
+            <button class="modal-close" onclick="closeModal()" aria-label="Close dialog">&times;</button>
+
             <!-- Main Download Section -->
             <div class="modal-section" id="downloadSection">
                 <div class="modal-header">
-                    <div class="modal-icon">📥</div>
+                    <div class="modal-icon" aria-hidden="true">📥</div>
                     <h2>Download LokAlert</h2>
                     <p>Get the latest version of our app</p>
                 </div>
@@ -65,27 +65,27 @@ function initModal() {
                 </div>
                 <div id="downloadArea"></div>
             </div>
-            
+
             <!-- Signup Section -->
             <div class="modal-section" id="signupSection" style="display: none;">
                 <div class="modal-header">
-                    <div class="modal-icon">📝</div>
+                    <div class="modal-icon" aria-hidden="true">📝</div>
                     <h2>Create Account</h2>
                     <p>Quick signup to download</p>
                 </div>
                 <form id="signupForm" onsubmit="handleSignup(event)">
                     <div class="form-group">
-                        <label>Name (Optional)</label>
+                        <label for="signupName">Name (Optional)</label>
                         <input type="text" id="signupName" placeholder="Enter your name or nickname">
                     </div>
                     <div class="form-group">
-                        <label>Email *</label>
+                        <label for="signupEmail">Email *</label>
                         <input type="email" id="signupEmail" placeholder="Enter your email" required>
                     </div>
                     <div class="form-group">
-                        <label>Password *</label>
+                        <label for="signupPassword">Password *</label>
                         <input type="password" id="signupPassword" placeholder="Create a strong password" required minlength="8" oninput="checkPasswordStrength(this.value)">
-                        <ul class="pw-requirements" id="pwRequirements">
+                        <ul class="pw-requirements" id="pwRequirements" aria-label="Password requirements">
                             <li id="pwLen">At least 8 characters</li>
                             <li id="pwUpper">An uppercase letter</li>
                             <li id="pwLower">A lowercase letter</li>
@@ -93,7 +93,7 @@ function initModal() {
                             <li id="pwSpecial">A special character (!@#$%^&*)</li>
                         </ul>
                     </div>
-                    <div class="form-error" id="signupError"></div>
+                    <div class="form-error" id="signupError" role="alert"></div>
                     <button type="submit" class="btn btn-primary btn-full" id="signupBtn">
                         <span>Create Account</span>
                     </button>
@@ -102,24 +102,24 @@ function initModal() {
                     Already have an account? <a href="#" onclick="showSection('login'); return false;">Log in</a>
                 </p>
             </div>
-            
+
             <!-- Login Section -->
             <div class="modal-section" id="loginSection" style="display: none;">
                 <div class="modal-header">
-                    <div class="modal-icon">🔐</div>
+                    <div class="modal-icon" aria-hidden="true">🔐</div>
                     <h2>Welcome Back</h2>
                     <p>Log in to download</p>
                 </div>
                 <form id="loginForm" onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label>Email</label>
+                        <label for="loginEmail">Email</label>
                         <input type="email" id="loginEmail" placeholder="Enter your email" required>
                     </div>
                     <div class="form-group">
-                        <label>Password</label>
+                        <label for="loginPassword">Password</label>
                         <input type="password" id="loginPassword" placeholder="Enter your password" required>
                     </div>
-                    <div class="form-error" id="loginError"></div>
+                    <div class="form-error" id="loginError" role="alert"></div>
                     <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
                         <span>Log In</span>
                     </button>
@@ -129,20 +129,20 @@ function initModal() {
                     <a href="#" onclick="showSection('forgot'); return false;">Forgot password?</a>
                 </p>
             </div>
-            
+
             <!-- Verification Section -->
             <div class="modal-section" id="verifySection" style="display: none;">
                 <div class="modal-header">
-                    <div class="modal-icon">✉️</div>
+                    <div class="modal-icon" aria-hidden="true">✉️</div>
                     <h2>Verify Your Email</h2>
                     <p>We sent a code to <span id="verifyEmail"></span></p>
                 </div>
                 <form id="verifyForm" onsubmit="handleVerification(event)">
                     <div class="form-group">
-                        <label>Verification Code</label>
+                        <label for="verifyCode">Verification Code</label>
                         <input type="text" id="verifyCode" placeholder="Enter 6-digit code" required maxlength="6" pattern="[0-9]{6}" class="code-input">
                     </div>
-                    <div class="form-error" id="verifyError"></div>
+                    <div class="form-error" id="verifyError" role="alert"></div>
                     <button type="submit" class="btn btn-primary btn-full" id="verifyBtn">
                         <span>Verify Email</span>
                     </button>
@@ -155,17 +155,17 @@ function initModal() {
             <!-- Forgot Password Section -->
             <div class="modal-section" id="forgotSection" style="display: none;">
                 <div class="modal-header">
-                    <div class="modal-icon">🔑</div>
+                    <div class="modal-icon" aria-hidden="true">🔑</div>
                     <h2>Reset Password</h2>
                     <p>We'll send you a reset link</p>
                 </div>
                 <form id="forgotForm" onsubmit="handleForgotPassword(event)">
                     <div class="form-group">
-                        <label>Email</label>
+                        <label for="forgotEmail">Email</label>
                         <input type="email" id="forgotEmail" placeholder="Enter your email" required>
                     </div>
-                    <div class="form-error" id="forgotError"></div>
-                    <div class="form-success" id="forgotSuccess"></div>
+                    <div class="form-error" id="forgotError" role="alert"></div>
+                    <div class="form-success" id="forgotSuccess" role="status"></div>
                     <button type="submit" class="btn btn-primary btn-full" id="forgotBtn">
                         <span>Send Reset Link</span>
                     </button>
@@ -405,12 +405,14 @@ function showSection(section) {
  */
 function openDownloadModal() {
     if (!modal) return;
-    
+
     checkAuthStatus().then(() => {
         updateUIForUser();
         showSection('download');
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
+        // Accessibility: trap focus in modal
+        if (window.a11yTrapFocus) window.a11yTrapFocus(modal);
     });
 }
 
@@ -421,6 +423,8 @@ function closeModal() {
     if (!modal) return;
     modal.classList.remove('active');
     document.body.style.overflow = '';
+    // Accessibility: release focus trap
+    if (window.a11yReleaseFocus) window.a11yReleaseFocus(modal);
 }
 
 /**

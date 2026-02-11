@@ -495,6 +495,7 @@
         }
         .sidebar-overlay.active { display: block; }
     </style>
+    <link rel="stylesheet" href="css/accessibility.css">
 </head>
 <body>
 
@@ -504,18 +505,18 @@
 <div class="login-container" id="loginContainer">
     <div class="login-box" id="loginBox">
         <div class="login-logo">
-            <div class="icon">📱</div>
+            <div class="icon" aria-hidden="true">📱</div>
             <h1>LokAlert Admin</h1>
             <p>Sign in to your dashboard</p>
         </div>
-        <div class="error-msg" id="loginError"></div>
+        <div class="error-msg" id="loginError" role="alert" aria-live="assertive"></div>
         <form id="loginForm">
             <div class="form-group">
-                <label>Username</label>
+                <label for="loginUsername">Username</label>
                 <input type="text" id="loginUsername" placeholder="Enter username" required autocomplete="username">
             </div>
             <div class="form-group">
-                <label>Password</label>
+                <label for="loginPassword">Password</label>
                 <input type="password" id="loginPassword" placeholder="Enter password" required autocomplete="current-password">
             </div>
             <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
@@ -526,7 +527,7 @@
     <!-- Invite Acceptance Box (hidden by default, shown when ?invite= param present) -->
     <div class="login-box invite-box" id="inviteBox" style="display:none;">
         <div class="login-logo">
-            <div class="icon">🎉</div>
+            <div class="icon" aria-hidden="true">🎉</div>
             <h1>Admin Invitation</h1>
             <p id="inviteSubtitle">You've been invited to join LokAlert Admin</p>
         </div>
@@ -539,7 +540,7 @@
         <form id="inviteForm">
             <div id="invitePasswordSection">
                 <div class="form-group">
-                    <label>Set Your Password</label>
+                    <label for="invitePassword">Set Your Password</label>
                     <input type="password" id="invitePassword" placeholder="Create a strong password" required minlength="8" oninput="checkPasswordStrength(this.value)">
                     <ul class="pw-requirements" id="pwRequirements">
                         <li id="pwLen">At least 8 characters</li>
@@ -567,38 +568,38 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <span class="logo-icon">📱</span>
+            <span class="logo-icon" aria-hidden="true">📱</span>
             <h2>LokAlert</h2>
         </div>
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav" role="navigation" aria-label="Admin sidebar navigation">
             <div class="sidebar-nav-label">Main</div>
-            <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
-                <span class="nav-icon">📊</span> Dashboard
+            <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')" role="button" tabindex="0" aria-current="page">
+                <span class="nav-icon" aria-hidden="true">📊</span> Dashboard
             </div>
-            <div class="nav-item" data-page="releases" onclick="navigateTo('releases')">
-                <span class="nav-icon">📦</span> Releases
+            <div class="nav-item" data-page="releases" onclick="navigateTo('releases')" role="button" tabindex="0">
+                <span class="nav-icon" aria-hidden="true">📦</span> Releases
             </div>
 
             <div class="sidebar-nav-label">Data</div>
-            <div class="nav-item" data-page="database" onclick="navigateTo('database')">
-                <span class="nav-icon">🗄️</span> Database
+            <div class="nav-item" data-page="database" onclick="navigateTo('database')" role="button" tabindex="0">
+                <span class="nav-icon" aria-hidden="true">🗄️</span> Database
             </div>
-            <div class="nav-item" data-page="users" onclick="navigateTo('users')">
-                <span class="nav-icon">👥</span> Users
+            <div class="nav-item" data-page="users" onclick="navigateTo('users')" role="button" tabindex="0">
+                <span class="nav-icon" aria-hidden="true">👥</span> Users
             </div>
-            <div class="nav-item" data-page="messages" onclick="navigateTo('messages')">
-                <span class="nav-icon">💬</span> Messages <span class="nav-badge" id="msgBadge" style="display:none;">0</span>
+            <div class="nav-item" data-page="messages" onclick="navigateTo('messages')" role="button" tabindex="0">
+                <span class="nav-icon" aria-hidden="true">💬</span> Messages <span class="nav-badge" id="msgBadge" style="display:none;">0</span>
             </div>
 
             <div class="sidebar-nav-label">System</div>
-            <div class="nav-item" data-page="backups" onclick="navigateTo('backups')">
-                <span class="nav-icon">💾</span> Backups
+            <div class="nav-item" data-page="backups" onclick="navigateTo('backups')" role="button" tabindex="0">
+                <span class="nav-icon" aria-hidden="true">💾</span> Backups
             </div>
-            <div class="nav-item" data-page="admins" onclick="navigateTo('admins')">
-                <span class="nav-icon">🛡️</span> Admin Invites
+            <div class="nav-item" data-page="admins" onclick="navigateTo('admins')" role="button" tabindex="0">
+                <span class="nav-icon" aria-hidden="true">🛡️</span> Admin Invites
             </div>
-            <div class="nav-item" data-page="settings" onclick="navigateTo('settings')">
-                <span class="nav-icon">⚙️</span> Settings
+            <div class="nav-item" data-page="settings" onclick="navigateTo('settings')" role="button" tabindex="0">
+                <span class="nav-icon" aria-hidden="true">⚙️</span> Settings
             </div>
         </nav>
         <div class="sidebar-footer">
@@ -610,17 +611,17 @@
     <!-- Main Area -->
     <div class="main-wrap">
         <!-- Maintenance Banner -->
-        <div class="maintenance-banner" id="maintenanceBanner">🔧 Maintenance Mode is ACTIVE — The public website is showing a maintenance page.</div>
+        <div class="maintenance-banner" id="maintenanceBanner" role="alert"><span aria-hidden="true">🔧</span> Maintenance Mode is ACTIVE — The public website is showing a maintenance page.</div>
 
         <!-- Top Bar -->
-        <header class="topbar">
+        <header class="topbar" role="banner">
             <div class="topbar-left">
-                <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">☰</button>
+                <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar navigation">☰</button>
                 <span class="page-title" id="pageTitle">Dashboard</span>
             </div>
             <div class="topbar-right">
-                <div class="session-timer" id="sessionTimer" title="Session timeout">
-                    ⏱️ <span id="sessionCountdown">--:--</span>
+                <div class="session-timer" id="sessionTimer" title="Session timeout" role="status" aria-live="polite">
+                    <span aria-hidden="true">⏱️</span> <span id="sessionCountdown">--:--</span>
                 </div>
                 <div class="admin-badge">
                     <div class="avatar" id="adminAvatar">A</div>
@@ -631,10 +632,10 @@
         </header>
 
         <!-- Alert Container (toast notifications) -->
-        <div id="alertContainer"></div>
+        <div id="alertContainer" role="alert" aria-live="assertive"></div>
 
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content" id="main-content" role="main">
 
             <!-- ========================================
                  PAGE: DASHBOARD
@@ -644,27 +645,27 @@
                 <!-- Top Stats -->
                 <div class="stats-row">
                     <div class="stat-card c1">
-                        <div class="stat-icon">📦</div>
+                        <div class="stat-icon" aria-hidden="true">📦</div>
                         <div class="stat-label">Total Releases</div>
                         <div class="stat-value" id="statReleases">0</div>
                     </div>
                     <div class="stat-card c2">
-                        <div class="stat-icon">📥</div>
+                        <div class="stat-icon" aria-hidden="true">📥</div>
                         <div class="stat-label">Total Downloads</div>
                         <div class="stat-value" id="statDownloads">0</div>
                     </div>
                     <div class="stat-card c3">
-                        <div class="stat-icon">🚀</div>
+                        <div class="stat-icon" aria-hidden="true">🚀</div>
                         <div class="stat-label">Latest Version</div>
                         <div class="stat-value" id="statLatest">-</div>
                     </div>
                     <div class="stat-card c4">
-                        <div class="stat-icon">📊</div>
+                        <div class="stat-icon" aria-hidden="true">📊</div>
                         <div class="stat-label">Total Size</div>
                         <div class="stat-value" id="statSize">0 MB</div>
                     </div>
                     <div class="stat-card c5">
-                        <div class="stat-icon">👥</div>
+                        <div class="stat-icon" aria-hidden="true">👥</div>
                         <div class="stat-label">Registered Users</div>
                         <div class="stat-value" id="statTotalUsers">0</div>
                     </div>
@@ -1092,13 +1093,13 @@
 </div>
 
 <!-- User Edit Modal -->
-<div class="modal-overlay" id="userEditModal">
+<div class="modal-overlay" id="userEditModal" role="dialog" aria-modal="true" aria-label="Edit User">
     <div class="modal-content">
         <h3>✏️ Edit User</h3>
         <form id="userEditForm" onsubmit="saveUserEdit(event)">
             <input type="hidden" id="userEditId">
-            <div class="form-group"><label>Name</label><input type="text" id="userEditName" placeholder="User's name"></div>
-            <div class="form-group"><label>Email</label><input type="email" id="userEditEmail" required></div>
+            <div class="form-group"><label for="userEditName">Name</label><input type="text" id="userEditName" placeholder="User's name"></div>
+            <div class="form-group"><label for="userEditEmail">Email</label><input type="email" id="userEditEmail" required></div>
             <div style="display: flex; gap: 10px; margin-top: 16px;">
                 <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
                 <button type="button" class="btn btn-sm btn-ghost" onclick="closeUserEditModal()">Cancel</button>
@@ -1108,7 +1109,7 @@
 </div>
 
 <!-- Password Reset Modal -->
-<div class="modal-overlay" id="passwordResetModal">
+<div class="modal-overlay" id="passwordResetModal" role="dialog" aria-modal="true" aria-label="Reset User Password">
     <div class="modal-content">
         <h3>🔐 Reset User Password</h3>
         <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 14px;">User: <strong id="resetUserEmail" style="color:var(--text);"></strong></p>
@@ -1117,7 +1118,7 @@
             <button class="btn btn-primary btn-sm" onclick="sendResetEmail()">📧 Send Reset Email</button>
             <div style="text-align: center; color: var(--text-muted); font-size: 12px;">— or —</div>
             <div class="form-group" style="margin-bottom: 0;">
-                <label>Set Temporary Password</label>
+                <label for="tempPassword">Set Temporary Password</label>
                 <input type="text" id="tempPassword" placeholder="Min 6 characters">
             </div>
             <button class="btn btn-sm btn-warning" onclick="setTempPassword()">🔑 Set Password</button>
@@ -1128,7 +1129,7 @@
 </div>
 
 <!-- Table Browser Modal -->
-<div class="modal-overlay" id="tableBrowserModal" style="display:none;">
+<div class="modal-overlay" id="tableBrowserModal" style="display:none;" role="dialog" aria-modal="true" aria-label="Table Browser">
     <div class="modal-content modal-large">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
             <h3 id="browserTableTitle" style="margin: 0;">📋 Table: <span id="browserTableName">—</span></h3>
@@ -1155,7 +1156,7 @@
 </div>
 
 <!-- Edit Record Modal -->
-<div class="modal-overlay" id="editRecordModal" style="display:none;">
+<div class="modal-overlay" id="editRecordModal" style="display:none;" role="dialog" aria-modal="true" aria-label="Edit Record">
     <div class="modal-content" style="max-width: 600px;">
         <h3>✏️ Edit Record</h3>
         <p style="color: var(--text-muted); margin-bottom: 14px; font-size: 13px;">Table: <strong id="editRecordTable" style="color:var(--text);">—</strong> | ID: <strong id="editRecordId" style="color:var(--text);">—</strong></p>
@@ -1170,7 +1171,7 @@
 </div>
 
 <!-- Backup Instructions Modal -->
-<div class="modal-overlay" id="backupInstructionsModal" style="display:none;">
+<div class="modal-overlay" id="backupInstructionsModal" style="display:none;" role="dialog" aria-modal="true" aria-label="Instructions">
     <div class="modal-content" style="max-width: 620px;">
         <h3 id="backupInstructionsTitle">📖 Instructions</h3>
         <div id="backupInstructionsBody" style="color: var(--text-muted); line-height: 1.8; font-size: 14px;"></div>
@@ -1182,6 +1183,7 @@
 <!-- ============================================
      JAVASCRIPT
      ============================================ -->
+<script src="js/accessibility.js"></script>
 <script>
     // ============================================
     // Password Strength Helpers
@@ -1290,7 +1292,7 @@
             btn.textContent = 'Creating account...';
             
             try {
-                const resp = await apiapiFetch(`${API_BASE}/auth.php?action=accept-invite`, {
+                const resp = await apiFetch(`${API_BASE}/auth.php?action=accept-invite`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token, password })
@@ -1321,10 +1323,16 @@
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         const target = document.getElementById('page-' + page);
         if (target) target.classList.add('active');
-        
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+        document.querySelectorAll('.nav-item').forEach(n => {
+            n.classList.remove('active');
+            n.removeAttribute('aria-current');
+        });
         const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
-        if (navItem) navItem.classList.add('active');
+        if (navItem) {
+            navItem.classList.add('active');
+            navItem.setAttribute('aria-current', 'page');
+        }
         
         const titles = {
             dashboard: 'Dashboard',
@@ -1359,7 +1367,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
         try {
             try {
-                const resp = await apiapiFetch(`${API_BASE}/auth.php?action=check`);
+                const resp = await apiFetch(`${API_BASE}/auth.php?action=check`);
                 const data = await resp.json();
                 if (data.authenticated && data.user && data.user.is_admin) {
                     isLoggedIn = true;
@@ -1418,7 +1426,7 @@
                 return;
             }
             
-            const response = await apiapiFetch(`${API_BASE}/auth.php?action=login`, {
+            const response = await apiFetch(`${API_BASE}/auth.php?action=login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ email: username, password: password })
@@ -1449,7 +1457,7 @@
         isLoggedIn = false;
         if (sessionTimerInterval) clearInterval(sessionTimerInterval);
         try {
-            await apiapiFetch(`${API_BASE}/auth.php?action=logout`, { method: 'POST' });
+            await apiFetch(`${API_BASE}/auth.php?action=logout`, { method: 'POST' });
         } catch(e) {}
         location.reload();
     }
@@ -1478,7 +1486,7 @@
     // ============================================
     async function checkMaintenanceStatus() {
         try {
-            const resp = await apiapiFetch(`${API_BASE}/users.php?action=maintenance-check`);
+            const resp = await apiFetch(`${API_BASE}/users.php?action=maintenance-check`);
             const data = await resp.json();
             const banner = document.getElementById('maintenanceBanner');
             if (data.maintenance) {
@@ -1522,7 +1530,7 @@
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         try {
-            const response = await apiapiFetch(`${API_BASE}/github.php?action=check-token`, {
+            const response = await apiFetch(`${API_BASE}/github.php?action=check-token`, {
                                 signal: controller.signal
             });
             clearTimeout(timeoutId);
@@ -1696,7 +1704,7 @@
             formData.append('release_notes', notes);
             formData.append('is_latest', isLatest ? '1' : '0');
             
-            const resp = await apiapiFetch(`${API_BASE}/versions.php?action=upload-to-db`, {
+            const resp = await apiFetch(`${API_BASE}/versions.php?action=upload-to-db`, {
                 method: 'POST',
                                 body: formData
             });
@@ -1832,7 +1840,7 @@
         if (!downloadUrl.startsWith('http')) { showAlert('Please enter a valid URL', 'error'); return; }
         
         try {
-            const response = await apiapiFetch(`${API_BASE}/versions.php`, {
+            const response = await apiFetch(`${API_BASE}/versions.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ version, file_size: fileSize, download_url: downloadUrl, release_notes: releaseNotes, is_latest: isLatest ? 1 : 0 })
@@ -1857,7 +1865,7 @@
 
     async function loadReleasesFromDB() {
         try {
-            const response = await apiapiFetch(`${API_BASE}/versions.php`);
+            const response = await apiFetch(`${API_BASE}/versions.php`);
             const data = await response.json();
             if (Array.isArray(data)) {
                 releases = data.map(r => ({
@@ -1878,7 +1886,7 @@
     async function deleteRelease(id) {
         if (!confirm('Delete this release permanently?')) return;
         try {
-            const r = await apiapiFetch(`${API_BASE}/versions.php?id=${id}`, { method: 'DELETE' });
+            const r = await apiFetch(`${API_BASE}/versions.php?id=${id}`, { method: 'DELETE' });
             const d = await r.json();
             if (d.success) { showAlert('Release deleted!', 'success'); await loadReleasesFromDB(); }
             else { showAlert(d.error || 'Failed to delete', 'error'); }
@@ -1888,7 +1896,7 @@
 
     async function setAsLatest(id) {
         try {
-            const r = await apiapiFetch(`${API_BASE}/versions.php?id=${id}`, {
+            const r = await apiFetch(`${API_BASE}/versions.php?id=${id}`, {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify({ is_latest: 1 })
             });
             const d = await r.json();
@@ -1907,7 +1915,7 @@
         const isLatest = document.getElementById('editIsLatest').checked;
         
         try {
-            const r = await apiapiFetch(`${API_BASE}/versions.php?id=${id}`, {
+            const r = await apiFetch(`${API_BASE}/versions.php?id=${id}`, {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify({ version, download_url: downloadUrl, release_notes: releaseNotes, is_latest: isLatest ? 1 : 0 })
             });
             const d = await r.json();
@@ -2016,12 +2024,12 @@
 
     async function loadDatabaseStats() {
         try {
-            const statsResp = await apiapiFetch(`${API_BASE}/users.php?action=stats`);
+            const statsResp = await apiFetch(`${API_BASE}/users.php?action=stats`);
             const stats = await statsResp.json();
-            const versResp = await apiapiFetch(`${API_BASE}/versions.php`);
+            const versResp = await apiFetch(`${API_BASE}/versions.php`);
             const versions = await versResp.json();
             const versionCount = Array.isArray(versions) ? versions.length : 0;
-            const msgsResp = await apiapiFetch(`${API_BASE}/messages.php`);
+            const msgsResp = await apiFetch(`${API_BASE}/messages.php`);
             const msgs = await msgsResp.json();
             const messageCount = Array.isArray(msgs) ? msgs.length : 0;
             let totalDownloads = 0;
@@ -2045,7 +2053,7 @@
     async function loadTableStats() {
         const tbody = document.getElementById('dbTablesBody');
         try {
-            const resp = await apiapiFetch(`${API_BASE}/users.php?action=table-stats`);
+            const resp = await apiFetch(`${API_BASE}/users.php?action=table-stats`);
             const tables = await resp.json();
             if (Array.isArray(tables) && tables.length > 0) {
                 tbody.innerHTML = tables.map(t => {
@@ -2071,7 +2079,7 @@
     async function loadAuditLog() {
         const containers = [document.getElementById('activityEntries'), document.getElementById('activityEntriesDB')];
         try {
-            const resp = await apiapiFetch(`${API_BASE}/users.php?action=audit-log`);
+            const resp = await apiFetch(`${API_BASE}/users.php?action=audit-log`);
             const data = await resp.json();
             const html = (Array.isArray(data) && data.length > 0) ? data.slice(0, 25).map(entry => {
                 const d = new Date(entry.created_at);
@@ -2098,7 +2106,7 @@
         if (mode === 'preview') {
             showAlert('⏳ Generating SQL preview...', 'success');
             try {
-                const r = await apiapiFetch(`${API_BASE}/backup.php?preview=1`);
+                const r = await apiFetch(`${API_BASE}/backup.php?preview=1`);
                 if (r.ok) {
                     const data = await r.json();
                     if (data.success && data.sql) {
@@ -2119,7 +2127,7 @@
 
         showAlert('⏳ Starting backup download...', 'success');
         try {
-            const r = await apiapiFetch(`${API_BASE}/backup.php`);
+            const r = await apiFetch(`${API_BASE}/backup.php`);
             if (r.ok) {
                 const ct = r.headers.get('Content-Type') || '';
                 if (ct.includes('application/sql') || ct.includes('application/octet-stream')) {
@@ -2173,7 +2181,7 @@
         const stats = document.getElementById('browserStats');
         tbody.innerHTML = '<tr><td colspan="20" style="text-align:center;color:var(--text-muted);padding:30px;">Loading...</td></tr>';
         try {
-            const resp = await apiapiFetch(`${API_BASE}/users.php?action=table-data&table=${encodeURIComponent(tableName)}&page=${page}&limit=25`);
+            const resp = await apiFetch(`${API_BASE}/users.php?action=table-data&table=${encodeURIComponent(tableName)}&page=${page}&limit=25`);
             const data = await resp.json();
             if (data.error) { tbody.innerHTML = `<tr><td colspan="20" style="text-align:center;color:var(--danger);">${data.error}</td></tr>`; return; }
             const columns = data.columns || [];
@@ -2239,7 +2247,7 @@
     // ============================================
     async function editRecord(tableName, recordId) {
         try {
-            const resp = await apiapiFetch(`${API_BASE}/users.php?action=table-data&table=${encodeURIComponent(tableName)}&page=1&limit=1000`);
+            const resp = await apiFetch(`${API_BASE}/users.php?action=table-data&table=${encodeURIComponent(tableName)}&page=1&limit=1000`);
             const data = await resp.json();
             const columns = (data.columns || []).map(c => c.Field || c.field || Object.values(c)[0]);
             const row = (data.rows || []).find(r => (r.id || r.ID || Object.values(r)[0]) == recordId);
@@ -2266,7 +2274,7 @@
         const formData = {};
         document.querySelectorAll('#editRecordFields input:not([readonly])').forEach(i => { formData[i.name] = i.value; });
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php?action=table-record&table=${encodeURIComponent(table)}&id=${id}`, {
+            const r = await apiFetch(`${API_BASE}/users.php?action=table-record&table=${encodeURIComponent(table)}&id=${id}`, {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify(formData)
             });
             const d = await r.json();
@@ -2278,7 +2286,7 @@
     async function deleteRecordFromBrowser(tableName, recordId) {
         if (!confirm(`Delete record #${recordId} from ${tableName}?`)) return;
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php?action=table-record&table=${encodeURIComponent(tableName)}&id=${recordId}`, { method: 'DELETE' });
+            const r = await apiFetch(`${API_BASE}/users.php?action=table-record&table=${encodeURIComponent(tableName)}&id=${recordId}`, { method: 'DELETE' });
             const d = await r.json();
             if (d.success) { showAlert('Record deleted!', 'success'); refreshBrowserTable(); loadDatabaseStats(); loadTableStats(); loadAuditLog(); }
             else { showAlert(d.error || 'Failed to delete', 'error'); }
@@ -2303,7 +2311,7 @@
     async function loadSettings() {
         const grid = document.getElementById('settingsGrid');
         try {
-            const resp = await apiapiFetch(`${API_BASE}/users.php?action=settings`);
+            const resp = await apiFetch(`${API_BASE}/users.php?action=settings`);
             const settings = await resp.json();
             if (Array.isArray(settings) && settings.length > 0) {
                 grid.innerHTML = settings.map(s => {
@@ -2345,7 +2353,7 @@
             payload[el.id.replace('setting_', '')] = el.value;
         });
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php?action=settings`, {
+            const r = await apiFetch(`${API_BASE}/users.php?action=settings`, {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify(payload)
             });
             const d = await r.json();
@@ -2377,7 +2385,7 @@
         const tbody = document.getElementById('messagesTable');
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px;">Loading messages...</td></tr>';
         try {
-            const resp = await apiapiFetch(`${API_BASE}/messages.php`);
+            const resp = await apiFetch(`${API_BASE}/messages.php`);
             messagesData = await resp.json();
             if (!Array.isArray(messagesData)) messagesData = [];
 
@@ -2438,7 +2446,7 @@
 
     async function viewMessage(id) {
         try {
-            const resp = await apiapiFetch(`${API_BASE}/messages.php?id=${id}`);
+            const resp = await apiFetch(`${API_BASE}/messages.php?id=${id}`);
             const msg = await resp.json();
             if (msg.error) { showAlert(msg.error, 'error'); return; }
 
@@ -2467,7 +2475,7 @@
 
     async function toggleMessageRead(id, isRead) {
         try {
-            const r = await apiapiFetch(`${API_BASE}/messages.php?id=${id}`, {
+            const r = await apiFetch(`${API_BASE}/messages.php?id=${id}`, {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify({ is_read: isRead })
             });
             const d = await r.json();
@@ -2479,7 +2487,7 @@
     async function deleteMessage(id) {
         if (!confirm('Delete this message permanently?')) return;
         try {
-            const r = await apiapiFetch(`${API_BASE}/messages.php?id=${id}`, { method: 'DELETE' });
+            const r = await apiFetch(`${API_BASE}/messages.php?id=${id}`, { method: 'DELETE' });
             const d = await r.json();
             if (d.success) { showAlert('🗑️ Message deleted', 'success'); loadMessages(); }
             else { showAlert(d.error || 'Failed to delete', 'error'); }
@@ -2492,7 +2500,7 @@
     async function loadBackupHistory() {
         const tbody = document.getElementById('backupHistoryBody');
         try {
-            const resp = await apiapiFetch(`${API_BASE}/users.php?action=backup-history`);
+            const resp = await apiFetch(`${API_BASE}/users.php?action=backup-history`);
             const data = await resp.json();
             if (Array.isArray(data) && data.length > 0) {
                 tbody.innerHTML = data.map((b, i) => `<tr><td>${i + 1}</td><td>${b.username || 'Admin'}</td><td>${new Date(b.created_at).toLocaleString()}</td><td style="font-family:monospace;font-size:11px;">${b.ip_address || '—'}</td></tr>`).join('');
@@ -2518,7 +2526,7 @@
         result.innerHTML = '<p style="color:var(--text-muted);">Sending invitation...</p>';
         
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php?action=invite-admin`, {
+            const r = await apiFetch(`${API_BASE}/users.php?action=invite-admin`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify({ name, email, password, expiry_hours: expiry })
             });
             const d = await r.json();
@@ -2545,7 +2553,7 @@
     async function loadInvites() {
         const tbody = document.getElementById('invitesTable');
         try {
-            const resp = await apiapiFetch(`${API_BASE}/users.php?action=list-invites`);
+            const resp = await apiFetch(`${API_BASE}/users.php?action=list-invites`);
             const data = await resp.json();
             if (Array.isArray(data) && data.length > 0) {
                 tbody.innerHTML = data.map(inv => {
@@ -2574,7 +2582,7 @@
     async function invalidateInvite(inviteId) {
         if (!confirm('Revoke this invitation?')) return;
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php?action=invalidate-invite`, {
+            const r = await apiFetch(`${API_BASE}/users.php?action=invalidate-invite`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify({ invite_id: inviteId })
             });
             const d = await r.json();
@@ -2589,7 +2597,7 @@
     async function promoteUser(userId, displayName) {
         if (!confirm(`Promote "${displayName}" to Admin?\n\nThis will give them full admin access.`)) return;
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php?action=promote-admin`, {
+            const r = await apiFetch(`${API_BASE}/users.php?action=promote-admin`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify({ user_id: userId })
             });
             const d = await r.json();
@@ -2604,7 +2612,7 @@
     async function demoteUser(userId, displayName) {
         if (!confirm(`Demote "${displayName}" from Admin?\n\nThey will lose all admin access.`)) return;
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php?action=demote-admin`, {
+            const r = await apiFetch(`${API_BASE}/users.php?action=demote-admin`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify({ user_id: userId })
             });
             const d = await r.json();
@@ -2621,7 +2629,7 @@
         if (!tbody) return;
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Loading...</td></tr>';
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php`);
+            const r = await apiFetch(`${API_BASE}/users.php`);
             const all = await r.json();
             if (Array.isArray(all)) {
                 const admins = all.filter(u => u.is_admin);
@@ -2675,7 +2683,7 @@
     }
 
     async function handleSessionTimeout() {
-        try { await apiapiFetch(`${API_BASE}/auth.php?action=logout`, { method: 'POST' }); } catch(e) {}
+        try { await apiFetch(`${API_BASE}/auth.php?action=logout`, { method: 'POST' }); } catch(e) {}
         isLoggedIn = false;
         document.getElementById('dashboard').classList.remove('active');
         document.getElementById('loginContainer').classList.remove('hidden');
@@ -2692,7 +2700,7 @@
         const tbody = document.getElementById('usersTable');
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Loading...</td></tr>';
         try {
-            const statsR = await apiapiFetch(`${API_BASE}/users.php?action=stats`);
+            const statsR = await apiFetch(`${API_BASE}/users.php?action=stats`);
             const stats = await statsR.json();
             if (stats.total_users !== undefined) {
                 document.getElementById('statTotalUsers').textContent = stats.total_users;
@@ -2702,7 +2710,7 @@
                 document.getElementById('statUsersDownloaded').textContent = stats.users_with_downloads;
                 document.getElementById('dbUsers').textContent = stats.total_users + 1;
             }
-            const usersR = await apiapiFetch(`${API_BASE}/users.php`);
+            const usersR = await apiFetch(`${API_BASE}/users.php`);
             usersData = await usersR.json();
             if (Array.isArray(usersData) && usersData.length > 0) {
                 const regular = usersData.filter(u => !u.is_admin);
@@ -2744,7 +2752,7 @@
         const name = document.getElementById('userEditName').value.trim();
         const email = document.getElementById('userEditEmail').value.trim();
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php?id=${id}`, {
+            const r = await apiFetch(`${API_BASE}/users.php?id=${id}`, {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify({ username: name, email })
             });
             const d = await r.json();
@@ -2756,7 +2764,7 @@
     async function deleteUser(userId) {
         if (!confirm('Delete this user permanently?')) return;
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php?id=${userId}`, { method: 'DELETE' });
+            const r = await apiFetch(`${API_BASE}/users.php?id=${userId}`, { method: 'DELETE' });
             const d = await r.json();
             if (d.success) { loadUsers(); showAlert('User deleted!', 'success'); }
             else { showAlert(d.error || 'Failed to delete', 'error'); }
@@ -2777,7 +2785,7 @@
         const el = document.getElementById('resetResult');
         el.innerHTML = '<p style="color:var(--text-muted);">Sending reset email...</p>';
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php?action=send-reset-email`, {
+            const r = await apiFetch(`${API_BASE}/users.php?action=send-reset-email`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify({ user_id: parseInt(userId) })
             });
             const d = await r.json();
@@ -2795,7 +2803,7 @@
         if (pw && pw.length < 6) { el.innerHTML = '<p style="color:var(--danger);">Password must be at least 6 characters</p>'; return; }
         el.innerHTML = '<p style="color:var(--text-muted);">Setting password...</p>';
         try {
-            const r = await apiapiFetch(`${API_BASE}/users.php?action=reset-password`, {
+            const r = await apiFetch(`${API_BASE}/users.php?action=reset-password`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },                 body: JSON.stringify({ user_id: parseInt(userId), new_password: pw || '', send_email: true })
             });
             const d = await r.json();

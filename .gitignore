@@ -1,3 +1,6 @@
+# Assets folder (images/videos too large for repo)
+assets/
+
 # Credentials (NEVER commit)
 includes/credentials.php
 
